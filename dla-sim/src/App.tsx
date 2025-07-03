@@ -1,12 +1,11 @@
 import { useState } from 'react'
 import './App.css'
+import DLAApp from './components/DLAApp'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <div>
-      <h1>DLA Simulation</h1>
+      <DLAApp />
     </div>
   )
 }
