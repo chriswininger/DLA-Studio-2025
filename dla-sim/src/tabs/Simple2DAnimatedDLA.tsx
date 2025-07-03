@@ -2,11 +2,11 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { createDLAState, stepDLA } from '../dla/dla';
 import type { DLAState } from '../dla/dla';
 
-const CANVAS_WIDTH = 400;
-const CANVAS_HEIGHT = 400;
-const DEFAULT_PARTICLES = 10000;
+const CANVAS_WIDTH = 1000;
+const CANVAS_HEIGHT = 1000;
+const DEFAULT_PARTICLES = 1000;
 
-const DLAApp: React.FC = () => {
+const Simple2DAnimatedDLA: React.FC = () => {
   const [numParticles, setNumParticles] = useState<number>(DEFAULT_PARTICLES);
   const [running, setRunning] = useState<boolean>(false);
   const [dlaState, setDlaState] = useState<DLAState>(() =>
@@ -69,7 +69,7 @@ const DLAApp: React.FC = () => {
   // Handle particle count input
   const handleParticlesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = parseInt(e.target.value, 10);
-    if (!isNaN(val) && val > 0 && val <= 10000) {
+    if (!isNaN(val) && val > 0) {
       setNumParticles(val);
     }
   };
@@ -102,11 +102,10 @@ const DLAApp: React.FC = () => {
           <input
             type="number"
             min={1}
-            max={10000}
             value={numParticles}
             onChange={handleParticlesChange}
             disabled={running}
-            style={{ marginLeft: 8, width: 80 }}
+            style={{ marginLeft: 8, width: 120 }}
           />
         </label>
       </div>
@@ -125,4 +124,4 @@ const DLAApp: React.FC = () => {
   );
 };
 
-export default DLAApp;
+export default Simple2DAnimatedDLA;

@@ -1,11 +1,10 @@
-import { useState } from 'react'
 import './App.css'
-import DLAApp from './components/DLAApp'
+import Simple2DAnimatedDLA from './tabs/Simple2DAnimatedDLA'
 
 function App() {
   return (
     <div>
-      <DLAApp />
+      <Simple2DAnimatedDLA />
     </div>
   )
 }
