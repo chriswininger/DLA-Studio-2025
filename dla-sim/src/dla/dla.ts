@@ -23,21 +23,24 @@ export function createDLAState(width: number, height: number, numWalkers: number
 
   // Spawn walkers randomly on the border
   const walkers: Point[] = [];
+  
+  const distanceFromTheEdge = 1;
   for (let i = 0; i < numWalkers; i++) {
-    let edge = Math.floor(Math.random() * 4);
+    const edge = Math.floor(Math.random() * 4);
     let x = 0, y = 0;
+    
     if (edge === 0) { // top
-      x = Math.floor(Math.random() * width);
+      x = Math.floor(Math.random() * (width - distanceFromTheEdge));
       y = 0;
     } else if (edge === 1) { // bottom
-      x = Math.floor(Math.random() * width);
-      y = height - 1;
+      x = Math.floor(Math.random() * (width - distanceFromTheEdge));
+      y = height - distanceFromTheEdge;
     } else if (edge === 2) { // left
       x = 0;
-      y = Math.floor(Math.random() * height);
+      y = Math.floor(Math.random() * (height - distanceFromTheEdge));
     } else { // right
-      x = width - 1;
-      y = Math.floor(Math.random() * height);
+      x = width - distanceFromTheEdge;
+      y = Math.floor(Math.random() * (height - distanceFromTheEdge));
     }
     walkers.push({ x, y });
   }
