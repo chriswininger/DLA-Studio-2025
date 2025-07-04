@@ -1,17 +1,16 @@
-// Types for DLA simulation
 export type Point = { x: number; y: number };
 
 export interface DLAState {
   width: number;
   height: number;
-  cluster: Set<string>; // Set of 'x,y' strings for cluster points
+  
+  // Clusters are the points that have stuck
+  // The field is initailized with at least one initial cluster
+  cluster: Set<string>;
+
+  // Walkers are the points that are still moving
   walkers: Point[];
   steps: number;
-}
-
-// Helper to serialize a point for Set
-function pointKey(p: Point): string {
-  return `${p.x},${p.y}`;
 }
 
 // Create initial DLA state
@@ -19,11 +18,13 @@ export function createDLAState(width: number, height: number, numWalkers: number
   // Start with a single cluster point at the center
   const cluster = new Set<string>();
   const center = { x: Math.floor(width / 2), y: Math.floor(height / 2) };
+
+  //clusters are tracked using strings for easy lookup
   cluster.add(pointKey(center));
 
-  // Spawn walkers randomly on the border
+  // Seeds the walkers randomly along the borders of the canvas
   const walkers: Point[] = [];
-  
+ 
   const distanceFromTheEdge = 1;
   for (let i = 0; i < numWalkers; i++) {
     const edge = Math.floor(Math.random() * 4);
@@ -52,16 +53,6 @@ export function createDLAState(width: number, height: number, numWalkers: number
     walkers,
     steps: 0,
   };
-}
-
-// Get 4-neighbor positions
-function neighbors(p: Point): Point[] {
-  return [
-    { x: p.x + 1, y: p.y },
-    { x: p.x - 1, y: p.y },
-    { x: p.x, y: p.y + 1 },
-    { x: p.x, y: p.y - 1 },
-  ];
 }
 
 // Advance the simulation by one step (pure function)
@@ -98,3 +89,20 @@ export function stepDLA(state: DLAState): DLAState {
     steps: state.steps + 1,
   };
 }
+
+// Get 4-neighbor positions
+function neighbors(p: Point): Point[] {
+  return [
+    { x: p.x + 1, y: p.y },
+    { x: p.x - 1, y: p.y },
+    { x: p.x, y: p.y + 1 },
+    { x: p.x, y: p.y - 1 },
+  ];
+}
+
+
+// Helper to serialize a point for Set
+function pointKey(p: Point): string {
+  return `${p.x},${p.y}`;
+}
+
