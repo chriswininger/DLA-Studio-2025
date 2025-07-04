@@ -7,6 +7,8 @@ import { createDLAState, stepDLA } from '../../dla/dla';
 import type { DLAState } from '../../dla/dla';
 import type { RootState } from '../../store';
 import type { Simple2DAnimatedDLAUIState } from './simple-2d-animated-dla-slice';
+// Vite/ESM native worker import
+// No import needed, use new Worker(new URL(...), { type: 'module' })
 
 const Simple2DAnimatedDLA: React.FC = () => {
   const dispatch = useDispatch();
@@ -17,6 +19,9 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const dlaStateRef = useRef<DLAState | null>(null);
   const stepsRef = useRef<number>(0);
   const [spawnSquareSize, setSpawnSquareSize] = React.useState(100);
+  const [progressTick, setProgressTick] = React.useState(0);
+  const [isSimulating, setIsSimulating] = React.useState(false);
+  const workerRef = React.useRef<Worker | null>(null);
 
   // Initialize simulation when numParticles changes
   useEffect(() => {
@@ -106,6 +111,44 @@ const Simple2DAnimatedDLA: React.FC = () => {
     draw();
   };
 
+  // Simulate to completion (no animation frames)
+  const handleSimulateToCompletion = () => {
+    setIsSimulating(true);
+    setProgressTick(t => t + 1);
+    workerRef.current = new Worker(new URL('./dla-worker.ts', import.meta.url), { type: 'module' });
+    workerRef.current.onmessage = (e: MessageEvent) => {
+      const msg = e.data;
+      if (msg.type === 'progress') {
+        stepsRef.current = msg.steps;
+        if (dlaStateRef.current) {
+          // Only update walkers count for progress
+          dlaStateRef.current.walkers = new Array(msg.walkers).fill({x:0,y:0});
+        }
+        setProgressTick(t => t + 1);
+      } else if (msg.type === 'done') {
+        stepsRef.current = msg.steps;
+        if (dlaStateRef.current) {
+          dlaStateRef.current.cluster = new Set(msg.cluster);
+          dlaStateRef.current.walkers = [];
+        }
+        setProgressTick(t => t + 1);
+        draw();
+        setIsSimulating(false);
+        workerRef.current?.terminate();
+        workerRef.current = null;
+        dispatch(setIsRunning(false));
+      }
+    };
+    workerRef.current.postMessage({
+      type: 'simulate',
+      width: CANVAS_WIDTH,
+      height: CANVAS_HEIGHT,
+      numWalkers: numParticles,
+      spawnSquareSize,
+      progressInterval: 1000,
+    });
+  };
+
   // Get current simulation info for display
   const walkersCount = dlaStateRef.current?.walkers.length ?? 0;
   const steps = stepsRef.current;
@@ -150,6 +193,9 @@ const Simple2DAnimatedDLA: React.FC = () => {
           <button onClick={handleStop} style={{ marginRight: 8 }}>Stop</button>
         )}
         <button onClick={handleReset} disabled={isRunning}>Reset</button>
+        <button onClick={handleSimulateToCompletion} disabled={isRunning || isSimulating} style={{ marginLeft: 8 }}>
+          {isSimulating ? 'Simulating...' : 'Simulate to Completion'}
+        </button>
       </div>
       <div style={{ marginTop: 12, color: '#888' }}>
         Steps: {steps} | Remaining walkers: {walkersCount}
