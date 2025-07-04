@@ -1,0 +1,30 @@
+/* Tab navigation container */
+.dlasim_tab-nav {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+/* Tab link styles */
+.dlasim_tab-link {
+  color: #ff00a6;
+  font-size: 1.2rem;
+  border: 2px solid #5a6cff;
+  border-radius: 6px;
+  padding: 0.5rem 2rem;
+  text-decoration: none;
+  margin-right: 1rem;
+  background: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.dlasim_tab-link:last-child {
+  margin-right: 0;
+}
+
+.dlasim_tab-link.dlasim_active {
+  background: #23234a;
+  color: #fff;
+  border-color: #ff00a6;
+} 

@@ -16,14 +16,15 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const animationRef = useRef<number | null>(null);
   const dlaStateRef = useRef<DLAState | null>(null);
   const stepsRef = useRef<number>(0);
+  const [spawnSquareSize, setSpawnSquareSize] = React.useState(100);
 
   // Initialize simulation when numParticles changes
   useEffect(() => {
-    dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT, numParticles);
+    dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT, numParticles, spawnSquareSize);
     stepsRef.current = 0;
     draw();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [numParticles]);
+  }, [numParticles, spawnSquareSize]);
 
   // Draw function
   const draw = useCallback(() => {
@@ -80,10 +81,18 @@ const Simple2DAnimatedDLA: React.FC = () => {
     }
   };
 
+  // Handle spawn square size input
+  const handleSpawnSquareSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = parseInt(e.target.value, 10);
+    if (!isNaN(val) && val > 0) {
+      setSpawnSquareSize(val);
+    }
+  };
+
   // Handle start/stop/reset
   const handleStart = () => {
     if (!dlaStateRef.current || dlaStateRef.current.walkers.length === 0) {
-      dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT, numParticles);
+      dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT, numParticles, spawnSquareSize);
       stepsRef.current = 0;
       draw();
     }
@@ -92,7 +101,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const handleStop = () => dispatch(setIsRunning(false));
   const handleReset = () => {
     dispatch(setIsRunning(false));
-    dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT, numParticles);
+    dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT, numParticles, spawnSquareSize);
     stepsRef.current = 0;
     draw();
   };
@@ -118,6 +127,17 @@ const Simple2DAnimatedDLA: React.FC = () => {
             min={1}
             value={numParticles}
             onChange={handleParticlesChange}
+            disabled={isRunning}
+            style={{ marginLeft: 8, width: 120 }}
+          />
+        </label>
+        <label style={{ marginLeft: 16 }}>
+          Spawn Square Size:
+          <input
+            type="number"
+            min={1}
+            value={spawnSquareSize}
+            onChange={handleSpawnSquareSizeChange}
             disabled={isRunning}
             style={{ marginLeft: 8, width: 120 }}
           />

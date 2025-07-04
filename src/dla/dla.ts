@@ -14,7 +14,7 @@ export interface DLAState {
 }
 
 // Create initial DLA state
-export function createDLAState(width: number, height: number, numWalkers: number): DLAState {
+export function createDLAState(width: number, height: number, numWalkers: number, spawnSquareSize?: number): DLAState {
   // Start with a single cluster point at the center
   const cluster = new Set<string>();
   const center = { x: Math.floor(width / 2), y: Math.floor(height / 2) };
@@ -22,28 +22,38 @@ export function createDLAState(width: number, height: number, numWalkers: number
   //clusters are tracked using strings for easy lookup
   cluster.add(pointKey(center));
 
-  // Seeds the walkers randomly along the borders of the canvas
+  // Seeds the walkers randomly along the borders of the canvas or within a square
   const walkers: Point[] = [];
  
-  const distanceFromTheEdge = 1;
-  for (let i = 0; i < numWalkers; i++) {
-    const edge = Math.floor(Math.random() * 4);
-    let x = 0, y = 0;
-    
-    if (edge === 0) { // top
-      x = Math.floor(Math.random() * (width - distanceFromTheEdge));
-      y = 0;
-    } else if (edge === 1) { // bottom
-      x = Math.floor(Math.random() * (width - distanceFromTheEdge));
-      y = height - distanceFromTheEdge;
-    } else if (edge === 2) { // left
-      x = 0;
-      y = Math.floor(Math.random() * (height - distanceFromTheEdge));
-    } else { // right
-      x = width - distanceFromTheEdge;
-      y = Math.floor(Math.random() * (height - distanceFromTheEdge));
+  if (spawnSquareSize && spawnSquareSize > 0) {
+    // Spawn walkers randomly within a square centered on the canvas
+    const half = Math.floor(spawnSquareSize / 2);
+    for (let i = 0; i < numWalkers; i++) {
+      const x = center.x - half + Math.floor(Math.random() * spawnSquareSize);
+      const y = center.y - half + Math.floor(Math.random() * spawnSquareSize);
+      walkers.push({ x, y });
     }
-    walkers.push({ x, y });
+  } else {
+    // Default: spawn walkers along the borders
+    const distanceFromTheEdge = 1;
+    for (let i = 0; i < numWalkers; i++) {
+      const edge = Math.floor(Math.random() * 4);
+      let x = 0, y = 0;
+      if (edge === 0) { // top
+        x = Math.floor(Math.random() * (width - distanceFromTheEdge));
+        y = 0;
+      } else if (edge === 1) { // bottom
+        x = Math.floor(Math.random() * (width - distanceFromTheEdge));
+        y = height - distanceFromTheEdge;
+      } else if (edge === 2) { // left
+        x = 0;
+        y = Math.floor(Math.random() * (height - distanceFromTheEdge));
+      } else { // right
+        x = width - distanceFromTheEdge;
+        y = Math.floor(Math.random() * (height - distanceFromTheEdge));
+      }
+      walkers.push({ x, y });
+    }
   }
 
   return {
