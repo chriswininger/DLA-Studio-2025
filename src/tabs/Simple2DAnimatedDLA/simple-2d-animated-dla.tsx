@@ -55,34 +55,23 @@ const Simple2DAnimatedDLA: React.FC = () => {
     });
   }, []);
 
-  // Animation loop
-  useEffect(() => {
-    if (isRunning) {
-      const animate = () => {
-        if (dlaStateRef.current) {
-          dlaStateRef.current = stepDLA(dlaStateRef.current);
-          stepsRef.current += 1;
-          draw();
-          if (dlaStateRef.current.walkers.length > 0) {
-            animationRef.current = requestAnimationFrame(animate);
-          } else {
-            dispatch(setIsRunning(false));
-          }
-        }
-      };
-      animationRef.current = requestAnimationFrame(animate);
-    } else if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current);
-      animationRef.current = null;
-    }
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-        animationRef.current = null;
+  // Animation step function
+  const stepAnimation = useCallback(() => {
+    if (dlaStateRef.current) {
+      dlaStateRef.current = stepDLA(dlaStateRef.current);
+      stepsRef.current += 1;
+      draw();
+      if (dlaStateRef.current.walkers.length === 0) {
+        dispatch(setIsRunning(false));
+        return false; // Stop animation
       }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isRunning, dispatch, draw]);
+      return true; // Continue animation
+    }
+    return false;
+  }, [draw, dispatch]);
+
+  // Use the animation loop hook
+  useAnimationLoop(stepAnimation, isRunning);
 
   // Get current simulation info for display
   const walkersCount = dlaStateRef.current?.walkers.length ?? 0;
@@ -242,15 +231,48 @@ const Simple2DAnimatedDLA: React.FC = () => {
     dispatch(setSelectedTool(tool));
   }
 
-  // Spawn new walkers and add to existing simulation
   function handleSpawn() {
-    if (!dlaStateRef.current) return;
-   
-    dlaStateRef.current.walkers = dlaStateRef.current.walkers
-      .concat(spawnWalkersInSquare(CANVAS_WIDTH, CANVAS_HEIGHT, numParticles, spawnSquareSize));
-   
-    draw();
+    if (dlaStateRef.current) {
+      const newWalkers = spawnWalkersInSquare(CANVAS_WIDTH, CANVAS_HEIGHT, numParticles, spawnSquareSize);
+      dlaStateRef.current.walkers = [...dlaStateRef.current.walkers, ...newWalkers];
+      draw();
+    }
   }
 };
+
+// Custom hook for animation loop
+function useAnimationLoop(callback: () => boolean, isRunning: boolean) {
+  const requestRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!isRunning) {
+      if (requestRef.current) {
+        cancelAnimationFrame(requestRef.current);
+        requestRef.current = null;
+      }
+      return;
+    }
+
+    const animate = () => {
+      const shouldContinue = callback();
+      if (shouldContinue) {
+        requestRef.current = requestAnimationFrame(animate);
+      } else {
+        requestRef.current = null;
+      }
+    };
+
+    requestRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (requestRef.current) {
+        cancelAnimationFrame(requestRef.current);
+        requestRef.current = null;
+      }
+    };
+  }, [isRunning, callback]);
+
+  return requestRef.current;
+}
 
 export default Simple2DAnimatedDLA;
