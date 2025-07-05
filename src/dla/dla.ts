@@ -15,7 +15,7 @@ export interface DLAState {
 
 // Create initial DLA state
 export function createDLAState(width: number, height: number, numWalkers: number, spawnSquareSize?: number): DLAState {
-  console.log('createDLAState', width, height, numWalkers, spawnSquareSize);
+  console.log(`createDLAState -> width ${width}  height ${height} numWalkers ${numWalkers} spawnSquareSize ${spawnSquareSize}`);
   // Start with a single cluster point at the center
   const cluster = new Set<string>();
   const center = { x: Math.floor(width / 2), y: Math.floor(height / 2) };

@@ -84,94 +84,10 @@ const Simple2DAnimatedDLA: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRunning, dispatch, draw]);
 
-  // Handle particle count input
-  const handleParticlesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = parseInt(e.target.value, 10);
-    if (!isNaN(val) && val > 0) {
-      dispatch(setNumParticles(val));
-    }
-  };
-
-  // Handle spawn square size input
-  const handleSpawnSquareSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = parseInt(e.target.value, 10);
-    if (!isNaN(val) && val > 0) {
-      setSpawnSquareSize(val);
-    }
-  };
-
-  // Handle start/stop/reset
-  const handleStart = () => {
-    if (!dlaStateRef.current || dlaStateRef.current.walkers.length === 0) {
-      dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT, numParticles, spawnSquareSize);
-      stepsRef.current = 0;
-      draw();
-    }
-    dispatch(setIsRunning(true));
-  };
-  const handleStop = () => dispatch(setIsRunning(false));
-  const handleReset = () => {
-    dispatch(setIsRunning(false));
-    dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT, numParticles, spawnSquareSize);
-    stepsRef.current = 0;
-    draw();
-  };
-
-  // Simulate to completion (no animation frames)
-  const handleSimulateToCompletion = () => {
-    setIsSimulating(true);
-    setProgressTick(t => t + 1);
-    workerRef.current = new Worker(new URL('./dla-worker.ts', import.meta.url), { type: 'module' });
-    workerRef.current.onmessage = (e: MessageEvent) => {
-      const msg = e.data;
-      if (msg.type === 'progress') {
-        stepsRef.current = msg.steps;
-        if (dlaStateRef.current) {
-          // Only update walkers count for progress
-          dlaStateRef.current.walkers = new Array(msg.walkers).fill({x:0,y:0});
-        }
-        setProgressTick(t => t + 1);
-      } else if (msg.type === 'done') {
-        stepsRef.current = msg.steps;
-        if (dlaStateRef.current) {
-          dlaStateRef.current.cluster = new Set(msg.cluster);
-          dlaStateRef.current.walkers = [];
-        }
-        setProgressTick(t => t + 1);
-        draw();
-        setIsSimulating(false);
-        workerRef.current?.terminate();
-        workerRef.current = null;
-        dispatch(setIsRunning(false));
-      }
-    };
-    workerRef.current.postMessage({
-      type: 'simulate',
-      width: CANVAS_WIDTH,
-      height: CANVAS_HEIGHT,
-      numWalkers: numParticles,
-      spawnSquareSize,
-      progressInterval: 1000,
-    });
-  };
-
   // Get current simulation info for display
   const walkersCount = dlaStateRef.current?.walkers.length ?? 0;
   const steps = stepsRef.current;
 
-  const handleSelectTool = (tool: 'brush' | 'eraser') => {
-    dispatch(setSelectedTool(tool));
-  };
-
-  // Spawn new walkers and add to existing simulation
-  const handleSpawn = () => {
-    if (!dlaStateRef.current) return;
-    // Create new walkers
-    const newState = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT, numParticles, spawnSquareSize);
-    // Only take the new walkers, not the cluster
-    dlaStateRef.current.walkers = dlaStateRef.current.walkers.concat(newState.walkers);
-    draw();
-  };
 
   return (
     <div style={{ textAlign: 'center' }}>
@@ -250,6 +166,95 @@ const Simple2DAnimatedDLA: React.FC = () => {
       </div>
     </div>
   );
+
+  // Handle particle count input
+  function handleParticlesChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = parseInt(e.target.value, 10);
+    if (!isNaN(val) && val > 0) {
+      dispatch(setNumParticles(val));
+    }
+  }
+
+  // Handle spawn square size input
+  function handleSpawnSquareSizeChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = parseInt(e.target.value, 10);
+    if (!isNaN(val) && val > 0) {
+      setSpawnSquareSize(val);
+    }
+  }
+
+  // Handle start/stop/reset
+  function handleStart() {
+    if (!dlaStateRef.current || dlaStateRef.current.walkers.length === 0) {
+      dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT, numParticles, spawnSquareSize);
+      stepsRef.current = 0;
+      draw();
+    }
+    dispatch(setIsRunning(true));
+  }
+
+  function handleStop() {
+    dispatch(setIsRunning(false));
+  }
+
+  function handleReset() {
+    dispatch(setIsRunning(false));
+    dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT, numParticles, spawnSquareSize);
+    stepsRef.current = 0;
+    draw();
+  }
+
+  // Simulate to completion (no animation frames)
+  function handleSimulateToCompletion() {
+    setIsSimulating(true);
+    setProgressTick(t => t + 1);
+    workerRef.current = new Worker(new URL('./dla-worker.ts', import.meta.url), { type: 'module' });
+    workerRef.current.onmessage = (e: MessageEvent) => {
+      const msg = e.data;
+      if (msg.type === 'progress') {
+        stepsRef.current = msg.steps;
+        if (dlaStateRef.current) {
+          // Only update walkers count for progress
+          dlaStateRef.current.walkers = new Array(msg.walkers).fill({x:0,y:0});
+        }
+        setProgressTick(t => t + 1);
+      } else if (msg.type === 'done') {
+        stepsRef.current = msg.steps;
+        if (dlaStateRef.current) {
+          dlaStateRef.current.cluster = new Set(msg.cluster);
+          dlaStateRef.current.walkers = [];
+        }
+        setProgressTick(t => t + 1);
+        draw();
+        setIsSimulating(false);
+        workerRef.current?.terminate();
+        workerRef.current = null;
+        dispatch(setIsRunning(false));
+      }
+    };
+    workerRef.current.postMessage({
+      type: 'simulate',
+      width: CANVAS_WIDTH,
+      height: CANVAS_HEIGHT,
+      numWalkers: numParticles,
+      spawnSquareSize,
+      progressInterval: 1000,
+    });
+  }
+
+  function handleSelectTool(tool: 'brush' | 'eraser') {
+    dispatch(setSelectedTool(tool));
+  }
+
+  // Spawn new walkers and add to existing simulation
+  function handleSpawn() {
+    if (!dlaStateRef.current) return;
+    // Create new walkers
+    const newState = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT, numParticles, spawnSquareSize);
+    // Only take the new walkers, not the cluster
+    dlaStateRef.current.walkers = dlaStateRef.current.walkers.concat(newState.walkers);
+    draw();
+  }
 };
 
 export default Simple2DAnimatedDLA;
