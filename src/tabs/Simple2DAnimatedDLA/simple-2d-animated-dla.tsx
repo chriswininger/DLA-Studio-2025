@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../store';
 import { setNumParticles, setIsRunning, setSelectedTool } from './simple-2d-animated-dla-slice';
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from './simple-2d-animated-dla-constants';
-import { createDLAState, stepDLA } from '../../dla/dla';
+import { createDLAState, spawnWalkersInSquare, stepDLA } from '../../dla/dla';
 import type { DLAState } from '../../dla/dla';
 import type { RootState } from '../../store';
 import type { Simple2DAnimatedDLAUIState } from './simple-2d-animated-dla-slice';
@@ -30,7 +30,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
   // Only initialize cluster and walkers on first mount or reset
   useEffect(() => {
     if (!dlaStateRef.current) {
-      dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT, 0, spawnSquareSize);
+      dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT);
       stepsRef.current = 0;
       draw();
     }
@@ -185,11 +185,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
 
   // Handle start/stop/reset
   function handleStart() {
-    if (!dlaStateRef.current || dlaStateRef.current.walkers.length === 0) {
-      dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT, numParticles, spawnSquareSize);
-      stepsRef.current = 0;
-      draw();
-    }
+
     dispatch(setIsRunning(true));
   }
 
@@ -199,7 +195,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
 
   function handleReset() {
     dispatch(setIsRunning(false));
-    dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT, numParticles, spawnSquareSize);
+    dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT);
     stepsRef.current = 0;
     draw();
   }
@@ -249,10 +245,10 @@ const Simple2DAnimatedDLA: React.FC = () => {
   // Spawn new walkers and add to existing simulation
   function handleSpawn() {
     if (!dlaStateRef.current) return;
-    // Create new walkers
-    const newState = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT, numParticles, spawnSquareSize);
-    // Only take the new walkers, not the cluster
-    dlaStateRef.current.walkers = dlaStateRef.current.walkers.concat(newState.walkers);
+   
+    dlaStateRef.current.walkers = dlaStateRef.current.walkers
+      .concat(spawnWalkersInSquare(CANVAS_WIDTH, CANVAS_HEIGHT, numParticles, spawnSquareSize));
+   
     draw();
   }
 };
