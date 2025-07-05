@@ -1,12 +1,15 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../store';
-import { setNumParticles, setIsRunning } from './simple-2d-animated-dla-slice';
+import { setNumParticles, setIsRunning, setSelectedTool } from './simple-2d-animated-dla-slice';
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from './simple-2d-animated-dla-constants';
 import { createDLAState, stepDLA } from '../../dla/dla';
 import type { DLAState } from '../../dla/dla';
 import type { RootState } from '../../store';
 import type { Simple2DAnimatedDLAUIState } from './simple-2d-animated-dla-slice';
+import './simple-2d-animated-dla.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaintBrush, faEraser } from '@fortawesome/free-solid-svg-icons';
 // Vite/ESM native worker import
 // No import needed, use new Worker(new URL(...), { type: 'module' })
 
@@ -14,6 +17,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const dispatch = useDispatch();
   const numParticles = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).numParticles);
   const isRunning = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).isRunning);
+  const selectedTool = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).selectedTool);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animationRef = useRef<number | null>(null);
   const dlaStateRef = useRef<DLAState | null>(null);
@@ -153,15 +157,41 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const walkersCount = dlaStateRef.current?.walkers.length ?? 0;
   const steps = stepsRef.current;
 
+  const handleSelectTool = (tool: 'brush' | 'eraser') => {
+    dispatch(setSelectedTool(tool));
+  };
+
   return (
     <div style={{ textAlign: 'center' }}>
       <h1>DLA Simulation</h1>
-      <canvas
-        ref={canvasRef}
-        width={CANVAS_WIDTH}
-        height={CANVAS_HEIGHT}
-        style={{ border: '1px solid #ccc', background: '#111' }}
-      />
+      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start' }}>
+        {/* Tool selection UI */}
+        <div className="dlasim_tool-container">
+          <button
+            className={`dlasim_tool-btn${selectedTool === 'brush' ? ' selected' : ' unselected'}`}
+            onClick={() => handleSelectTool('brush')}
+            aria-label="Paint Brush Tool"
+            type="button"
+          >
+            <FontAwesomeIcon icon={faPaintBrush} className="dlasim_tool-icon" color={selectedTool === 'brush' ? '#FB8158' : '#EB2EA4'} />
+          </button>
+          <button
+            className={`dlasim_tool-btn${selectedTool === 'eraser' ? ' selected' : ' unselected'}`}
+            onClick={() => handleSelectTool('eraser')}
+            aria-label="Eraser Tool"
+            type="button"
+          >
+            <FontAwesomeIcon icon={faEraser} className="dlasim_tool-icon" color={selectedTool === 'eraser' ? '#FB8158' : '#EB2EA4'} />
+          </button>
+        </div>
+        {/* Canvas */}
+        <canvas
+          ref={canvasRef}
+          width={CANVAS_WIDTH}
+          height={CANVAS_HEIGHT}
+          style={{ border: '1px solid #ccc', background: '#111' }}
+        />
+      </div>
       <div style={{ margin: '1em 0' }}>
         <label>
           Particles:
