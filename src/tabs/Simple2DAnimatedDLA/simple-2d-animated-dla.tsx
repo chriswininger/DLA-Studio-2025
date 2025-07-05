@@ -27,13 +27,15 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const [isSimulating, setIsSimulating] = React.useState(false);
   const workerRef = React.useRef<Worker | null>(null);
 
-  // Initialize simulation when numParticles changes
+  // Only initialize cluster and walkers on first mount or reset
   useEffect(() => {
-    dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT, numParticles, spawnSquareSize);
-    stepsRef.current = 0;
-    draw();
+    if (!dlaStateRef.current) {
+      dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT, 0, spawnSquareSize);
+      stepsRef.current = 0;
+      draw();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [numParticles, spawnSquareSize]);
+  }, []);
 
   // Draw function
   const draw = useCallback(() => {
@@ -161,6 +163,16 @@ const Simple2DAnimatedDLA: React.FC = () => {
     dispatch(setSelectedTool(tool));
   };
 
+  // Spawn new walkers and add to existing simulation
+  const handleSpawn = () => {
+    if (!dlaStateRef.current) return;
+    // Create new walkers
+    const newState = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT, numParticles, spawnSquareSize);
+    // Only take the new walkers, not the cluster
+    dlaStateRef.current.walkers = dlaStateRef.current.walkers.concat(newState.walkers);
+    draw();
+  };
+
   return (
     <div style={{ textAlign: 'center' }}>
       <h1>DLA Simulation</h1>
@@ -191,30 +203,36 @@ const Simple2DAnimatedDLA: React.FC = () => {
           height={CANVAS_HEIGHT}
           style={{ border: '1px solid #ccc', background: '#111' }}
         />
-      </div>
-      <div style={{ margin: '1em 0' }}>
-        <label>
-          Particles:
-          <input
-            type="number"
-            min={1}
-            value={numParticles}
-            onChange={handleParticlesChange}
-            disabled={isRunning}
-            style={{ marginLeft: 8, width: 120 }}
-          />
-        </label>
-        <label style={{ marginLeft: 16 }}>
-          Spawn Square Size:
-          <input
-            type="number"
-            min={1}
-            value={spawnSquareSize}
-            onChange={handleSpawnSquareSizeChange}
-            disabled={isRunning}
-            style={{ marginLeft: 8, width: 120 }}
-          />
-        </label>
+        {/* Spawn controls */}
+        <div style={{ marginLeft: 48, border: '2px solid #5a6cff', borderRadius: 8, padding: 24, minWidth: 300 }}>
+          <div style={{ marginBottom: 16 }}>
+            <label htmlFor="dla-spawn-count">Particles to Spawn: </label>
+            <input
+              id="dla-spawn-count"
+              type="number"
+              min={1}
+              value={numParticles}
+              onChange={handleParticlesChange}
+              disabled={isRunning}
+              style={{ marginLeft: 8, width: 120 }}
+            />
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            <label htmlFor="dla-spawn-size">Spawn Square Size: </label>
+            <input
+              id="dla-spawn-size"
+              type="number"
+              min={1}
+              value={spawnSquareSize}
+              onChange={handleSpawnSquareSizeChange}
+              disabled={isRunning}
+              style={{ marginLeft: 8, width: 120 }}
+            />
+          </div>
+          <button onClick={handleSpawn} disabled={isRunning} style={{ marginTop: 8, width: 100 }}>
+            Spawn
+          </button>
+        </div>
       </div>
       <div>
         {!isRunning ? (
