@@ -2,7 +2,7 @@
 .dlasim_tab-nav {
   display: flex;
   gap: 2rem;
-  justify-content: center;
+  justify-content: flex-start;
   margin: 2rem 0;
 }
 

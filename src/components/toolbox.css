@@ -1,0 +1,63 @@
+.dlasim_toolbox {
+  background: #1a1a2e;
+  border: 2px solid #5a6cff;
+  border-radius: 8px;
+  padding: 1rem;
+  width: 200px;
+  min-height: 300px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dlasim_toolbox-title {
+  color: #ff00a6;
+  font-size: 1.1rem;
+  margin: 0 0 1rem 0;
+  text-align: center;
+  border-bottom: 1px solid #5a6cff;
+  padding-bottom: 0.5rem;
+}
+
+.dlasim_tool-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dlasim_tool-button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: none;
+  border: 2px solid #5a6cff;
+  border-radius: 6px;
+  color: #ff00a6;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.dlasim_tool-button:hover {
+  background: #23234a;
+  border-color: #ff00a6;
+  transform: translateY(-1px);
+}
+
+.dlasim_tool-button.dlasim_active {
+  background: #23234a;
+  border-color: #ff00a6;
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(255, 0, 166, 0.3);
+}
+
+.dlasim_tool-icon {
+  font-size: 1.2rem;
+  min-width: 1.5rem;
+  text-align: center;
+}
+
+.dlasim_tool-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+} 
