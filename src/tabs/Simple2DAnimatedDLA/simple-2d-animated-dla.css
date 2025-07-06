@@ -35,4 +35,26 @@
 
 .dlasim_tool-icon {
   pointer-events: none;
+}
+
+.dlasim_canvas-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 600px; /* Match your canvas width */
+}
+
+.dlasim_button-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 24px;
+  width: 100%;
+}
+
+.dlasim_status-row {
+  margin-top: 12px;
+  color: #888;
+  text-align: center;
+  width: 100%;
 } 

@@ -39,7 +39,6 @@ const Simple2DAnimatedDLA: React.FC = () => {
 
   return (
     <div style={{ textAlign: 'center' }}>
-      <h1>DLA Simulation</h1>
       <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start' }}>
         {/* Tool selection UI */}
         <div className="dlasim_tool-container">
@@ -60,13 +59,29 @@ const Simple2DAnimatedDLA: React.FC = () => {
             <FontAwesomeIcon icon={faEraser} className="dlasim_tool-icon" color={selectedTool === 'eraser' ? '#FB8158' : '#EB2EA4'} />
           </button>
         </div>
-        {/* Canvas */}
-        <canvas
-          ref={canvasRef}
-          width={CANVAS_WIDTH}
-          height={CANVAS_HEIGHT}
-          style={{ border: '1px solid #ccc', background: '#111' }}
-        />
+        {/* Canvas and button row column */}
+        <div className="dlasim_canvas-col">
+          <canvas
+            ref={canvasRef}
+            width={CANVAS_WIDTH}
+            height={CANVAS_HEIGHT}
+            style={{ border: '1px solid #ccc', background: '#111' }}
+          />
+          <div className="dlasim_button-row">
+            {!isRunning ? (
+              <button onClick={handleStart} style={{ marginRight: 8 }}>Start</button>
+            ) : (
+              <button onClick={handleStop} style={{ marginRight: 8 }}>Stop</button>
+            )}
+            <button onClick={handleReset} disabled={isRunning}>Reset</button>
+            <button onClick={handleSimulateToCompletion} disabled={isRunning || isSimulating} style={{ marginLeft: 8 }}>
+              {isSimulating ? 'Simulating...' : 'Simulate to Completion'}
+            </button>
+          </div>
+          <div className="dlasim_status-row">
+            Steps: {steps} | Remaining walkers: {walkersCount}
+          </div>
+        </div>
         {/* Spawn controls */}
         <div style={{ marginLeft: 48, border: '2px solid #5a6cff', borderRadius: 8, padding: 24, minWidth: 300 }}>
           <div style={{ marginBottom: 16 }}>
@@ -97,20 +112,6 @@ const Simple2DAnimatedDLA: React.FC = () => {
             Spawn
           </button>
         </div>
-      </div>
-      <div>
-        {!isRunning ? (
-          <button onClick={handleStart} style={{ marginRight: 8 }}>Start</button>
-        ) : (
-          <button onClick={handleStop} style={{ marginRight: 8 }}>Stop</button>
-        )}
-        <button onClick={handleReset} disabled={isRunning}>Reset</button>
-        <button onClick={handleSimulateToCompletion} disabled={isRunning || isSimulating} style={{ marginLeft: 8 }}>
-          {isSimulating ? 'Simulating...' : 'Simulate to Completion'}
-        </button>
-      </div>
-      <div style={{ marginTop: 12, color: '#888' }}>
-        Steps: {steps} | Remaining walkers: {walkersCount}
       </div>
     </div>
   );
