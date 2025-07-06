@@ -19,7 +19,6 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const isRunning = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).isRunning);
   const selectedTool = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).selectedTool);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const animationRef = useRef<number | null>(null);
   const dlaStateRef = useRef<DLAState | null>(null);
   const stepsRef = useRef<number>(0);
   const [spawnSquareSize, setSpawnSquareSize] = React.useState(100);
@@ -27,50 +26,10 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const [isSimulating, setIsSimulating] = React.useState(false);
   const workerRef = React.useRef<Worker | null>(null);
 
-  // Only initialize cluster and walkers on first mount or reset
-  useEffect(() => {
-    if (!dlaStateRef.current) {
-      dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT);
-      stepsRef.current = 0;
-      draw();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useEffect(initializeState, []);
+  const draw = useCallback(doDraw, []);
+  const stepAnimation = useCallback(doStepAnimation, [draw, dispatch]);
 
-  // Draw function
-  const draw = useCallback(() => {
-    const ctx = canvasRef.current?.getContext('2d');
-    if (!ctx || !dlaStateRef.current) return;
-    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    // Draw cluster
-    ctx.fillStyle = '#00d8ff';
-    dlaStateRef.current.cluster.forEach((key: string) => {
-      const [x, y]: [number, number] = key.split(',').map(Number) as [number, number];
-      ctx.fillRect(x, y, 1, 1);
-    });
-    // Draw walkers
-    ctx.fillStyle = '#ff0080';
-    dlaStateRef.current.walkers.forEach(({ x, y }: { x: number; y: number }) => {
-      ctx.fillRect(x, y, 1, 1);
-    });
-  }, []);
-
-  // Animation step function
-  const stepAnimation = useCallback(() => {
-    if (dlaStateRef.current) {
-      dlaStateRef.current = stepDLA(dlaStateRef.current);
-      stepsRef.current += 1;
-      draw();
-      if (dlaStateRef.current.walkers.length === 0) {
-        dispatch(setIsRunning(false));
-        return false; // Stop animation
-      }
-      return true; // Continue animation
-    }
-    return false;
-  }, [draw, dispatch]);
-
-  // Use the animation loop hook
   useAnimationLoop(stepAnimation, isRunning);
 
   // Get current simulation info for display
@@ -235,6 +194,46 @@ const Simple2DAnimatedDLA: React.FC = () => {
     if (dlaStateRef.current) {
       const newWalkers = spawnWalkersInSquare(CANVAS_WIDTH, CANVAS_HEIGHT, numParticles, spawnSquareSize);
       dlaStateRef.current.walkers = [...dlaStateRef.current.walkers, ...newWalkers];
+      draw();
+    }
+  }
+
+  function doStepAnimation(): boolean {
+    if (dlaStateRef.current) {
+      dlaStateRef.current = stepDLA(dlaStateRef.current);
+      stepsRef.current += 1;
+      draw();
+      if (dlaStateRef.current.walkers.length === 0) {
+        dispatch(setIsRunning(false));
+        return false; // Stop animation
+      }
+      return true; // Continue animation
+    }
+    return false;
+  }
+
+  function doDraw() {
+    const ctx = canvasRef.current?.getContext('2d');
+    if (!ctx || !dlaStateRef.current) return;
+    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    // Draw cluster
+    ctx.fillStyle = '#00d8ff';
+    dlaStateRef.current.cluster.forEach((key: string) => {
+      const [x, y]: [number, number] = key.split(',').map(Number) as [number, number];
+      ctx.fillRect(x, y, 1, 1);
+    });
+    // Draw walkers
+    ctx.fillStyle = '#ff0080';
+    dlaStateRef.current.walkers.forEach(({ x, y }: { x: number; y: number }) => {
+      ctx.fillRect(x, y, 1, 1);
+    });
+  }
+
+  function initializeState() {
+    // Only initialize cluster and walkers on first mount or reset
+    if (!dlaStateRef.current) {
+      dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT);
+      stepsRef.current = 0;
       draw();
     }
   }
