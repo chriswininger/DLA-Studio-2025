@@ -141,6 +141,10 @@ const Simple2DAnimatedDLA: React.FC = () => {
       if (msg.type === 'progress') {
         setSteps(msg.steps);
         setProgressTick(t => t + 1);
+        // Update the current state with the latest walkers and their positions
+        if (dlaStateRef.current && msg.walkerPositions) {
+          dlaStateRef.current.walkers = msg.walkerPositions;
+        }
       } else if (msg.type === 'done') {
         setSteps(msg.steps);
         if (dlaStateRef.current) {

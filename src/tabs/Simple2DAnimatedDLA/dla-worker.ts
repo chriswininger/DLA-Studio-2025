@@ -32,7 +32,12 @@ self.onmessage = function(e) {
       dlaState = stepDLA(dlaState);
       steps++;
       if (steps % progressInterval === 0) {
-        self.postMessage({ type: 'progress', steps, walkers: dlaState.walkers.length });
+        self.postMessage({ 
+          type: 'progress', 
+          steps, 
+          walkers: dlaState.walkers.length,
+          walkerPositions: dlaState.walkers
+        });
       }
     }
     self.postMessage({ type: 'done', steps, cluster: Array.from(dlaState.cluster) });
