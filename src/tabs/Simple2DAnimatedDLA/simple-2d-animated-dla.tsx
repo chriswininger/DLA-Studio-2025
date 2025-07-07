@@ -19,7 +19,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const selectedTool = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).selectedTool);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const dlaStateRef = useRef<DLAState | null>(null);
-  const stepsRef = useRef<number>(0);
+  const [steps, setSteps] = React.useState(0);
   const [spawnSquareSize, setSpawnSquareSize] = React.useState(100);
   const [progressTick, setProgressTick] = React.useState(0);
   const [isSimulating, setIsSimulating] = React.useState(false);
@@ -33,7 +33,6 @@ const Simple2DAnimatedDLA: React.FC = () => {
 
   // Get current simulation info for display
   const walkersCount = dlaStateRef.current?.walkers.length ?? 0;
-  const steps = stepsRef.current;
 
 
   return (
@@ -61,7 +60,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
             </button>
           </div>
           <div className="dlasim_status-row">
-            Steps: {steps} | Remaining walkers: {walkersCount}
+            Steps: {steps} | Remaining walkers: {walkersCount} | Progress: {progressTick}
           </div>
         </div>
         {/* Spawn controls */}
@@ -127,7 +126,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
   function handleReset() {
     dispatch(setIsRunning(false));
     dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT);
-    stepsRef.current = 0;
+    setSteps(0);
     draw();
   }
 
@@ -139,14 +138,14 @@ const Simple2DAnimatedDLA: React.FC = () => {
     workerRef.current.onmessage = (e: MessageEvent) => {
       const msg = e.data;
       if (msg.type === 'progress') {
-        stepsRef.current = msg.steps;
+        setSteps(msg.steps);
         if (dlaStateRef.current) {
           // Only update walkers count for progress
           dlaStateRef.current.walkers = new Array(msg.walkers).fill({x:0,y:0});
         }
         setProgressTick(t => t + 1);
       } else if (msg.type === 'done') {
-        stepsRef.current = msg.steps;
+        setSteps(msg.steps);
         if (dlaStateRef.current) {
           dlaStateRef.current.cluster = new Set(msg.cluster);
           dlaStateRef.current.walkers = [];
@@ -182,7 +181,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
   function doStepAnimation(): boolean {
     if (dlaStateRef.current) {
       dlaStateRef.current = stepDLA(dlaStateRef.current);
-      stepsRef.current += 1;
+      setSteps(prev => prev + 1);
       draw();
       if (dlaStateRef.current.walkers.length === 0) {
         dispatch(setIsRunning(false));
@@ -214,7 +213,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
     // Only initialize cluster and walkers on first mount or reset
     if (!dlaStateRef.current) {
       dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT);
-      stepsRef.current = 0;
+      setSteps(0);
       draw();
     }
   }
