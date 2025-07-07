@@ -16,7 +16,6 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const dispatch = useDispatch();
   const numParticles = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).numParticles);
   const isRunning = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).isRunning);
-  const selectedTool = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).selectedTool);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const dlaStateRef = useRef<DLAState | null>(null);
   const [steps, setSteps] = React.useState(0);
