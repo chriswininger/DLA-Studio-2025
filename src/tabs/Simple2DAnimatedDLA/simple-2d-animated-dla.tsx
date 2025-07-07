@@ -1,15 +1,14 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../store';
-import { setNumParticles, setIsRunning, setSelectedTool } from './simple-2d-animated-dla-slice';
+import { setNumParticles, setIsRunning } from './simple-2d-animated-dla-slice';
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from './simple-2d-animated-dla-constants';
 import { createDLAState, spawnWalkersInSquare, stepDLA } from '../../dla/dla';
 import type { DLAState } from '../../dla/dla';
 import type { RootState } from '../../store';
 import type { Simple2DAnimatedDLAUIState } from './simple-2d-animated-dla-slice';
 import './simple-2d-animated-dla.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaintBrush, faEraser } from '@fortawesome/free-solid-svg-icons';
+import ToolBar from './tool-bar';
 // Vite/ESM native worker import
 // No import needed, use new Worker(new URL(...), { type: 'module' })
 
@@ -41,24 +40,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
     <div style={{ textAlign: 'center' }}>
       <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start' }}>
         {/* Tool selection UI */}
-        <div className="dlasim_tool-container">
-          <button
-            className={`dlasim_tool-btn${selectedTool === 'brush' ? ' selected' : ' unselected'}`}
-            onClick={() => handleSelectTool('brush')}
-            aria-label="Paint Brush Tool"
-            type="button"
-          >
-            <FontAwesomeIcon icon={faPaintBrush} className="dlasim_tool-icon" color={selectedTool === 'brush' ? '#FB8158' : '#EB2EA4'} />
-          </button>
-          <button
-            className={`dlasim_tool-btn${selectedTool === 'eraser' ? ' selected' : ' unselected'}`}
-            onClick={() => handleSelectTool('eraser')}
-            aria-label="Eraser Tool"
-            type="button"
-          >
-            <FontAwesomeIcon icon={faEraser} className="dlasim_tool-icon" color={selectedTool === 'eraser' ? '#FB8158' : '#EB2EA4'} />
-          </button>
-        </div>
+        <ToolBar />
         {/* Canvas and button row column */}
         <div className="dlasim_canvas-col">
           <canvas
@@ -187,9 +169,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
     });
   }
 
-  function handleSelectTool(tool: 'brush' | 'eraser') {
-    dispatch(setSelectedTool(tool));
-  }
+
 
   function handleSpawn() {
     if (dlaStateRef.current) {

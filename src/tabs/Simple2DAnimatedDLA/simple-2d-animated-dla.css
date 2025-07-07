@@ -1,41 +1,4 @@
-/* Tool selection container */
-.dlasim_tool-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  margin-right: 32px;
-}
 
-.dlasim_tool-btn {
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid #5a6cff;
-  border-radius: 8px;
-  background: none;
-  cursor: pointer;
-  transition: border-color 0.2s, background 0.2s;
-  font-size: 2rem;
-  margin: 0;
-  outline: none;
-}
-
-.dlasim_tool-btn.selected {
-  border-color: #FB8158;
-  background: rgba(251, 129, 88, 0.08);
-}
-
-.dlasim_tool-btn.unselected {
-  border-color: #EB2EA4;
-  background: rgba(235, 46, 164, 0.08);
-}
-
-.dlasim_tool-icon {
-  pointer-events: none;
-}
 
 .dlasim_canvas-col {
   display: flex;
