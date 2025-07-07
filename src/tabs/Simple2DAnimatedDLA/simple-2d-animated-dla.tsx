@@ -21,7 +21,6 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const dlaStateRef = useRef<DLAState | null>(null);
   const [steps, setSteps] = React.useState(0);
   const [spawnSquareSize, setSpawnSquareSize] = React.useState(100);
-  const [progressTick, setProgressTick] = React.useState(0);
   const [isSimulating, setIsSimulating] = React.useState(false);
   const workerRef = React.useRef<Worker | null>(null);
 
@@ -60,7 +59,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
             </button>
           </div>
           <div className="dlasim_status-row">
-            Steps: {steps} | Remaining walkers: {walkersCount} | Progress: {progressTick}
+            Steps: {steps} | Remaining walkers: {walkersCount}
           </div>
         </div>
         {/* Spawn controls */}
@@ -133,14 +132,12 @@ const Simple2DAnimatedDLA: React.FC = () => {
   // Simulate to completion (no animation frames)
   function handleSimulateToCompletion() {
     setIsSimulating(true);
-    setProgressTick(0);
     setSteps(0);
     workerRef.current = new Worker(new URL('./dla-worker.ts', import.meta.url), { type: 'module' });
     workerRef.current.onmessage = (e: MessageEvent) => {
       const msg = e.data;
       if (msg.type === 'progress') {
         setSteps(msg.steps);
-        setProgressTick(t => t + 1);
         // Update the current state with the latest walkers and their positions
         if (dlaStateRef.current && msg.walkerPositions) {
           dlaStateRef.current.walkers = msg.walkerPositions;
@@ -152,7 +149,6 @@ const Simple2DAnimatedDLA: React.FC = () => {
           dlaStateRef.current.walkers = [];
           dlaStateRef.current.steps = msg.steps;
         }
-        setProgressTick(t => t + 1);
         draw();
         setIsSimulating(false);
         workerRef.current?.terminate();
