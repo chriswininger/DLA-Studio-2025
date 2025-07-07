@@ -133,22 +133,20 @@ const Simple2DAnimatedDLA: React.FC = () => {
   // Simulate to completion (no animation frames)
   function handleSimulateToCompletion() {
     setIsSimulating(true);
-    setProgressTick(t => t + 1);
+    setProgressTick(0);
+    setSteps(0);
     workerRef.current = new Worker(new URL('./dla-worker.ts', import.meta.url), { type: 'module' });
     workerRef.current.onmessage = (e: MessageEvent) => {
       const msg = e.data;
       if (msg.type === 'progress') {
         setSteps(msg.steps);
-        if (dlaStateRef.current) {
-          // Only update walkers count for progress
-          dlaStateRef.current.walkers = new Array(msg.walkers).fill({x:0,y:0});
-        }
         setProgressTick(t => t + 1);
       } else if (msg.type === 'done') {
         setSteps(msg.steps);
         if (dlaStateRef.current) {
           dlaStateRef.current.cluster = new Set(msg.cluster);
           dlaStateRef.current.walkers = [];
+          dlaStateRef.current.steps = msg.steps;
         }
         setProgressTick(t => t + 1);
         draw();
@@ -156,14 +154,30 @@ const Simple2DAnimatedDLA: React.FC = () => {
         workerRef.current?.terminate();
         workerRef.current = null;
         dispatch(setIsRunning(false));
+      } else if (msg.type === 'error') {
+        console.error('Worker error:', msg.error);
+        setIsSimulating(false);
+        workerRef.current?.terminate();
+        workerRef.current = null;
       }
     };
+    // Prepare the current DLA state for the worker
+    const currentState = dlaStateRef.current;
+    if (!currentState) {
+      console.error('No DLA state available for simulation');
+      setIsSimulating(false);
+      return;
+    }
+
     workerRef.current.postMessage({
       type: 'simulate',
       width: CANVAS_WIDTH,
       height: CANVAS_HEIGHT,
-      numWalkers: numParticles,
-      spawnSquareSize,
+      dlaState: {
+        cluster: Array.from(currentState.cluster),
+        walkers: currentState.walkers,
+        steps: currentState.steps
+      },
       progressInterval: 1000,
     });
   }
