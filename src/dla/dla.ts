@@ -33,10 +33,10 @@ export function createDLAState(width: number, height: number): DLAState {
   };
 }
 
-export function spawnWalkersInSquare(width: number, height: number, numWalkers: number, spawnSquareSize: number): Point[] {
+export function spawnWalkersInSquare(width: number, height: number, numWalkers: number, spawnSquareSize: number, xOffset: number = 0): Point[] {
   const walkers: Point[] = [];
 
-  const center = { x: Math.floor(width / 2), y: Math.floor(height / 2) };
+  const center = { x: Math.floor(width / 2) + xOffset, y: Math.floor(height / 2) };
 
 
   const half = Math.floor(spawnSquareSize / 2);

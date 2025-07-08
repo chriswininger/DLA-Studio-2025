@@ -16,14 +16,16 @@ import ShapeSpawnControls from './shape-spawn-controls/shape-spawn-controls';
 const Simple2DAnimatedDLA: React.FC = () => {
   const dispatch = useDispatch();
   const isRunning = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).isRunning);
+  const spawnXOffset = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnXOffset);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const dlaStateRef = useRef<DLAState | null>(null);
   const [steps, setSteps] = React.useState(0);
   const [isSimulating, setIsSimulating] = React.useState(false);
+  const [spawnSquareSize, setSpawnSquareSize] = React.useState(100);
   const workerRef = React.useRef<Worker | null>(null);
 
   useEffect(initializeState, []);
-  const draw = useCallback(doDraw, []);
+  const draw = useCallback(doDraw, [spawnXOffset, spawnSquareSize]);
   const stepAnimation = useCallback(doStepAnimation, [draw, dispatch]);
 
   useAnimationLoop(stepAnimation, isRunning);
@@ -66,6 +68,8 @@ const Simple2DAnimatedDLA: React.FC = () => {
           canvasHeight={CANVAS_HEIGHT}
           onSpawn={handleSpawn}
           isRunning={isRunning}
+          spawnSquareSize={spawnSquareSize}
+          onSpawnSquareSizeChange={setSpawnSquareSize}
         />
       </div>
     </div>
@@ -168,6 +172,23 @@ const Simple2DAnimatedDLA: React.FC = () => {
     const ctx = canvasRef.current?.getContext('2d');
     if (!ctx || !dlaStateRef.current) return;
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    
+    // Draw spawn bounding box
+    const centerX = Math.floor(CANVAS_WIDTH / 2) + spawnXOffset;
+    const centerY = Math.floor(CANVAS_HEIGHT / 2);
+    const halfSize = Math.floor(spawnSquareSize / 2);
+    
+    ctx.strokeStyle = '#ffff00';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([5, 5]);
+    ctx.strokeRect(
+      centerX - halfSize,
+      centerY - halfSize,
+      spawnSquareSize,
+      spawnSquareSize
+    );
+    ctx.setLineDash([]);
+    
     // Draw cluster
     ctx.fillStyle = '#00d8ff';
     dlaStateRef.current.cluster.forEach((key: string) => {

@@ -5,12 +5,14 @@ import { DEFAULT_PARTICLES } from './simple-2d-animated-dla-constants';
 export type Simple2DAnimatedDLATool = 'brush' | 'eraser';
 export interface Simple2DAnimatedDLAUIState {
   numParticles: number;
+  spawnXOffset: number;
   isRunning: boolean;
   selectedTool: Simple2DAnimatedDLATool;
 }
 
 const initialState: Simple2DAnimatedDLAUIState = {
   numParticles: DEFAULT_PARTICLES,
+  spawnXOffset: 0,
   isRunning: false,
   selectedTool: 'brush',
 };
@@ -22,6 +24,9 @@ const slice = createSlice({
     setNumParticles(state, action: PayloadAction<number>) {
       state.numParticles = action.payload;
     },
+    setSpawnXOffset(state, action: PayloadAction<number>) {
+      state.spawnXOffset = action.payload;
+    },
     setIsRunning(state, action: PayloadAction<boolean>) {
       state.isRunning = action.payload;
     },
@@ -31,5 +36,5 @@ const slice = createSlice({
   },
 });
 
-export const { setNumParticles, setIsRunning, setSelectedTool } = slice.actions;
+export const { setNumParticles, setSpawnXOffset, setIsRunning, setSelectedTool } = slice.actions;
 export default slice.reducer; 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../store';
-import { setNumParticles } from '../simple-2d-animated-dla-slice';
+import { setNumParticles, setSpawnXOffset } from '../simple-2d-animated-dla-slice';
 import { spawnWalkersInSquare } from '../../../dla/dla';
 import type { RootState } from '../../../store';
 import type { Simple2DAnimatedDLAUIState } from '../simple-2d-animated-dla-slice';
@@ -12,20 +12,25 @@ interface ShapeSpawnControlsProps {
   canvasHeight: number;
   onSpawn: (walkers: { x: number; y: number }[]) => void;
   isRunning: boolean;
+  spawnSquareSize: number;
+  onSpawnSquareSizeChange: (size: number) => void;
 }
 
 const ShapeSpawnControls: React.FC<ShapeSpawnControlsProps> = ({
   canvasWidth,
   canvasHeight,
   onSpawn,
-  isRunning
+  isRunning,
+  spawnSquareSize,
+  onSpawnSquareSizeChange
 }) => {
   const dispatch = useDispatch();
   const numParticles = useAppSelector((state: RootState) => 
     (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).numParticles
   );
-  const [spawnSquareSize, setSpawnSquareSize] = React.useState(100);
-
+  const spawnXOffset = useAppSelector((state: RootState) => 
+    (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnXOffset
+  );
 
   return (
     <div className="dlasim_spawn-controls">
@@ -53,6 +58,17 @@ const ShapeSpawnControls: React.FC<ShapeSpawnControlsProps> = ({
           className="dlasim_spawn-input"
         />
       </div>
+      <div className="dlasim_spawn-row">
+        <label htmlFor="dla-spawn-x-offset">X Offset: </label>
+        <input
+          id="dla-spawn-x-offset"
+          type="number"
+          value={spawnXOffset}
+          onChange={handleXOffsetChange}
+          disabled={isRunning}
+          className="dlasim_spawn-input"
+        />
+      </div>
       <button 
         onClick={handleSpawn} 
         disabled={isRunning} 
@@ -73,13 +89,20 @@ const ShapeSpawnControls: React.FC<ShapeSpawnControlsProps> = ({
   function handleSpawnSquareSizeChange(e: React.ChangeEvent<HTMLInputElement>) {
     const val = parseInt(e.target.value, 10);
     if (!isNaN(val) && val > 0) {
-      setSpawnSquareSize(val);
+      onSpawnSquareSizeChange(val);
+    }
+  }
+
+  function handleXOffsetChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = parseInt(e.target.value, 10);
+    if (!isNaN(val)) {
+      dispatch(setSpawnXOffset(val));
     }
   }
 
   // Handle spawn button click
   function handleSpawn() {
-    const newWalkers = spawnWalkersInSquare(canvasWidth, canvasHeight, numParticles, spawnSquareSize);
+    const newWalkers = spawnWalkersInSquare(canvasWidth, canvasHeight, numParticles, spawnSquareSize, spawnXOffset);
     onSpawn(newWalkers);
   }
 };
