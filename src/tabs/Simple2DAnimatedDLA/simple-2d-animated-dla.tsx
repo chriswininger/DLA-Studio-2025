@@ -1,25 +1,24 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../store';
-import { setNumParticles, setIsRunning } from './simple-2d-animated-dla-slice';
+import { setIsRunning } from './simple-2d-animated-dla-slice';
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from './simple-2d-animated-dla-constants';
-import { createDLAState, spawnWalkersInSquare, stepDLA } from '../../dla/dla';
+import { createDLAState, stepDLA } from '../../dla/dla';
 import type { DLAState } from '../../dla/dla';
 import type { RootState } from '../../store';
 import type { Simple2DAnimatedDLAUIState } from './simple-2d-animated-dla-slice';
 import './simple-2d-animated-dla.css';
 import ToolBar from './tool-bar';
+import ShapeSpawnControls from './shape-spawn-controls';
 // Vite/ESM native worker import
 // No import needed, use new Worker(new URL(...), { type: 'module' })
 
 const Simple2DAnimatedDLA: React.FC = () => {
   const dispatch = useDispatch();
-  const numParticles = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).numParticles);
   const isRunning = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).isRunning);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const dlaStateRef = useRef<DLAState | null>(null);
   const [steps, setSteps] = React.useState(0);
-  const [spawnSquareSize, setSpawnSquareSize] = React.useState(100);
   const [isSimulating, setIsSimulating] = React.useState(false);
   const workerRef = React.useRef<Worker | null>(null);
 
@@ -62,54 +61,15 @@ const Simple2DAnimatedDLA: React.FC = () => {
           </div>
         </div>
         {/* Spawn controls */}
-        <div style={{ marginLeft: 48, border: '2px solid #5a6cff', borderRadius: 8, padding: 24, minWidth: 300 }}>
-          <div style={{ marginBottom: 16 }}>
-            <label htmlFor="dla-spawn-count">Particles to Spawn: </label>
-            <input
-              id="dla-spawn-count"
-              type="number"
-              min={1}
-              value={numParticles}
-              onChange={handleParticlesChange}
-              disabled={isRunning}
-              style={{ marginLeft: 8, width: 120 }}
-            />
-          </div>
-          <div style={{ marginBottom: 16 }}>
-            <label htmlFor="dla-spawn-size">Spawn Square Size: </label>
-            <input
-              id="dla-spawn-size"
-              type="number"
-              min={1}
-              value={spawnSquareSize}
-              onChange={handleSpawnSquareSizeChange}
-              disabled={isRunning}
-              style={{ marginLeft: 8, width: 120 }}
-            />
-          </div>
-          <button onClick={handleSpawn} disabled={isRunning} style={{ marginTop: 8, width: 100 }}>
-            Spawn
-          </button>
-        </div>
+        <ShapeSpawnControls
+          canvasWidth={CANVAS_WIDTH}
+          canvasHeight={CANVAS_HEIGHT}
+          onSpawn={handleSpawn}
+          isRunning={isRunning}
+        />
       </div>
     </div>
   );
-
-  // Handle particle count input
-  function handleParticlesChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const val = parseInt(e.target.value, 10);
-    if (!isNaN(val) && val > 0) {
-      dispatch(setNumParticles(val));
-    }
-  }
-
-  // Handle spawn square size input
-  function handleSpawnSquareSizeChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const val = parseInt(e.target.value, 10);
-    if (!isNaN(val) && val > 0) {
-      setSpawnSquareSize(val);
-    }
-  }
 
   // Handle start/stop/reset
   function handleStart() {
@@ -183,9 +143,8 @@ const Simple2DAnimatedDLA: React.FC = () => {
 
 
 
-  function handleSpawn() {
+  function handleSpawn(newWalkers: { x: number; y: number }[]) {
     if (dlaStateRef.current) {
-      const newWalkers = spawnWalkersInSquare(CANVAS_WIDTH, CANVAS_HEIGHT, numParticles, spawnSquareSize);
       dlaStateRef.current.walkers = [...dlaStateRef.current.walkers, ...newWalkers];
       draw();
     }
