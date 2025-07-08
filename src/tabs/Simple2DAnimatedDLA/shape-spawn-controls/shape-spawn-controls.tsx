@@ -1,10 +1,10 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { useAppSelector } from '../../store';
-import { setNumParticles } from './simple-2d-animated-dla-slice';
-import { spawnWalkersInSquare } from '../../dla/dla';
-import type { RootState } from '../../store';
-import type { Simple2DAnimatedDLAUIState } from './simple-2d-animated-dla-slice';
+import { useAppSelector } from '../../../store';
+import { setNumParticles } from '../simple-2d-animated-dla-slice';
+import { spawnWalkersInSquare } from '../../../dla/dla';
+import type { RootState } from '../../../store';
+import type { Simple2DAnimatedDLAUIState } from '../simple-2d-animated-dla-slice';
 import './shape-spawn-controls.css';
 
 interface ShapeSpawnControlsProps {

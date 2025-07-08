@@ -8,8 +8,8 @@ import type { DLAState } from '../../dla/dla';
 import type { RootState } from '../../store';
 import type { Simple2DAnimatedDLAUIState } from './simple-2d-animated-dla-slice';
 import './simple-2d-animated-dla.css';
-import ToolBar from './tool-bar';
-import ShapeSpawnControls from './shape-spawn-controls';
+import ToolBar from './tool-bar/tool-bar';
+import ShapeSpawnControls from './shape-spawn-controls/shape-spawn-controls';
 // Vite/ESM native worker import
 // No import needed, use new Worker(new URL(...), { type: 'module' })
 

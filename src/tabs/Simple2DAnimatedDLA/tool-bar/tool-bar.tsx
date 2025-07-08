@@ -1,9 +1,9 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { useAppSelector } from '../../store';
-import { setSelectedTool } from './simple-2d-animated-dla-slice';
-import type { RootState } from '../../store';
-import type { Simple2DAnimatedDLAUIState, Simple2DAnimatedDLATool } from './simple-2d-animated-dla-slice';
+import { useAppSelector } from '../../../store';
+import { setSelectedTool } from '../simple-2d-animated-dla-slice';
+import type { RootState } from '../../../store';
+import type { Simple2DAnimatedDLAUIState, Simple2DAnimatedDLATool } from '../simple-2d-animated-dla-slice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaintBrush, faEraser } from '@fortawesome/free-solid-svg-icons';
 import './tool-bar.css';
