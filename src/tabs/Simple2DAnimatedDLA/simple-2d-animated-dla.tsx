@@ -10,6 +10,7 @@ import type { Simple2DAnimatedDLAUIState } from './simple-2d-animated-dla-slice'
 import './simple-2d-animated-dla.css';
 import ToolBar from './tool-bar/tool-bar';
 import ShapeSpawnControls from './shape-spawn-controls/shape-spawn-controls';
+import PaintBrushControls from './paint-brush-controls/paint-brush-controls';
 // Vite/ESM native worker import
 // No import needed, use new Worker(new URL(...), { type: 'module' })
 
@@ -72,6 +73,10 @@ const Simple2DAnimatedDLA: React.FC = () => {
           isRunning={isRunning}
           spawnSquareSize={spawnSquareSize}
           onSpawnShapeChanged={handleSpawnShapeChanged}
+        />
+        {/* Paint brush controls */}
+        <PaintBrushControls
+          isRunning={isRunning}
         />
       </div>
     </div>
