@@ -5,7 +5,7 @@ import { setSelectedTool } from '../simple-2d-animated-dla-slice';
 import type { RootState } from '../../../store';
 import type { Simple2DAnimatedDLAUIState, Simple2DAnimatedDLATool } from '../simple-2d-animated-dla-slice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaintBrush, faEraser } from '@fortawesome/free-solid-svg-icons';
+import { faPaintBrush, faEraser, faShapes } from '@fortawesome/free-solid-svg-icons';
 import './tool-bar.css';
 
 const ToolBar: React.FC = () => {
@@ -38,6 +38,18 @@ const ToolBar: React.FC = () => {
           icon={faEraser} 
           className="dlasim_tool-icon" 
           color={selectedTool === 'eraser' ? '#FB8158' : '#EB2EA4'} 
+        />
+      </button>
+      <button
+        className={`dlasim_tool-btn${selectedTool === 'spawn-shapes' ? ' selected' : ' unselected'}`}
+        onClick={() => handleSelectTool('spawn-shapes')}
+        aria-label="Spawn Shapes Tool"
+        type="button"
+      >
+        <FontAwesomeIcon 
+          icon={faShapes} 
+          className="dlasim_tool-icon" 
+          color={selectedTool === 'spawn-shapes' ? '#FB8158' : '#EB2EA4'} 
         />
       </button>
     </div>

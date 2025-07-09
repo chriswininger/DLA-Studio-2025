@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { DEFAULT_PARTICLES } from './simple-2d-animated-dla-constants';
 
-export type Simple2DAnimatedDLATool = 'brush' | 'eraser';
+export type Simple2DAnimatedDLATool = 'brush' | 'eraser' | 'spawn-shapes';
 export interface Simple2DAnimatedDLAUIState {
   numParticles: number;
   spawnXOffset: number;
