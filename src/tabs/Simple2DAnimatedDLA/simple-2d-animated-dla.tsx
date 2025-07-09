@@ -17,6 +17,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const dispatch = useDispatch();
   const isRunning = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).isRunning);
   const spawnXOffset = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnXOffset);
+  const spawnYOffset = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnYOffset);
   const spawnSquareSize = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnSquareSize);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const dlaStateRef = useRef<DLAState | null>(null);
@@ -25,7 +26,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const workerRef = React.useRef<Worker | null>(null);
 
   useEffect(initializeState, []);
-  const draw = useCallback(doDraw, [spawnXOffset, spawnSquareSize, isRunning]);
+  const draw = useCallback(doDraw, [spawnXOffset, spawnYOffset, spawnSquareSize, isRunning]);
   const stepAnimation = useCallback(doStepAnimation, [draw, dispatch]);
 
   useAnimationLoop(stepAnimation, isRunning);
@@ -197,7 +198,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
 
   function drawShapeSpawn(ctx: CanvasRenderingContext2D) {
     const centerX = Math.floor(CANVAS_WIDTH / 2) + spawnXOffset;
-    const centerY = Math.floor(CANVAS_HEIGHT / 2);
+    const centerY = Math.floor(CANVAS_HEIGHT / 2) + spawnYOffset;
     const halfSize = Math.floor(spawnSquareSize / 2);
     
     ctx.strokeStyle = '#ffff00';

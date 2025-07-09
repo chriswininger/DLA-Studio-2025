@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../store';
-import { setNumParticles, setSpawnXOffset, setSpawnSquareSize } from '../simple-2d-animated-dla-slice';
+import { setNumParticles, setSpawnXOffset, setSpawnYOffset, setSpawnSquareSize } from '../simple-2d-animated-dla-slice';
 import { spawnWalkersInSquare } from '../../../dla/dla';
 import type { RootState } from '../../../store';
 import type { Simple2DAnimatedDLAUIState } from '../simple-2d-animated-dla-slice';
@@ -30,6 +30,9 @@ const ShapeSpawnControls: React.FC<ShapeSpawnControlsProps> = ({
   );
   const spawnXOffset = useAppSelector((state: RootState) => 
     (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnXOffset
+  );
+  const spawnYOffset = useAppSelector((state: RootState) => 
+    (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnYOffset
   );
 
   return (
@@ -69,6 +72,17 @@ const ShapeSpawnControls: React.FC<ShapeSpawnControlsProps> = ({
           className="dlasim_spawn-input"
         />
       </div>
+      <div className="dlasim_spawn-row">
+        <label htmlFor="dla-spawn-y-offset">Y Offset: </label>
+        <input
+          id="dla-spawn-y-offset"
+          type="number"
+          value={spawnYOffset}
+          onChange={handleYOffsetChange}
+          disabled={isRunning}
+          className="dlasim_spawn-input"
+        />
+      </div>
       <button 
         onClick={handleSpawn} 
         disabled={isRunning} 
@@ -102,9 +116,17 @@ const ShapeSpawnControls: React.FC<ShapeSpawnControlsProps> = ({
     }
   }
 
+  function handleYOffsetChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = parseInt(e.target.value, 10);
+    if (!isNaN(val)) {
+      dispatch(setSpawnYOffset(val));
+      onSpawnShapeChanged();
+    }
+  }
+
   // Handle spawn button click
   function handleSpawn() {
-    const newWalkers = spawnWalkersInSquare(canvasWidth, canvasHeight, numParticles, spawnSquareSize, spawnXOffset);
+    const newWalkers = spawnWalkersInSquare(canvasWidth, canvasHeight, numParticles, spawnSquareSize, spawnXOffset, spawnYOffset);
     onSpawn(newWalkers);
   }
 };
