@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../store';
-import { setNumParticles, setSpawnXOffset } from '../simple-2d-animated-dla-slice';
+import { setNumParticles, setSpawnXOffset, setSpawnSquareSize } from '../simple-2d-animated-dla-slice';
 import { spawnWalkersInSquare } from '../../../dla/dla';
 import type { RootState } from '../../../store';
 import type { Simple2DAnimatedDLAUIState } from '../simple-2d-animated-dla-slice';

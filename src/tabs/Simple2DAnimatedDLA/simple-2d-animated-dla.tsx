@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../store';
-import { setIsRunning } from './simple-2d-animated-dla-slice';
+import { setIsRunning, setSpawnSquareSize } from './simple-2d-animated-dla-slice';
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from './simple-2d-animated-dla-constants';
 import { createDLAState, stepDLA } from '../../dla/dla';
 import type { DLAState } from '../../dla/dla';
@@ -17,11 +17,11 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const dispatch = useDispatch();
   const isRunning = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).isRunning);
   const spawnXOffset = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnXOffset);
+  const spawnSquareSize = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnSquareSize);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const dlaStateRef = useRef<DLAState | null>(null);
   const [steps, setSteps] = React.useState(0);
   const [isSimulating, setIsSimulating] = React.useState(false);
-  const [spawnSquareSize, setSpawnSquareSize] = React.useState(100);
   const workerRef = React.useRef<Worker | null>(null);
 
   useEffect(initializeState, []);
@@ -69,7 +69,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
           onSpawn={handleSpawn}
           isRunning={isRunning}
           spawnSquareSize={spawnSquareSize}
-          onSpawnSquareSizeChange={setSpawnSquareSize}
+          onSpawnSquareSizeChange={(size) => dispatch(setSpawnSquareSize(size))}
         />
       </div>
     </div>
@@ -169,6 +169,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
   }
 
   function doDraw() {
+    console.log('!!! doDraw');
     const ctx = canvasRef.current?.getContext('2d');
     if (!ctx || !dlaStateRef.current) return;
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
