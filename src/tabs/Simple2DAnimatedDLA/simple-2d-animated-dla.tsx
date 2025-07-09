@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../store';
-import { setIsRunning, setSpawnSquareSize } from './simple-2d-animated-dla-slice';
+import { setIsRunning } from './simple-2d-animated-dla-slice';
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from './simple-2d-animated-dla-constants';
 import { createDLAState, stepDLA } from '../../dla/dla';
 import type { DLAState } from '../../dla/dla';
@@ -25,7 +25,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const workerRef = React.useRef<Worker | null>(null);
 
   useEffect(initializeState, []);
-  const draw = useCallback(doDraw, [spawnXOffset, spawnSquareSize]);
+  const draw = useCallback(doDraw, [spawnXOffset, spawnSquareSize, isRunning]);
   const stepAnimation = useCallback(doStepAnimation, [draw, dispatch]);
 
   useAnimationLoop(stepAnimation, isRunning);
@@ -69,7 +69,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
           onSpawn={handleSpawn}
           isRunning={isRunning}
           spawnSquareSize={spawnSquareSize}
-          onSpawnSquareSizeChange={(size) => dispatch(setSpawnSquareSize(size))}
+          onSpawnShapeChanged={handleSpawnShapeChanged}
         />
       </div>
     </div>
@@ -77,7 +77,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
 
   // Handle start/stop/reset
   function handleStart() {
-
+    console.info("started")
     dispatch(setIsRunning(true));
   }
 
@@ -168,13 +168,34 @@ const Simple2DAnimatedDLA: React.FC = () => {
     return false;
   }
 
+  function handleSpawnShapeChanged() {
+    draw();
+  }
+
   function doDraw() {
-    console.log('!!! doDraw');
     const ctx = canvasRef.current?.getContext('2d');
     if (!ctx || !dlaStateRef.current) return;
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     
-    // Draw spawn bounding box
+    if (!isRunning) {
+      drawShapeSpawn(ctx);
+    }
+    
+    // Draw cluster
+    ctx.fillStyle = '#00d8ff';
+    dlaStateRef.current.cluster.forEach((key: string) => {
+      const [x, y]: [number, number] = key.split(',').map(Number) as [number, number];
+      ctx.fillRect(x, y, 1, 1);
+    });
+
+    // Draw walkers
+    ctx.fillStyle = '#ff0080';
+    dlaStateRef.current.walkers.forEach(({ x, y }: { x: number; y: number }) => {
+      ctx.fillRect(x, y, 1, 1);
+    });
+  }
+
+  function drawShapeSpawn(ctx: CanvasRenderingContext2D) {
     const centerX = Math.floor(CANVAS_WIDTH / 2) + spawnXOffset;
     const centerY = Math.floor(CANVAS_HEIGHT / 2);
     const halfSize = Math.floor(spawnSquareSize / 2);
@@ -189,18 +210,6 @@ const Simple2DAnimatedDLA: React.FC = () => {
       spawnSquareSize
     );
     ctx.setLineDash([]);
-    
-    // Draw cluster
-    ctx.fillStyle = '#00d8ff';
-    dlaStateRef.current.cluster.forEach((key: string) => {
-      const [x, y]: [number, number] = key.split(',').map(Number) as [number, number];
-      ctx.fillRect(x, y, 1, 1);
-    });
-    // Draw walkers
-    ctx.fillStyle = '#ff0080';
-    dlaStateRef.current.walkers.forEach(({ x, y }: { x: number; y: number }) => {
-      ctx.fillRect(x, y, 1, 1);
-    });
   }
 
   function initializeState() {
@@ -215,6 +224,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
 
 // Custom hook for animation loop
 function useAnimationLoop(callback: () => boolean, isRunning: boolean) {
+  console.log('!!! animation loop isRunning: ' + isRunning)
   const requestRef = useRef<number | null>(null);
 
   useEffect(() => {

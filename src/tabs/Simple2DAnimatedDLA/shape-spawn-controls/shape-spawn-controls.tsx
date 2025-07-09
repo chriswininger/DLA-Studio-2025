@@ -13,7 +13,7 @@ interface ShapeSpawnControlsProps {
   onSpawn: (walkers: { x: number; y: number }[]) => void;
   isRunning: boolean;
   spawnSquareSize: number;
-  onSpawnSquareSizeChange: (size: number) => void;
+  onSpawnShapeChanged: () => void;
 }
 
 const ShapeSpawnControls: React.FC<ShapeSpawnControlsProps> = ({
@@ -22,7 +22,7 @@ const ShapeSpawnControls: React.FC<ShapeSpawnControlsProps> = ({
   onSpawn,
   isRunning,
   spawnSquareSize,
-  onSpawnSquareSizeChange
+  onSpawnShapeChanged
 }) => {
   const dispatch = useDispatch();
   const numParticles = useAppSelector((state: RootState) => 
@@ -89,7 +89,8 @@ const ShapeSpawnControls: React.FC<ShapeSpawnControlsProps> = ({
   function handleSpawnSquareSizeChange(e: React.ChangeEvent<HTMLInputElement>) {
     const val = parseInt(e.target.value, 10);
     if (!isNaN(val) && val > 0) {
-      onSpawnSquareSizeChange(val);
+      dispatch(setSpawnSquareSize(val))
+      onSpawnShapeChanged();
     }
   }
 
@@ -97,6 +98,7 @@ const ShapeSpawnControls: React.FC<ShapeSpawnControlsProps> = ({
     const val = parseInt(e.target.value, 10);
     if (!isNaN(val)) {
       dispatch(setSpawnXOffset(val));
+      onSpawnShapeChanged();
     }
   }
 
