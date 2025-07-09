@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../store';
-import { setNumParticles, setSpawnXOffset, setSpawnYOffset, setSpawnSquareSize } from '../simple-2d-animated-dla-slice';
+import { setNumParticles, setSpawnXOffset, setSpawnYOffset, setSpawnRotation, setSpawnSquareSize } from '../simple-2d-animated-dla-slice';
 import { spawnWalkersInSquare } from '../../../dla/dla';
 import type { RootState } from '../../../store';
 import type { Simple2DAnimatedDLAUIState } from '../simple-2d-animated-dla-slice';
@@ -33,6 +33,9 @@ const ShapeSpawnControls: React.FC<ShapeSpawnControlsProps> = ({
   );
   const spawnYOffset = useAppSelector((state: RootState) => 
     (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnYOffset
+  );
+  const spawnRotation = useAppSelector((state: RootState) => 
+    (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnRotation
   );
 
   return (
@@ -83,6 +86,20 @@ const ShapeSpawnControls: React.FC<ShapeSpawnControlsProps> = ({
           className="dlasim_spawn-input"
         />
       </div>
+      <div className="dlasim_spawn-row">
+        <label htmlFor="dla-spawn-rotation">Rotation (degrees): </label>
+        <input
+          id="dla-spawn-rotation"
+          type="number"
+          min={0}
+          max={360}
+          step={1}
+          value={spawnRotation}
+          onChange={handleRotationChange}
+          disabled={isRunning}
+          className="dlasim_spawn-input"
+        />
+      </div>
       <button 
         onClick={handleSpawn} 
         disabled={isRunning} 
@@ -124,9 +141,17 @@ const ShapeSpawnControls: React.FC<ShapeSpawnControlsProps> = ({
     }
   }
 
+  function handleRotationChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = parseInt(e.target.value, 10);
+    if (!isNaN(val)) {
+      dispatch(setSpawnRotation(val));
+      onSpawnShapeChanged();
+    }
+  }
+
   // Handle spawn button click
   function handleSpawn() {
-    const newWalkers = spawnWalkersInSquare(canvasWidth, canvasHeight, numParticles, spawnSquareSize, spawnXOffset, spawnYOffset);
+    const newWalkers = spawnWalkersInSquare(canvasWidth, canvasHeight, numParticles, spawnSquareSize, spawnXOffset, spawnYOffset, spawnRotation);
     onSpawn(newWalkers);
   }
 };

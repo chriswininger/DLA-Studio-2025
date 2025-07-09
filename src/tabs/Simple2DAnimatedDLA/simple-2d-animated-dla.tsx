@@ -18,6 +18,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const isRunning = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).isRunning);
   const spawnXOffset = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnXOffset);
   const spawnYOffset = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnYOffset);
+  const spawnRotation = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnRotation);
   const spawnSquareSize = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnSquareSize);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const dlaStateRef = useRef<DLAState | null>(null);
@@ -26,7 +27,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const workerRef = React.useRef<Worker | null>(null);
 
   useEffect(initializeState, []);
-  const draw = useCallback(doDraw, [spawnXOffset, spawnYOffset, spawnSquareSize, isRunning]);
+  const draw = useCallback(doDraw, [spawnXOffset, spawnYOffset, spawnRotation, spawnSquareSize, isRunning]);
   const stepAnimation = useCallback(doStepAnimation, [draw, dispatch]);
 
   useAnimationLoop(stepAnimation, isRunning);
@@ -150,6 +151,10 @@ const Simple2DAnimatedDLA: React.FC = () => {
 
   function handleSpawn(newWalkers: { x: number; y: number }[]) {
     if (dlaStateRef.current) {
+      console.log('Current cluster size:', dlaStateRef.current.cluster.size);
+      console.log('Cluster positions:', Array.from(dlaStateRef.current.cluster));
+      console.log('Spawning walkers:', newWalkers.length);
+      
       dlaStateRef.current.walkers = [...dlaStateRef.current.walkers, ...newWalkers];
       draw();
     }
@@ -201,16 +206,25 @@ const Simple2DAnimatedDLA: React.FC = () => {
     const centerY = Math.floor(CANVAS_HEIGHT / 2) + spawnYOffset;
     const halfSize = Math.floor(spawnSquareSize / 2);
     
+    // Save the current context state
+    ctx.save();
+    
+    // Translate to the center of the spawn shape
+    ctx.translate(centerX, centerY);
+    
+    // Apply rotation (convert degrees to radians)
+    const rotationRadians = (spawnRotation * Math.PI) / 180;
+    ctx.rotate(rotationRadians);
+    
+    // Draw the rectangle centered at the origin (after translation)
     ctx.strokeStyle = '#ffff00';
     ctx.lineWidth = 1;
     ctx.setLineDash([5, 5]);
-    ctx.strokeRect(
-      centerX - halfSize,
-      centerY - halfSize,
-      spawnSquareSize,
-      spawnSquareSize
-    );
+    ctx.strokeRect(-halfSize, -halfSize, spawnSquareSize, spawnSquareSize);
     ctx.setLineDash([]);
+    
+    // Restore the context state
+    ctx.restore();
   }
 
   function initializeState() {

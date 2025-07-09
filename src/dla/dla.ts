@@ -33,16 +33,30 @@ export function createDLAState(width: number, height: number): DLAState {
   };
 }
 
-export function spawnWalkersInSquare(width: number, height: number, numWalkers: number, spawnSquareSize: number, xOffset: number = 0, yOffset: number = 0): Point[] {
+export function spawnWalkersInSquare(width: number, height: number, numWalkers: number, spawnSquareSize: number, xOffset: number = 0, yOffset: number = 0, rotation: number = 0): Point[] {
   const walkers: Point[] = [];
 
   const center = { x: Math.floor(width / 2) + xOffset, y: Math.floor(height / 2) + yOffset };
-
-
   const half = Math.floor(spawnSquareSize / 2);
+  const rotationRadians = (rotation * Math.PI) / 180;
+  
+  console.log(`Spawning with rotation: ${rotation}° (${rotationRadians} radians)`);
+  console.log(`Spawn center: (${center.x}, ${center.y})`);
+  console.log(`Spawn area: ${spawnSquareSize}x${spawnSquareSize} centered at (${center.x}, ${center.y})`);
+  
   for (let i = 0; i < numWalkers; i++) {
-    const x = center.x - half + Math.floor(Math.random() * spawnSquareSize);
-    const y = center.y - half + Math.floor(Math.random() * spawnSquareSize);
+    // Generate random position within the square (before rotation)
+    const randomX = -half + Math.floor(Math.random() * spawnSquareSize);
+    const randomY = -half + Math.floor(Math.random() * spawnSquareSize);
+    
+    // Apply rotation transformation
+    const rotatedX = randomX * Math.cos(rotationRadians) - randomY * Math.sin(rotationRadians);
+    const rotatedY = randomX * Math.sin(rotationRadians) + randomY * Math.cos(rotationRadians);
+    
+    // Translate to the center position
+    const x = Math.floor(center.x + rotatedX);
+    const y = Math.floor(center.y + rotatedY);
+    
     walkers.push({ x, y });
   }
 
