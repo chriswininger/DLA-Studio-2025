@@ -38,7 +38,10 @@ const Simple2DAnimatedDLA: React.FC = () => {
   // Get current simulation info for display
   const walkersCount = dlaStateRef.current?.walkers.length ?? 0;
 
-  
+  useEffect(function () {
+    doDraw();
+  }, [selectedTool, spawnXOffset, spawnYOffset, spawnRotation, spawnSquareSize]);
+
   return (
     <div style={{ textAlign: 'center' }}>
       <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start' }}>
@@ -75,7 +78,6 @@ const Simple2DAnimatedDLA: React.FC = () => {
             onSpawn={handleSpawn}
             isRunning={isRunning}
             spawnSquareSize={spawnSquareSize}
-            onSpawnShapeChanged={handleSpawnShapeChanged}
           />
         )}
         {/* Paint brush controls - only show when brush tool is selected */}
@@ -191,10 +193,6 @@ const Simple2DAnimatedDLA: React.FC = () => {
     return false;
   }
 
-  function handleSpawnShapeChanged() {
-    doDraw();
-  }
-
   function doDraw() {
     const ctx = canvasRef.current?.getContext('2d');
     if (!ctx || !dlaStateRef.current) return;
@@ -256,7 +254,6 @@ const Simple2DAnimatedDLA: React.FC = () => {
 
 // Custom hook for animation loop
 function useAnimationLoop(callback: () => boolean, isRunning: boolean) {
-  console.log('!!! animation loop isRunning: ' + isRunning)
   const requestRef = useRef<number | null>(null);
 
   useEffect(() => {
