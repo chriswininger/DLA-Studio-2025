@@ -29,6 +29,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const [steps, setSteps] = React.useState(0);
   const [isSimulating, setIsSimulating] = React.useState(false);
   const [cursorPosition, setCursorPosition] = React.useState<{ x: number; y: number } | null>(null);
+  const [isDragging, setIsDragging] = React.useState(false);
   const workerRef = React.useRef<Worker | null>(null);
   const shouldShowSpawnShapePreview = selectedTool === 'spawn-shapes' && !isRunning;
   const shouldShowBrushPreview = selectedTool === 'brush' && !isRunning;
@@ -55,16 +56,23 @@ const Simple2DAnimatedDLA: React.FC = () => {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         setCursorPosition({ x, y });
+        
+        // If dragging, spawn walkers continuously
+        if (isDragging && selectedTool === 'brush' && !isRunning) {
+          spawnWalkersInBrushRadius(x, y, brushSize, 100);
+        }
       }
     }
-  }, [shouldShowBrushPreview]);
+  }, [shouldShowBrushPreview, isDragging, selectedTool, isRunning, brushSize]);
 
   const handleMouseLeave = useCallback(() => {
     setCursorPosition(null);
+    setIsDragging(false);
   }, []);
 
-  const handleCanvasClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     if (selectedTool === 'brush' && !isRunning) {
+      setIsDragging(true);
       const rect = canvasRef.current?.getBoundingClientRect();
       if (rect) {
         const x = e.clientX - rect.left;
@@ -73,6 +81,10 @@ const Simple2DAnimatedDLA: React.FC = () => {
       }
     }
   }, [selectedTool, isRunning, brushSize]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
 
   return (
     <div style={{ textAlign: 'center' }}>
@@ -88,7 +100,8 @@ const Simple2DAnimatedDLA: React.FC = () => {
             style={{ border: '1px solid #ccc', background: '#111' }}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
-            onClick={handleCanvasClick}
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
           />
           <div className="dlasim_button-row">
             {!isRunning ? (
