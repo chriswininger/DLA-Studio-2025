@@ -21,8 +21,8 @@ const initialState: Simple2DAnimatedDLAUIState = {
   spawnYOffset: 0,
   spawnRotation: 0,
   spawnSquareSize: 100,
-  brushSize: 5,
-  eraserSize: 5,
+  brushSize: 10,
+  eraserSize: 10,
   isRunning: false,
   selectedTool: 'brush',
 };
