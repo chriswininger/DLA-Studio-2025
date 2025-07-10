@@ -11,6 +11,7 @@ import './simple-2d-animated-dla.css';
 import ToolBar from './tool-bar/tool-bar';
 import ShapeSpawnControls from './shape-spawn-controls/shape-spawn-controls';
 import PaintBrushControls from './paint-brush-controls/paint-brush-controls';
+import EraserControls from './eraser-controls/eraser-controls';
 // Vite/ESM native worker import
 // No import needed, use new Worker(new URL(...), { type: 'module' })
 
@@ -27,9 +28,10 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const [steps, setSteps] = React.useState(0);
   const [isSimulating, setIsSimulating] = React.useState(false);
   const workerRef = React.useRef<Worker | null>(null);
+  const shouldShowSpawnShapePreview = selectedTool === 'spawn-shapes' && !isRunning;
 
   useEffect(initializeState, []);
-  const draw = useCallback(doDraw, [spawnXOffset, spawnYOffset, spawnRotation, spawnSquareSize, isRunning]);
+  const draw = useCallback(doDraw, [spawnXOffset, spawnYOffset, spawnRotation, spawnSquareSize, isRunning, shouldShowSpawnShapePreview]);
   const stepAnimation = useCallback(doStepAnimation, [draw, dispatch]);
 
   useAnimationLoop(stepAnimation, isRunning);
@@ -37,7 +39,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
   // Get current simulation info for display
   const walkersCount = dlaStateRef.current?.walkers.length ?? 0;
 
-
+  
   return (
     <div style={{ textAlign: 'center' }}>
       <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start' }}>
@@ -80,6 +82,12 @@ const Simple2DAnimatedDLA: React.FC = () => {
         {/* Paint brush controls - only show when brush tool is selected */}
         {selectedTool === 'brush' && (
           <PaintBrushControls
+            isRunning={isRunning}
+          />
+        )}
+        {/* Eraser controls - only show when eraser tool is selected */}
+        {selectedTool === 'eraser' && (
+          <EraserControls
             isRunning={isRunning}
           />
         )}
@@ -193,7 +201,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
     if (!ctx || !dlaStateRef.current) return;
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     
-    if (!isRunning) {
+    if (shouldShowSpawnShapePreview) {
       drawShapeSpawn(ctx);
     }
     

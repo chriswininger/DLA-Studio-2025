@@ -10,6 +10,7 @@ export interface Simple2DAnimatedDLAUIState {
   spawnRotation: number;
   spawnSquareSize: number;
   brushSize: number;
+  eraserSize: number;
   isRunning: boolean;
   selectedTool: Simple2DAnimatedDLATool;
 }
@@ -21,6 +22,7 @@ const initialState: Simple2DAnimatedDLAUIState = {
   spawnRotation: 0,
   spawnSquareSize: 100,
   brushSize: 5,
+  eraserSize: 5,
   isRunning: false,
   selectedTool: 'brush',
 };
@@ -47,6 +49,9 @@ const slice = createSlice({
     setBrushSize(state, action: PayloadAction<number>) {
       state.brushSize = action.payload;
     },
+    setEraserSize(state, action: PayloadAction<number>) {
+      state.eraserSize = action.payload;
+    },
     setIsRunning(state, action: PayloadAction<boolean>) {
       state.isRunning = action.payload;
     },
@@ -56,5 +61,5 @@ const slice = createSlice({
   },
 });
 
-export const { setNumParticles, setSpawnXOffset, setSpawnYOffset, setSpawnRotation, setSpawnSquareSize, setBrushSize, setIsRunning, setSelectedTool } = slice.actions;
+export const { setNumParticles, setSpawnXOffset, setSpawnYOffset, setSpawnRotation, setSpawnSquareSize, setBrushSize, setEraserSize, setIsRunning, setSelectedTool } = slice.actions;
 export default slice.reducer; 

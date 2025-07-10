@@ -1,0 +1,26 @@
+.dlasim_eraser-controls {
+  margin-left: 48px;
+  border: 2px solid #5a6cff;
+  border-radius: 8px;
+  padding: 24px;
+  min-width: 300px;
+}
+
+.dlasim_eraser-row {
+  margin-bottom: 16px;
+}
+
+.dlasim_eraser-input {
+  margin-left: 8px;
+  width: 120px;
+  padding: 4px 8px;
+  border: 1px solid #5a6cff;
+  border-radius: 4px;
+  background: #1a1a2e;
+  color: #fff;
+}
+
+.dlasim_eraser-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+} 
