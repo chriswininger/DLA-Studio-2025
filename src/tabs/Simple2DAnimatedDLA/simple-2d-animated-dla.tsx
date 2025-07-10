@@ -23,12 +23,17 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const spawnRotation = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnRotation);
   const spawnSquareSize = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnSquareSize);
   const selectedTool = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).selectedTool);
+  const brushSize = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushSize);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const dlaStateRef = useRef<DLAState | null>(null);
   const [steps, setSteps] = React.useState(0);
   const [isSimulating, setIsSimulating] = React.useState(false);
+  const [cursorPosition, setCursorPosition] = React.useState<{ x: number; y: number } | null>(null);
   const workerRef = React.useRef<Worker | null>(null);
   const shouldShowSpawnShapePreview = selectedTool === 'spawn-shapes' && !isRunning;
+  const shouldShowBrushPreview = selectedTool === 'brush' && !isRunning;
+
+  const spawnPreviewColor = '#ffff00';
 
   useEffect(initializeState, []);
   const stepAnimation = useCallback(doStepAnimation, [doDraw, dispatch]);
@@ -40,7 +45,23 @@ const Simple2DAnimatedDLA: React.FC = () => {
 
   useEffect(function () {
     doDraw();
-  }, [selectedTool, spawnXOffset, spawnYOffset, spawnRotation, spawnSquareSize]);
+  }, [selectedTool, spawnXOffset, spawnYOffset, spawnRotation, spawnSquareSize, cursorPosition]);
+
+  // Mouse event handlers for cursor tracking
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (shouldShowBrushPreview) {
+      const rect = canvasRef.current?.getBoundingClientRect();
+      if (rect) {
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        setCursorPosition({ x, y });
+      }
+    }
+  }, [shouldShowBrushPreview]);
+
+  const handleMouseLeave = useCallback(() => {
+    setCursorPosition(null);
+  }, []);
 
   return (
     <div style={{ textAlign: 'center' }}>
@@ -54,6 +75,8 @@ const Simple2DAnimatedDLA: React.FC = () => {
             width={CANVAS_WIDTH}
             height={CANVAS_HEIGHT}
             style={{ border: '1px solid #ccc', background: '#111' }}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
           />
           <div className="dlasim_button-row">
             {!isRunning ? (
@@ -214,6 +237,11 @@ const Simple2DAnimatedDLA: React.FC = () => {
     dlaStateRef.current.walkers.forEach(({ x, y }: { x: number; y: number }) => {
       ctx.fillRect(x, y, 1, 1);
     });
+
+    // Draw brush preview
+    if (shouldShowBrushPreview && cursorPosition) {
+      drawBrushPreview(ctx, cursorPosition, brushSize);
+    }
   }
 
   function drawShapeSpawn(ctx: CanvasRenderingContext2D) {
@@ -232,13 +260,33 @@ const Simple2DAnimatedDLA: React.FC = () => {
     ctx.rotate(rotationRadians);
     
     // Draw the rectangle centered at the origin (after translation)
-    ctx.strokeStyle = '#ffff00';
+    ctx.strokeStyle = spawnPreviewColor;
     ctx.lineWidth = 1;
     ctx.setLineDash([5, 5]);
     ctx.strokeRect(-halfSize, -halfSize, spawnSquareSize, spawnSquareSize);
     ctx.setLineDash([]);
     
     // Restore the context state
+    ctx.restore();
+  }
+
+  function drawBrushPreview(ctx: CanvasRenderingContext2D, position: { x: number; y: number }, size: number) {
+    const radius = size / 2;
+    
+    ctx.save();
+    
+    // Draw brush preview circle
+    ctx.strokeStyle = spawnPreviewColor;
+    ctx.lineWidth = 2;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.arc(position.x, position.y, radius, 0, 2 * Math.PI);
+    ctx.stroke();
+    
+    // Draw center point
+    ctx.fillStyle = spawnPreviewColor;
+    ctx.fillRect(position.x - 1, position.y - 1, 2, 2);
+    
     ctx.restore();
   }
 
