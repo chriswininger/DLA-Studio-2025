@@ -21,6 +21,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const spawnYOffset = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnYOffset);
   const spawnRotation = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnRotation);
   const spawnSquareSize = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnSquareSize);
+  const selectedTool = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).selectedTool);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const dlaStateRef = useRef<DLAState | null>(null);
   const [steps, setSteps] = React.useState(0);
@@ -65,19 +66,23 @@ const Simple2DAnimatedDLA: React.FC = () => {
             Steps: {steps} | Remaining walkers: {walkersCount}
           </div>
         </div>
-        {/* Spawn controls */}
-        <ShapeSpawnControls
-          canvasWidth={CANVAS_WIDTH}
-          canvasHeight={CANVAS_HEIGHT}
-          onSpawn={handleSpawn}
-          isRunning={isRunning}
-          spawnSquareSize={spawnSquareSize}
-          onSpawnShapeChanged={handleSpawnShapeChanged}
-        />
-        {/* Paint brush controls */}
-        <PaintBrushControls
-          isRunning={isRunning}
-        />
+        {/* Spawn controls - only show when spawn-shapes tool is selected */}
+        {selectedTool === 'spawn-shapes' && (
+          <ShapeSpawnControls
+            canvasWidth={CANVAS_WIDTH}
+            canvasHeight={CANVAS_HEIGHT}
+            onSpawn={handleSpawn}
+            isRunning={isRunning}
+            spawnSquareSize={spawnSquareSize}
+            onSpawnShapeChanged={handleSpawnShapeChanged}
+          />
+        )}
+        {/* Paint brush controls - only show when brush tool is selected */}
+        {selectedTool === 'brush' && (
+          <PaintBrushControls
+            isRunning={isRunning}
+          />
+        )}
       </div>
     </div>
   );
