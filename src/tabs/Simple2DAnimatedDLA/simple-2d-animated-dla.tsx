@@ -31,8 +31,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const shouldShowSpawnShapePreview = selectedTool === 'spawn-shapes' && !isRunning;
 
   useEffect(initializeState, []);
-  const draw = useCallback(doDraw, [spawnXOffset, spawnYOffset, spawnRotation, spawnSquareSize, isRunning, shouldShowSpawnShapePreview]);
-  const stepAnimation = useCallback(doStepAnimation, [draw, dispatch]);
+  const stepAnimation = useCallback(doStepAnimation, [doDraw, dispatch]);
 
   useAnimationLoop(stepAnimation, isRunning);
 
@@ -109,7 +108,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
     dispatch(setIsRunning(false));
     dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT);
     setSteps(0);
-    draw();
+    doDraw();
   }
 
   // Simulate to completion (no animation frames)
@@ -132,7 +131,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
           dlaStateRef.current.walkers = [];
           dlaStateRef.current.steps = msg.steps;
         }
-        draw();
+        doDraw();
         setIsSimulating(false);
         workerRef.current?.terminate();
         workerRef.current = null;
@@ -174,7 +173,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
       console.log('Spawning walkers:', newWalkers.length);
       
       dlaStateRef.current.walkers = [...dlaStateRef.current.walkers, ...newWalkers];
-      draw();
+      doDraw();
     }
   }
 
@@ -182,7 +181,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
     if (dlaStateRef.current) {
       dlaStateRef.current = stepDLA(dlaStateRef.current);
       setSteps(prev => prev + 1);
-      draw();
+      doDraw();
       if (dlaStateRef.current.walkers.length === 0) {
         dispatch(setIsRunning(false));
         return false; // Stop animation
@@ -193,7 +192,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
   }
 
   function handleSpawnShapeChanged() {
-    draw();
+    doDraw();
   }
 
   function doDraw() {
@@ -250,7 +249,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
     if (!dlaStateRef.current) {
       dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT);
       setSteps(0);
-      draw();
+      doDraw();
     }
   }
 };
