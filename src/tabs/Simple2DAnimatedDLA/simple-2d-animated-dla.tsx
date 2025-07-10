@@ -63,6 +63,17 @@ const Simple2DAnimatedDLA: React.FC = () => {
     setCursorPosition(null);
   }, []);
 
+  const handleCanvasClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (selectedTool === 'brush' && !isRunning) {
+      const rect = canvasRef.current?.getBoundingClientRect();
+      if (rect) {
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        spawnWalkersInBrushRadius(x, y, brushSize, 100);
+      }
+    }
+  }, [selectedTool, isRunning, brushSize]);
+
   return (
     <div style={{ textAlign: 'center' }}>
       <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start' }}>
@@ -77,6 +88,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
             style={{ border: '1px solid #ccc', background: '#111' }}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
+            onClick={handleCanvasClick}
           />
           <div className="dlasim_button-row">
             {!isRunning ? (
@@ -288,6 +300,33 @@ const Simple2DAnimatedDLA: React.FC = () => {
     ctx.fillRect(position.x - 1, position.y - 1, 2, 2);
     
     ctx.restore();
+  }
+
+  function spawnWalkersInBrushRadius(centerX: number, centerY: number, brushSize: number, numWalkers: number) {
+    if (!dlaStateRef.current) return;
+    
+    const radius = brushSize / 2;
+    const walkers: { x: number; y: number }[] = [];
+    
+    for (let i = 0; i < numWalkers; i++) {
+      // Generate random angle and distance within the circle
+      const angle = Math.random() * 2 * Math.PI;
+      const distance = Math.random() * radius;
+      
+      // Convert polar coordinates to Cartesian
+      const x = Math.floor(centerX + distance * Math.cos(angle));
+      const y = Math.floor(centerY + distance * Math.sin(angle));
+      
+      // Clamp to canvas bounds
+      const clampedX = Math.max(0, Math.min(CANVAS_WIDTH - 1, x));
+      const clampedY = Math.max(0, Math.min(CANVAS_HEIGHT - 1, y));
+      
+      walkers.push({ x: clampedX, y: clampedY });
+    }
+    
+    // Add walkers to the current state
+    dlaStateRef.current.walkers = [...dlaStateRef.current.walkers, ...walkers];
+    doDraw();
   }
 
   function initializeState() {
