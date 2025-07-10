@@ -24,6 +24,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const spawnSquareSize = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnSquareSize);
   const selectedTool = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).selectedTool);
   const brushSize = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushSize);
+  const brushParticles = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushParticles);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const dlaStateRef = useRef<DLAState | null>(null);
   const [steps, setSteps] = React.useState(0);
@@ -59,11 +60,11 @@ const Simple2DAnimatedDLA: React.FC = () => {
         
         // If dragging, spawn walkers continuously
         if (isDragging && selectedTool === 'brush' && !isRunning) {
-          spawnWalkersInBrushRadius(x, y, brushSize, 100);
+          spawnWalkersInBrushRadius(x, y, brushSize, brushParticles);
         }
       }
     }
-  }, [shouldShowBrushPreview, isDragging, selectedTool, isRunning, brushSize]);
+  }, [shouldShowBrushPreview, isDragging, selectedTool, isRunning, brushSize, brushParticles]);
 
   const handleMouseLeave = useCallback(() => {
     setCursorPosition(null);
@@ -77,10 +78,10 @@ const Simple2DAnimatedDLA: React.FC = () => {
       if (rect) {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        spawnWalkersInBrushRadius(x, y, brushSize, 100);
+        spawnWalkersInBrushRadius(x, y, brushSize, brushParticles);
       }
     }
-  }, [selectedTool, isRunning, brushSize]);
+  }, [selectedTool, isRunning, brushSize, brushParticles]);
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
