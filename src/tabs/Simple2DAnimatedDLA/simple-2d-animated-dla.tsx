@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../store';
-import { setIsRunning } from './simple-2d-animated-dla-slice';
+import { setIsRunning, saveDLAState, resetDLAState } from './simple-2d-animated-dla-slice';
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from './simple-2d-animated-dla-constants';
 import { createDLAState, stepDLA } from '../../dla/dla';
 import type { DLAState } from '../../dla/dla';
@@ -25,6 +25,9 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const selectedTool = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).selectedTool);
   const brushSize = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushSize);
   const brushParticles = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushParticles);
+  const dlaCluster = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).dlaCluster);
+  const dlaWalkers = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).dlaWalkers);
+  const dlaSteps = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).dlaSteps);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const dlaStateRef = useRef<DLAState | null>(null);
   const [steps, setSteps] = React.useState(0);
@@ -41,6 +44,19 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const stepAnimation = useCallback(doStepAnimation, [doDraw, dispatch]);
 
   useAnimationLoop(stepAnimation, isRunning);
+
+  // Save DLA state when component unmounts or when switching tabs
+  useEffect(() => {
+    return () => {
+      if (dlaStateRef.current) {
+        dispatch(saveDLAState({
+          cluster: Array.from(dlaStateRef.current.cluster),
+          walkers: dlaStateRef.current.walkers,
+          steps: dlaStateRef.current.steps
+        }));
+      }
+    };
+  }, [dispatch]);
 
   // Get current simulation info for display
   const walkersCount = dlaStateRef.current?.walkers.length ?? 0;
@@ -157,6 +173,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
 
   function handleReset() {
     dispatch(setIsRunning(false));
+    dispatch(resetDLAState());
     dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT);
     setSteps(0);
     doDraw();
@@ -346,8 +363,22 @@ const Simple2DAnimatedDLA: React.FC = () => {
   function initializeState() {
     // Only initialize cluster and walkers on first mount or reset
     if (!dlaStateRef.current) {
-      dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT);
-      setSteps(0);
+      // Check if we have saved state in Redux
+      if (dlaCluster.length > 0 || dlaWalkers.length > 0) {
+        // Load from saved state
+        dlaStateRef.current = {
+          width: CANVAS_WIDTH,
+          height: CANVAS_HEIGHT,
+          cluster: new Set(dlaCluster),
+          walkers: dlaWalkers,
+          steps: dlaSteps
+        };
+        setSteps(dlaSteps);
+      } else {
+        // Create new state
+        dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT);
+        setSteps(0);
+      }
       doDraw();
     }
   }

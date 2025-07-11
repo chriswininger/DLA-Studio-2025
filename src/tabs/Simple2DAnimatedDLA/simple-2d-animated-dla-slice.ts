@@ -14,6 +14,10 @@ export interface Simple2DAnimatedDLAUIState {
   eraserSize: number;
   isRunning: boolean;
   selectedTool: Simple2DAnimatedDLATool;
+  // DLA simulation state
+  dlaCluster: string[];
+  dlaWalkers: { x: number; y: number }[];
+  dlaSteps: number;
 }
 
 const initialState: Simple2DAnimatedDLAUIState = {
@@ -27,6 +31,10 @@ const initialState: Simple2DAnimatedDLAUIState = {
   eraserSize: 10,
   isRunning: false,
   selectedTool: 'brush',
+  // DLA simulation state
+  dlaCluster: [],
+  dlaWalkers: [],
+  dlaSteps: 0,
 };
 
 const slice = createSlice({
@@ -63,8 +71,18 @@ const slice = createSlice({
     setSelectedTool(state, action: PayloadAction<Simple2DAnimatedDLATool>) {
       state.selectedTool = action.payload;
     },
+    saveDLAState(state, action: PayloadAction<{ cluster: string[]; walkers: { x: number; y: number }[]; steps: number }>) {
+      state.dlaCluster = action.payload.cluster;
+      state.dlaWalkers = action.payload.walkers;
+      state.dlaSteps = action.payload.steps;
+    },
+    resetDLAState(state) {
+      state.dlaCluster = [];
+      state.dlaWalkers = [];
+      state.dlaSteps = 0;
+    },
   },
 });
 
-export const { setNumParticles, setSpawnXOffset, setSpawnYOffset, setSpawnRotation, setSpawnSquareSize, setBrushSize, setBrushParticles, setEraserSize, setIsRunning, setSelectedTool } = slice.actions;
+export const { setNumParticles, setSpawnXOffset, setSpawnYOffset, setSpawnRotation, setSpawnSquareSize, setBrushSize, setBrushParticles, setEraserSize, setIsRunning, setSelectedTool, saveDLAState, resetDLAState } = slice.actions;
 export default slice.reducer; 
