@@ -29,7 +29,6 @@ const PaintBrushControls: React.FC<PaintBrushControlsProps> = ({
           id="dla-brush-size"
           type="number"
           min={1}
-          max={50}
           value={brushSize}
           onChange={handleBrushSizeChange}
           disabled={isRunning}
@@ -42,7 +41,6 @@ const PaintBrushControls: React.FC<PaintBrushControlsProps> = ({
           id="dla-brush-particles"
           type="number"
           min={1}
-          max={1000}
           value={brushParticles}
           onChange={handleBrushParticlesChange}
           disabled={isRunning}
@@ -54,14 +52,14 @@ const PaintBrushControls: React.FC<PaintBrushControlsProps> = ({
 
   function handleBrushSizeChange(e: React.ChangeEvent<HTMLInputElement>) {
     const val = parseInt(e.target.value, 10);
-    if (!isNaN(val) && val > 0 && val <= 50) {
+    if (!isNaN(val) && val > 0) {
       dispatch(setBrushSize(val));
     }
   }
 
   function handleBrushParticlesChange(e: React.ChangeEvent<HTMLInputElement>) {
     const val = parseInt(e.target.value, 10);
-    if (!isNaN(val) && val > 0 && val <= 1000) {
+    if (!isNaN(val) && val > 0) {
       dispatch(setBrushParticles(val));
     }
   }

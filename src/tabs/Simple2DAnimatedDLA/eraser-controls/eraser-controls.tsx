@@ -26,7 +26,6 @@ const EraserControls: React.FC<EraserControlsProps> = ({
           id="dla-eraser-size"
           type="number"
           min={1}
-          max={50}
           value={eraserSize}
           onChange={handleEraserSizeChange}
           disabled={isRunning}
@@ -38,7 +37,7 @@ const EraserControls: React.FC<EraserControlsProps> = ({
 
   function handleEraserSizeChange(e: React.ChangeEvent<HTMLInputElement>) {
     const val = parseInt(e.target.value, 10);
-    if (!isNaN(val) && val > 0 && val <= 50) {
+    if (!isNaN(val) && val > 0) {
       dispatch(setEraserSize(val));
     }
   }
