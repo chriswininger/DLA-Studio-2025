@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAppSelector } from '../../store';
 import type { RootState } from '../../store';
+import './SVGDLA.css';
 
 const SVGDLA: React.FC = () => {
   const CANVAS_WIDTH = 500;
@@ -12,7 +13,29 @@ const SVGDLA: React.FC = () => {
     (state.simple2dAnimatedDla as any).dlaCluster
   );
 
-  const generateSVG = () => {
+  return (
+    <div className="svgdla-container">
+      <h2>SVG DLA</h2>
+      <div className="svgdla-svg-container">
+        <svg
+          width={CANVAS_WIDTH}
+          height={CANVAS_HEIGHT}
+          className="svgdla-svg"
+          viewBox={`0 0 ${CANVAS_WIDTH} ${CANVAS_HEIGHT}`}
+          dangerouslySetInnerHTML={{ __html: svgContent }}
+        >
+          {/* SVG content will be generated here */}
+        </svg>
+      </div>
+      <div className="svgdla-button-container">
+        <button onClick={generateSVG}>
+          Generate SVG
+        </button>
+      </div>
+    </div>
+  );
+
+  function generateSVG() {
     if (!dlaCluster || dlaCluster.length === 0) {
       console.log('No cluster data available');
       return;
@@ -47,33 +70,7 @@ const SVGDLA: React.FC = () => {
     setSvgContent(svgContentString);
     
     console.log('Generated SVG with', svgLines.length, 'line segments');
-  };
-
-  return (
-    <div style={{ textAlign: 'center', marginTop: '3rem' }}>
-      <h2>SVG DLA</h2>
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
-        <svg
-          width={CANVAS_WIDTH}
-          height={CANVAS_HEIGHT}
-          style={{ 
-            border: '1px solid #ccc', 
-            background: '#111',
-            display: 'block'
-          }}
-          viewBox={`0 0 ${CANVAS_WIDTH} ${CANVAS_HEIGHT}`}
-          dangerouslySetInnerHTML={{ __html: svgContent }}
-        >
-          {/* SVG content will be generated here */}
-        </svg>
-      </div>
-      <div style={{ marginTop: '1rem' }}>
-        <button onClick={generateSVG}>
-          Generate SVG
-        </button>
-      </div>
-    </div>
-  );
+  }
 };
 
 export default SVGDLA; 

@@ -1,0 +1,20 @@
+.svgdla-container {
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.svgdla-svg-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.svgdla-svg {
+  border: 1px solid #ccc;
+  background: #111;
+  display: block;
+}
+
+.svgdla-button-container {
+  margin-top: 1rem;
+} 
