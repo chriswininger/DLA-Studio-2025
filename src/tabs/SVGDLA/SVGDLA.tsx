@@ -21,6 +21,9 @@ const SVGDLA: React.FC = () => {
     (state.svgDla as SVGDLAUIState).lineLength
   );
 
+  // Scaling factor for the visualization
+  const scaleFactor = 2; // You can adjust this value or make it configurable
+
   return (
     <div className="svgdla-container">
       <h2>SVG DLA</h2>
@@ -69,8 +72,14 @@ const SVGDLA: React.FC = () => {
       // Get the parent point
       const parentPoint = parent.point;
       
-      // Draw a simple line from parent to child point
-      svgLines.push(`<line x1="${parentPoint.x}" y1="${parentPoint.y}" x2="${point.x}" y2="${point.y}" stroke="#00d8ff" stroke-width="1" />`);
+      // Apply scaling to the coordinates
+      const scaledParentX = parentPoint.x * scaleFactor;
+      const scaledParentY = parentPoint.y * scaleFactor;
+      const scaledPointX = point.x * scaleFactor;
+      const scaledPointY = point.y * scaleFactor;
+      
+      // Draw a simple line from parent to child point with scaling
+      svgLines.push(`<line x1="${scaledParentX}" y1="${scaledParentY}" x2="${scaledPointX}" y2="${scaledPointY}" stroke="#00d8ff" stroke-width="1" />`);
     });
 
     const svgContentString = svgLines.join('\n');
