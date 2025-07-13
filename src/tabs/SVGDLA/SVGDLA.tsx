@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAppSelector } from '../../store';
 import type { RootState } from '../../store';
 import type { SVGDLAUIState } from './svg-dla-slice';
+import type { ClusterMap } from '../../dla/dla';
 import LineLengthControls from './line-length-controls/line-length-controls';
 import './SVGDLA.css';
 
@@ -12,13 +13,16 @@ const SVGDLA: React.FC = () => {
 
   // Get cluster data from Redux
   const dlaCluster = useAppSelector((state: RootState) => 
-    (state.simple2dAnimatedDla as any).dlaCluster
+    (state.simple2dAnimatedDla as any).dlaCluster as ClusterMap
   );
   
   // Get line length from Redux
   const lineLength = useAppSelector((state: RootState) => 
     (state.svgDla as SVGDLAUIState).lineLength
   );
+
+  // Scaling factor for the visualization
+  const scaleFactor = lineLength;
 
   return (
     <div className="svgdla-container">
@@ -48,34 +52,39 @@ const SVGDLA: React.FC = () => {
   );
 
   function generateSVG() {
-    if (!dlaCluster || dlaCluster.length === 0) {
+    if (!dlaCluster || Object.keys(dlaCluster).length === 0) {
       console.log('No cluster data available');
       return;
     }
 
-    // Parse cluster points from string format
-    const points: { x: number; y: number }[] = dlaCluster.map((pointStr: string) => {
-      const [x, y] = pointStr.split(',').map(Number);
-      return { x, y };
-    });
-
-    console.log('Parsed points:', points.length);
-
-    // Create SVG line segments using the line length from Redux
-    const segmentLength = lineLength;
+    console.log('Cluster data:', dlaCluster);
     const svgLines: string[] = [];
 
-    points.forEach((point) => {
-      // Create a small line segment centered on each point
-      const halfLength = segmentLength / 2;
+    // Calculate the center of all points
+    const points = Object.values(dlaCluster).map(entry => entry.point);
+    const centerX = points.reduce((sum, p) => sum + p.x, 0) / points.length;
+    const centerY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
+
+    // Iterate through all cluster entries
+    Object.values(dlaCluster).forEach((entry) => {
+      const { point, parent } = entry;
       
-      // Horizontal line segment
-      const x1 = point.x - halfLength;
-      const y1 = point.y;
-      const x2 = point.x + halfLength;
-      const y2 = point.y;
+      // Skip the root entry (it has no parent to connect to)
+      if (parent === 'ROOT') {
+        return;
+      }
       
-      svgLines.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#00d8ff" stroke-width="1" />`);
+      // Get the parent point
+      const parentPoint = parent.point;
+      
+      // Scale from center: translate to origin, scale, then translate back
+      const scaledParentX = (parentPoint.x - centerX) * scaleFactor + centerX;
+      const scaledParentY = (parentPoint.y - centerY) * scaleFactor + centerY;
+      const scaledPointX = (point.x - centerX) * scaleFactor + centerX;
+      const scaledPointY = (point.y - centerY) * scaleFactor + centerY;
+      
+      // Draw a simple line from parent to child point with scaling
+      svgLines.push(`<line x1="${scaledParentX}" y1="${scaledParentY}" x2="${scaledPointX}" y2="${scaledPointY}" stroke="#00d8ff" stroke-width="1" />`);
     });
 
     const svgContentString = svgLines.join('\n');

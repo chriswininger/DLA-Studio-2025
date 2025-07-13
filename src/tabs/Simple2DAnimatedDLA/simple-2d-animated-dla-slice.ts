@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { DEFAULT_PARTICLES } from './simple-2d-animated-dla-constants';
+import type { ClusterMap } from '../../dla/dla';
 
 export type Simple2DAnimatedDLATool = 'brush' | 'eraser' | 'spawn-shapes';
 export interface Simple2DAnimatedDLAUIState {
@@ -15,7 +16,7 @@ export interface Simple2DAnimatedDLAUIState {
   isRunning: boolean;
   selectedTool: Simple2DAnimatedDLATool;
   // DLA simulation state
-  dlaCluster: string[];
+  dlaCluster: ClusterMap;
   dlaWalkers: { x: number; y: number }[];
   dlaSteps: number;
 }
@@ -32,7 +33,7 @@ const initialState: Simple2DAnimatedDLAUIState = {
   isRunning: false,
   selectedTool: 'brush',
   // DLA simulation state
-  dlaCluster: [],
+  dlaCluster: {},
   dlaWalkers: [],
   dlaSteps: 0,
 };
@@ -71,13 +72,13 @@ const slice = createSlice({
     setSelectedTool(state, action: PayloadAction<Simple2DAnimatedDLATool>) {
       state.selectedTool = action.payload;
     },
-    saveDLAState(state, action: PayloadAction<{ cluster: string[]; walkers: { x: number; y: number }[]; steps: number }>) {
+    saveDLAState(state, action: PayloadAction<{ cluster: ClusterMap; walkers: { x: number; y: number }[]; steps: number }>) {
       state.dlaCluster = action.payload.cluster;
       state.dlaWalkers = action.payload.walkers;
       state.dlaSteps = action.payload.steps;
     },
     resetDLAState(state) {
-      state.dlaCluster = [];
+      state.dlaCluster = {};
       state.dlaWalkers = [];
       state.dlaSteps = 0;
     },

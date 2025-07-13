@@ -1,4 +1,5 @@
 import { stepDLA } from '../../dla/dla';
+import type { ClusterMap } from '../../dla/dla';
 
 // Types for messages
 interface SimulateMessage {
@@ -6,7 +7,7 @@ interface SimulateMessage {
   width: number;
   height: number;
   dlaState: {
-    cluster: string[];
+    cluster: ClusterMap;
     walkers: { x: number; y: number }[];
     steps: number;
   };
@@ -21,7 +22,7 @@ self.onmessage = function(e) {
     let dlaState = {
       width: data.width,
       height: data.height,
-      cluster: new Set(data.dlaState.cluster),
+      cluster: data.dlaState.cluster,
       walkers: data.dlaState.walkers,
       steps: data.dlaState.steps
     };
@@ -40,7 +41,7 @@ self.onmessage = function(e) {
         });
       }
     }
-    self.postMessage({ type: 'done', steps, cluster: Array.from(dlaState.cluster) });
+    self.postMessage({ type: 'done', steps, cluster: dlaState.cluster });
   }
   } catch (error) {
     self.postMessage({ type: 'error', error: (error as Error).message });
