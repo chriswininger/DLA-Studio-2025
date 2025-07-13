@@ -3,10 +3,16 @@
   margin-top: 3rem;
 }
 
-.svgdla-svg-container {
+.svgdla-main-content {
   display: flex;
+  flex-direction: row;
   justify-content: center;
+  align-items: flex-start;
   margin-top: 2rem;
+}
+
+.svgdla-svg-container {
+  margin-right: 1rem;
 }
 
 .svgdla-svg {

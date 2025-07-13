@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import simple2dAnimatedDlaReducer from './tabs/Simple2DAnimatedDLA/simple-2d-animated-dla-slice';
+import svgDlaReducer from './tabs/SVGDLA/svg-dla-slice';
 import { useSelector } from 'react-redux';
 import type { TypedUseSelectorHook } from 'react-redux';
 
 export const store = configureStore({
   reducer: {
     simple2dAnimatedDla: simple2dAnimatedDlaReducer,
+    svgDla: svgDlaReducer,
   },
 });
 

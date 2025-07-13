@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useAppSelector } from '../../store';
 import type { RootState } from '../../store';
+import type { SVGDLAUIState } from './svg-dla-slice';
+import LineLengthControls from './line-length-controls/line-length-controls';
 import './SVGDLA.css';
 
 const SVGDLA: React.FC = () => {
@@ -12,20 +14,30 @@ const SVGDLA: React.FC = () => {
   const dlaCluster = useAppSelector((state: RootState) => 
     (state.simple2dAnimatedDla as any).dlaCluster
   );
+  
+  // Get line length from Redux
+  const lineLength = useAppSelector((state: RootState) => 
+    (state.svgDla as SVGDLAUIState).lineLength
+  );
 
   return (
     <div className="svgdla-container">
       <h2>SVG DLA</h2>
-      <div className="svgdla-svg-container">
-        <svg
-          width={CANVAS_WIDTH}
-          height={CANVAS_HEIGHT}
-          className="svgdla-svg"
-          viewBox={`0 0 ${CANVAS_WIDTH} ${CANVAS_HEIGHT}`}
-          dangerouslySetInnerHTML={{ __html: svgContent }}
-        >
-          {/* SVG content will be generated here */}
-        </svg>
+      <div className="svgdla-main-content">
+        {/* SVG container */}
+        <div className="svgdla-svg-container">
+          <svg
+            width={CANVAS_WIDTH}
+            height={CANVAS_HEIGHT}
+            className="svgdla-svg"
+            viewBox={`0 0 ${CANVAS_WIDTH} ${CANVAS_HEIGHT}`}
+            dangerouslySetInnerHTML={{ __html: svgContent }}
+          >
+            {/* SVG content will be generated here */}
+          </svg>
+        </div>
+        {/* Line length controls */}
+        <LineLengthControls />
       </div>
       <div className="svgdla-button-container">
         <button onClick={generateSVG}>
@@ -49,8 +61,8 @@ const SVGDLA: React.FC = () => {
 
     console.log('Parsed points:', points.length);
 
-    // Create SVG line segments with unit length of 2 pixels
-    const segmentLength = 2;
+    // Create SVG line segments using the line length from Redux
+    const segmentLength = lineLength;
     const svgLines: string[] = [];
 
     points.forEach((point) => {
