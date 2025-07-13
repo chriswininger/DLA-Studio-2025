@@ -54,23 +54,23 @@ const SVGDLA: React.FC = () => {
       return;
     }
 
-    // Parse cluster points from ClusterMap format
-    const points: { x: number; y: number }[] = Object.values(dlaCluster).map(entry => entry.point);
-
-    console.log('Parsed points:', points.length);
+    console.log('Cluster data:', dlaCluster);
     const svgLines: string[] = [];
 
-    points.forEach((point) => {
-      // Create a horizontal line segment centered on each point
-      const halfLength = lineLength / 2;
+    // Iterate through all cluster entries
+    Object.values(dlaCluster).forEach((entry) => {
+      const { point, parent } = entry;
       
-      // Horizontal line segment - y coordinates should be the same
-      const x1 = point.x - halfLength;
-      const y1 = point.y;
-      const x2 = point.x + halfLength;
-      const y2 = point.y;
+      // Skip the root entry (it has no parent to connect to)
+      if (parent === 'ROOT') {
+        return;
+      }
       
-      svgLines.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#00d8ff" stroke-width="1" />`);
+      // Get the parent point
+      const parentPoint = parent.point;
+      
+      // Draw a simple line from parent to child point
+      svgLines.push(`<line x1="${parentPoint.x}" y1="${parentPoint.y}" x2="${point.x}" y2="${point.y}" stroke="#00d8ff" stroke-width="1" />`);
     });
 
     const svgContentString = svgLines.join('\n');
