@@ -22,7 +22,7 @@ const SVGDLA: React.FC = () => {
   );
 
   // Scaling factor for the visualization
-  const scaleFactor = 2; // You can adjust this value or make it configurable
+  const scaleFactor = lineLength;
 
   return (
     <div className="svgdla-container">
@@ -60,6 +60,11 @@ const SVGDLA: React.FC = () => {
     console.log('Cluster data:', dlaCluster);
     const svgLines: string[] = [];
 
+    // Calculate the center of all points
+    const points = Object.values(dlaCluster).map(entry => entry.point);
+    const centerX = points.reduce((sum, p) => sum + p.x, 0) / points.length;
+    const centerY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
+
     // Iterate through all cluster entries
     Object.values(dlaCluster).forEach((entry) => {
       const { point, parent } = entry;
@@ -72,11 +77,11 @@ const SVGDLA: React.FC = () => {
       // Get the parent point
       const parentPoint = parent.point;
       
-      // Apply scaling to the coordinates
-      const scaledParentX = parentPoint.x * scaleFactor;
-      const scaledParentY = parentPoint.y * scaleFactor;
-      const scaledPointX = point.x * scaleFactor;
-      const scaledPointY = point.y * scaleFactor;
+      // Scale from center: translate to origin, scale, then translate back
+      const scaledParentX = (parentPoint.x - centerX) * scaleFactor + centerX;
+      const scaledParentY = (parentPoint.y - centerY) * scaleFactor + centerY;
+      const scaledPointX = (point.x - centerX) * scaleFactor + centerX;
+      const scaledPointY = (point.y - centerY) * scaleFactor + centerY;
       
       // Draw a simple line from parent to child point with scaling
       svgLines.push(`<line x1="${scaledParentX}" y1="${scaledParentY}" x2="${scaledPointX}" y2="${scaledPointY}" stroke="#00d8ff" stroke-width="1" />`);

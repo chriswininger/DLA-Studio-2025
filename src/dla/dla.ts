@@ -115,13 +115,17 @@ export function stepDLA(state: DLAState): DLAState {
   };
 }
 
-// Get 4-neighbor positions
+// Get 8 possilbe neighbor positions
 function neighbors(p: Point): Point[] {
   return [
     { x: p.x + 1, y: p.y },
     { x: p.x - 1, y: p.y },
     { x: p.x, y: p.y + 1 },
     { x: p.x, y: p.y - 1 },
+    { x: p.x + 1, y: p.y + 1},
+    { x: p.x - 1, y: p.y - 1},
+    { x: p.x - 1, y: p.y + 1},
+    { x: p.x + 1, y: p.y - 1},
   ];
 }
 
