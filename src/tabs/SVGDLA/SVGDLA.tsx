@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { useAppSelector } from '../../store';
+import React from 'react';
+import { useAppSelector, useAppDispatch } from '../../store';
 import type { RootState } from '../../store';
 import type { SVGDLAUIState } from './svg-dla-slice';
+import { setSvgContent } from './svg-dla-slice';
 import type { ClusterMap } from '../../dla/dla';
 import LineLengthControls from './line-length-controls/line-length-controls';
 import './SVGDLA.css';
@@ -9,16 +10,16 @@ import './SVGDLA.css';
 const SVGDLA: React.FC = () => {
   const CANVAS_WIDTH = 500;
   const CANVAS_HEIGHT = 500;
-  const [svgContent, setSvgContent] = useState<string>('');
+  const dispatch = useAppDispatch();
 
   // Get cluster data from Redux
   const dlaCluster = useAppSelector((state: RootState) => 
     (state.simple2dAnimatedDla as any).dlaCluster as ClusterMap
   );
   
-  // Get line length from Redux
-  const lineLength = useAppSelector((state: RootState) => 
-    (state.svgDla as SVGDLAUIState).lineLength
+  // Get line length and SVG content from Redux
+  const { lineLength, svgContent } = useAppSelector((state: RootState) => 
+    state.svgDla as SVGDLAUIState
   );
 
   // Scaling factor for the visualization
@@ -88,7 +89,7 @@ const SVGDLA: React.FC = () => {
     });
 
     const svgContentString = svgLines.join('\n');
-    setSvgContent(svgContentString);
+    dispatch(setSvgContent(svgContentString));
     
     console.log('Generated SVG with', svgLines.length, 'line segments');
   }
