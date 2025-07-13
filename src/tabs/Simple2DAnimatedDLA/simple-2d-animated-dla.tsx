@@ -50,7 +50,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
     return () => {
       if (dlaStateRef.current) {
         dispatch(saveDLAState({
-          cluster: Array.from(dlaStateRef.current.cluster),
+          cluster: dlaStateRef.current.cluster,
           walkers: dlaStateRef.current.walkers,
           steps: dlaStateRef.current.steps
         }));
@@ -195,7 +195,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
       } else if (msg.type === 'done') {
         setSteps(msg.steps);
         if (dlaStateRef.current) {
-          dlaStateRef.current.cluster = new Set(msg.cluster);
+          dlaStateRef.current.cluster = msg.cluster;
           dlaStateRef.current.walkers = [];
           dlaStateRef.current.steps = msg.steps;
         }
@@ -224,7 +224,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
       width: CANVAS_WIDTH,
       height: CANVAS_HEIGHT,
       dlaState: {
-        cluster: Array.from(currentState.cluster),
+        cluster: currentState.cluster,
         walkers: currentState.walkers,
         steps: currentState.steps
       },
@@ -236,8 +236,8 @@ const Simple2DAnimatedDLA: React.FC = () => {
 
   function handleSpawn(newWalkers: { x: number; y: number }[]) {
     if (dlaStateRef.current) {
-      console.log('Current cluster size:', dlaStateRef.current.cluster.size);
-      console.log('Cluster positions:', Array.from(dlaStateRef.current.cluster));
+      console.log('Current cluster size:', Object.keys(dlaStateRef.current.cluster).length);
+      console.log('Cluster positions:', Object.keys(dlaStateRef.current.cluster));
       console.log('Spawning walkers:', newWalkers.length);
       
       dlaStateRef.current.walkers = [...dlaStateRef.current.walkers, ...newWalkers];
@@ -270,8 +270,8 @@ const Simple2DAnimatedDLA: React.FC = () => {
     
     // Draw cluster
     ctx.fillStyle = '#00d8ff';
-    dlaStateRef.current.cluster.forEach((key: string) => {
-      const [x, y]: [number, number] = key.split(',').map(Number) as [number, number];
+    Object.values(dlaStateRef.current.cluster).forEach((entry) => {
+      const { x, y } = entry.point;
       ctx.fillRect(x, y, 1, 1);
     });
 
@@ -364,12 +364,12 @@ const Simple2DAnimatedDLA: React.FC = () => {
     // Only initialize cluster and walkers on first mount or reset
     if (!dlaStateRef.current) {
       // Check if we have saved state in Redux
-      if (dlaCluster.length > 0 || dlaWalkers.length > 0) {
+      if (Object.keys(dlaCluster).length > 0 || dlaWalkers.length > 0) {
         // Load from saved state
         dlaStateRef.current = {
           width: CANVAS_WIDTH,
           height: CANVAS_HEIGHT,
-          cluster: new Set(dlaCluster),
+          cluster: dlaCluster,
           walkers: dlaWalkers,
           steps: dlaSteps
         };

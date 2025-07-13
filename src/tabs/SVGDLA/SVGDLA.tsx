@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAppSelector } from '../../store';
 import type { RootState } from '../../store';
 import type { SVGDLAUIState } from './svg-dla-slice';
+import type { ClusterMap } from '../../dla/dla';
 import LineLengthControls from './line-length-controls/line-length-controls';
 import './SVGDLA.css';
 
@@ -12,7 +13,7 @@ const SVGDLA: React.FC = () => {
 
   // Get cluster data from Redux
   const dlaCluster = useAppSelector((state: RootState) => 
-    (state.simple2dAnimatedDla as any).dlaCluster
+    (state.simple2dAnimatedDla as any).dlaCluster as ClusterMap
   );
   
   // Get line length from Redux
@@ -48,28 +49,22 @@ const SVGDLA: React.FC = () => {
   );
 
   function generateSVG() {
-    if (!dlaCluster || dlaCluster.length === 0) {
+    if (!dlaCluster || Object.keys(dlaCluster).length === 0) {
       console.log('No cluster data available');
       return;
     }
 
-    // Parse cluster points from string format
-    const points: { x: number; y: number }[] = dlaCluster.map((pointStr: string) => {
-      const [x, y] = pointStr.split(',').map(Number);
-      return { x, y };
-    });
+    // Parse cluster points from ClusterMap format
+    const points: { x: number; y: number }[] = Object.values(dlaCluster).map(entry => entry.point);
 
     console.log('Parsed points:', points.length);
-
-    // Create SVG line segments using the line length from Redux
-    const segmentLength = lineLength;
     const svgLines: string[] = [];
 
     points.forEach((point) => {
-      // Create a small line segment centered on each point
-      const halfLength = segmentLength / 2;
+      // Create a horizontal line segment centered on each point
+      const halfLength = lineLength / 2;
       
-      // Horizontal line segment
+      // Horizontal line segment - y coordinates should be the same
       const x1 = point.x - halfLength;
       const y1 = point.y;
       const x2 = point.x + halfLength;

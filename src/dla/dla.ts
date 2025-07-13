@@ -1,12 +1,24 @@
 export type Point = { x: number; y: number };
 
+const ROOT = 'ROOT'
+
+export interface ClusterEntry {
+  point: Point,
+  distance: number,
+  parent: ClusterEntry | typeof ROOT
+}
+
+export interface ClusterMap {
+  [key: string]: ClusterEntry
+}
+
 export interface DLAState {
   width: number;
   height: number;
   
   // Clusters are the points that have stuck
   // The field is initailized with at least one initial cluster
-  cluster: Set<string>;
+  cluster: ClusterMap;
 
   // Walkers are the points that are still moving
   walkers: Point[];
@@ -16,11 +28,11 @@ export interface DLAState {
 // Create initial DLA state
 export function createDLAState(width: number, height: number): DLAState {
   // Start with a single cluster point at the center
-  const cluster = new Set<string>();
+  const cluster: ClusterMap = {};
   const center = { x: Math.floor(width / 2), y: Math.floor(height / 2) };
 
   //clusters are tracked using strings for easy lookup
-  cluster.add(pointKey(center));
+  cluster[pointKey(center)] = clusterEntry(center, ROOT);
 
   const walkers: Point[] = [];
 
@@ -66,7 +78,7 @@ export function spawnWalkersInSquare(width: number, height: number, numWalkers: 
 // Advance the simulation by one step (pure function)
 export function stepDLA(state: DLAState): DLAState {
   const { width, height, cluster } = state;
-  const newCluster = new Set(cluster);
+  const newCluster: ClusterMap = {};
   const newWalkers: Point[] = [];
 
   for (const walker of state.walkers) {
@@ -81,10 +93,15 @@ export function stepDLA(state: DLAState): DLAState {
     x = Math.max(0, Math.min(width - 1, x));
     y = Math.max(0, Math.min(height - 1, y));
     const moved = { x, y };
+    
     // Check if adjacent to cluster
-    const stuck = neighbors(moved).some(n => cluster.has(pointKey(n)));
-    if (stuck) {
-      newCluster.add(pointKey(moved));
+    const stuckNeighbor: Point | undefined = neighbors(moved)
+      .find(n => !!cluster[pointKey(n)])
+    
+
+    if (!!stuckNeighbor) {
+      const parent: ClusterEntry = cluster[pointKey(stuckNeighbor)]
+      newCluster[pointKey(moved)] = clusterEntry(moved, parent);
     } else {
       newWalkers.push(moved);
     }
@@ -92,7 +109,7 @@ export function stepDLA(state: DLAState): DLAState {
 
   return {
     ...state,
-    cluster: newCluster,
+    cluster: { ...state.cluster, ...newCluster },
     walkers: newWalkers,
     steps: state.steps + 1,
   };
@@ -108,6 +125,18 @@ function neighbors(p: Point): Point[] {
   ];
 }
 
+
+function clusterEntry(
+  point: Point,
+  parent: ClusterEntry | typeof ROOT,
+  distance: number = 0
+): ClusterEntry {
+  return {
+    point,
+    parent,
+    distance,
+  }
+} 
 
 // Helper to serialize a point for Set
 function pointKey(p: Point): string {
