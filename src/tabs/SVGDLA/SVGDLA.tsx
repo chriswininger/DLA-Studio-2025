@@ -27,7 +27,6 @@ const SVGDLA: React.FC = () => {
 
   return (
     <div className="svgdla-container">
-      <h2>SVG DLA</h2>
       <div className="svgdla-main-content">
         {/* SVG container */}
         <div className="svgdla-svg-container">

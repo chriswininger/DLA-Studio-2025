@@ -20,4 +20,20 @@
   color: #888;
   text-align: center;
   width: 100%;
+}
+
+.dlasim-outer-center {
+  text-align: left;
+}
+
+.dlasim-flex-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.dlasim-canvas {
+  border: 1px solid #ccc;
+  background: #111;
 } 

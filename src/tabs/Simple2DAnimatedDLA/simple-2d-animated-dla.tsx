@@ -104,8 +104,8 @@ const Simple2DAnimatedDLA: React.FC = () => {
   }, []);
 
   return (
-    <div style={{ textAlign: 'center' }}>
-      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start' }}>
+    <div className="dlasim-outer-center">
+      <div className="dlasim-flex-row">
         {/* Tool selection UI */}
         <ToolBar />
         {/* Canvas and button row column */}
@@ -114,7 +114,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
             ref={canvasRef}
             width={CANVAS_WIDTH}
             height={CANVAS_HEIGHT}
-            style={{ border: '1px solid #ccc', background: '#111' }}
+            className="dlasim-canvas"
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             onMouseDown={handleMouseDown}
