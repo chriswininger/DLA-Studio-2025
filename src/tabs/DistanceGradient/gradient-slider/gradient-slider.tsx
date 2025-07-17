@@ -1,7 +1,7 @@
 import React, { useRef, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../../../store';
-import { updateColorStop, type ColorStop } from '../distance-gradient-slice';
+import { updateColorStop } from '../distance-gradient-slice';
 import './gradient-slider.css';
 
 const GradientSlider: React.FC = () => {
