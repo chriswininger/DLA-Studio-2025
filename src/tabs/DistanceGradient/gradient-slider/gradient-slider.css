@@ -1,0 +1,86 @@
+.gradient-slider-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.gradient-bar {
+  position: relative;
+  width: 100%;
+  height: 24px;
+  border: 2px solid #2C7A7B;
+  border-radius: 12px;
+  cursor: pointer;
+  overflow: visible;
+}
+
+.gradient-handle {
+  position: absolute;
+  top: -4px;
+  width: 12px;
+  height: 32px;
+  border: 2px solid;
+  border-radius: 6px;
+  cursor: grab;
+  transform: translateX(-50%);
+  transition: box-shadow 0.2s ease;
+  z-index: 10;
+}
+
+.gradient-handle:hover {
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+.gradient-handle.dragging {
+  cursor: grabbing;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+  z-index: 20;
+}
+
+.gradient-axis {
+  position: relative;
+  width: 100%;
+  height: 40px;
+}
+
+.gradient-axis::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: #E2E8F0;
+}
+
+.value-label {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.value-text {
+  background-color: white;
+  border: 1px solid #E2E8F0;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #1A202C;
+  min-width: 30px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.value-label.active .value-text {
+  border-color: #2C7A7B;
+  border-width: 2px;
+} 

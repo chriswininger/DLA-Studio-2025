@@ -9,20 +9,18 @@
 }
 
 .distance-gradient-visualization {
-  background: #181818;
-  border: 1px solid #333;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
   min-width: 500px;
-  min-height: 500px;
+  min-height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 20px;
 }
 
-.distance-gradient-placeholder {
-  color: #00d8ff;
-  font-size: 1.2rem;
-  opacity: 0.7;
-}
+
 
 .distance-gradient-controls {
   display: flex;
