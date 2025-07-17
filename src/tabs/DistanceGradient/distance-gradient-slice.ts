@@ -9,7 +9,6 @@ export interface ColorStop {
 
 interface DistanceGradientState {
   colorStops: ColorStop[];
-  selectedStopId: string;
 }
 
 const initialState: DistanceGradientState = {
@@ -17,8 +16,7 @@ const initialState: DistanceGradientState = {
     { id: '1', color: '#2A7B9B', position: 0 },
     { id: '2', color: '#57C785', position: 31 },
     { id: '3', color: '#EDDD53', position: 100 }
-  ],
-  selectedStopId: '2'
+  ]
 };
 
 const distanceGradientSlice = createSlice({
@@ -47,18 +45,11 @@ const distanceGradientSlice = createSlice({
         position: 50
       };
       state.colorStops.push(newStop);
-      state.selectedStopId = newId;
     },
     removeColorStop: (state, action: PayloadAction<string>) => {
       if (state.colorStops.length > 2) {
         state.colorStops = state.colorStops.filter(stop => stop.id !== action.payload);
-        if (state.selectedStopId === action.payload) {
-          state.selectedStopId = state.colorStops[0]?.id || '';
-        }
       }
-    },
-    setSelectedStop: (state, action: PayloadAction<string>) => {
-      state.selectedStopId = action.payload;
     }
   }
 });
@@ -67,7 +58,6 @@ export const {
   updateColorStop,
   addColorStop,
   removeColorStop,
-  setSelectedStop
 } = distanceGradientSlice.actions;
 
 export default distanceGradientSlice.reducer; 

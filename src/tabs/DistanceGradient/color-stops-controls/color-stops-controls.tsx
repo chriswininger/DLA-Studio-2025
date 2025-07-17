@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../../../store';
-import { updateColorStop, addColorStop, removeColorStop, setSelectedStop, type ColorStop } from '../distance-gradient-slice';
+import { updateColorStop, addColorStop, removeColorStop, type ColorStop } from '../distance-gradient-slice';
 import './color-stops-controls.css';
 
 const ColorStopsControls: React.FC = () => {
@@ -20,9 +20,6 @@ const ColorStopsControls: React.FC = () => {
     dispatch(addColorStop());
   };
 
-  const handleSelectStop = (id: string) => {
-    dispatch(setSelectedStop(id));
-  };
 
   return (
     <div className="color-stops-section">
@@ -31,8 +28,7 @@ const ColorStopsControls: React.FC = () => {
         {colorStops.map((stop: ColorStop) => (
           <div 
             key={stop.id} 
-            className={`color-stop-row ${selectedStopId === stop.id ? 'selected' : ''}`}
-            onClick={() => handleSelectStop(stop.id)}
+            className='color-stop-row'
           >
             <div 
               className="color-swatch"
