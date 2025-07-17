@@ -22,8 +22,9 @@
   width: 100%;
 }
 
-.dlasim-outer-center {
+.dlasim-simple-2d-animated-dla-tab {
   text-align: left;
+  width: var(--page-size-desktop);
 }
 
 .dlasim-flex-row {

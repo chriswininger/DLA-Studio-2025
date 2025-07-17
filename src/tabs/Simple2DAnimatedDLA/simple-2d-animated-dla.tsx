@@ -104,7 +104,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
   }, []);
 
   return (
-    <div className="dlasim-outer-center">
+    <div className="dlasim-simple-2d-animated-dla-tab">
       <div className="dlasim-flex-row">
         {/* Tool selection UI */}
         <ToolBar />

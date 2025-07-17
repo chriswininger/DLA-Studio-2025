@@ -26,7 +26,7 @@ const SVGDLA: React.FC = () => {
   const scaleFactor = lineLength;
 
   return (
-    <div className="svgdla-container">
+    <div className="dlasim-svgdla-tab">
       <div className="svgdla-main-content">
         {/* SVG container */}
         <div className="svgdla-svg-container">

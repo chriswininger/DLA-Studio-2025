@@ -1,6 +1,6 @@
 .svgdla-container {
-  text-align: center;
-  margin-top: 3rem;
+  text-align: left;
+  width: var(--page-size-desktop);
 }
 
 .svgdla-main-content {
@@ -12,7 +12,7 @@
 }
 
 .svgdla-svg-container {
-  margin-right: 1rem;
+ 
 }
 
 .svgdla-svg {
