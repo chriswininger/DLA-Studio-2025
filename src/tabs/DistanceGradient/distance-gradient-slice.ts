@@ -13,9 +13,9 @@ interface DistanceGradientState {
 
 const initialState: DistanceGradientState = {
   colorStops: [
-    { id: '1', color: '#2A7B9B', position: 0 },
-    { id: '2', color: '#57C785', position: 31 },
-    { id: '3', color: '#EDDD53', position: 100 }
+    { id: '1', color: '#FF6C11', position: 0 },
+    { id: '2', color: '#FF3864', position: 50 },
+    { id: '3', color: '#2DE2E6', position: 100 }
   ]
 };
 

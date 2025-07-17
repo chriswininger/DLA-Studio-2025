@@ -1,10 +1,10 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../../../store';
 import { updateColorStop } from '../distance-gradient-slice';
 import './gradient-slider.css';
 
-const GradientSlider: React.FC = () => {
+function GradientSlider() {
   const dispatch = useDispatch();
   const { colorStops } = useSelector((state: RootState) => state.distanceGradient);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -22,24 +22,6 @@ const GradientSlider: React.FC = () => {
     background: `linear-gradient(to right, ${gradientStops})`
   };
 
-  const handleMouseDown = useCallback((e: React.MouseEvent, stopId: string) => {
-    e.preventDefault();
-    setDraggedStop(stopId);
-  }, []);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!draggedStop || !containerRef.current) return;
-
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
-    
-    dispatch(updateColorStop({ id: draggedStop, field: 'position', value: Math.round(percentage) }));
-  }, [draggedStop, dispatch]);
-
-  const handleMouseUp = useCallback(() => {
-    setDraggedStop(null);
-  }, []);
 
   // Add global mouse event listeners
   React.useEffect(() => {
@@ -51,7 +33,7 @@ const GradientSlider: React.FC = () => {
         document.removeEventListener('mouseup', handleMouseUp);
       };
     }
-  }, [draggedStop, handleMouseMove, handleMouseUp]);
+  }, [draggedStop]);
 
   return (
     <div className="gradient-slider-container">
@@ -88,6 +70,25 @@ const GradientSlider: React.FC = () => {
       </div>
     </div>
   );
-};
+
+  function handleMouseDown(e: React.MouseEvent, stopId: string) {
+    e.preventDefault();
+    setDraggedStop(stopId);
+  }
+
+  function handleMouseMove(e: React.MouseEvent) {
+    if (!draggedStop || !containerRef.current) return;
+
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
+    
+    dispatch(updateColorStop({ id: draggedStop, field: 'position', value: Math.round(percentage) }));
+  }
+
+  function handleMouseUp() {
+    setDraggedStop(null);
+  }
+}
 
 export default GradientSlider; 
