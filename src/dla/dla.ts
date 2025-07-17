@@ -101,7 +101,7 @@ export function stepDLA(state: DLAState): DLAState {
 
     if (!!stuckNeighbor) {
       const parent: ClusterEntry = cluster[pointKey(stuckNeighbor)]
-      newCluster[pointKey(moved)] = clusterEntry(moved, parent);
+      newCluster[pointKey(moved)] = clusterEntry(moved, parent, parent.distance + 1);
     } else {
       newWalkers.push(moved);
     }

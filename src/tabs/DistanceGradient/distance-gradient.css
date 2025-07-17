@@ -1,0 +1,41 @@
+.distance-gradient-container {
+  padding: 32px;
+}
+
+.distance-gradient-main-content {
+  display: flex;
+  flex-direction: row;
+  gap: 32px;
+}
+
+.distance-gradient-visualization {
+  background: #181818;
+  border: 1px solid #333;
+  min-width: 500px;
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.distance-gradient-placeholder {
+  color: #00d8ff;
+  font-size: 1.2rem;
+  opacity: 0.7;
+}
+
+.distance-gradient-controls {
+  min-width: 220px;
+  background: #222;
+  border-radius: 8px;
+  padding: 24px;
+  color: #ccc;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.distance-gradient-controls-placeholder {
+  opacity: 0.6;
+  font-size: 1rem;
+} 
