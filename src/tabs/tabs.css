@@ -10,7 +10,7 @@
 .dlasim_tab-link {
   color: #ff00a6;
   font-size: 1.2rem;
-  border: 2px solid #5a6cff;
+  border: 2px solid var(--control-border-color);
   border-radius: 6px;
   padding: 0.5rem 2rem;
   text-decoration: none;

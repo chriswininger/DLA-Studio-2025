@@ -13,7 +13,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #5a6cff;
+  border: 2px solid var(--control-border-color);
   border-radius: 8px;
   background: none;
   cursor: pointer;
