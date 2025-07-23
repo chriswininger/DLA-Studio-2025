@@ -17,17 +17,19 @@ import EraserControls from './eraser-controls/eraser-controls';
 
 const Simple2DAnimatedDLA: React.FC = () => {
   const dispatch = useDispatch();
-  const isRunning = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).isRunning);
-  const spawnXOffset = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnXOffset);
-  const spawnYOffset = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnYOffset);
-  const spawnRotation = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnRotation);
-  const spawnSquareSize = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnSquareSize);
-  const selectedTool = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).selectedTool);
-  const brushSize = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushSize);
-  const brushParticles = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushParticles);
-  const dlaCluster = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).dlaCluster);
-  const dlaWalkers = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).dlaWalkers);
-  const dlaSteps = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).dlaSteps);
+  const {
+    isRunning,
+    spawnXOffset,
+    spawnYOffset,
+    spawnRotation,
+    spawnSquareSize,
+    selectedTool,
+    brushSize,
+    brushParticles,
+    dlaCluster,
+    dlaWalkers,
+    dlaSteps
+  } = useSimple2dAnimatedDLAState();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const dlaStateRef = useRef<DLAState | null>(null);
   const [steps, setSteps] = React.useState(0);
@@ -417,6 +419,34 @@ function useAnimationLoop(callback: () => boolean, isRunning: boolean) {
   }, [isRunning, callback]);
 
   return requestRef.current;
+}
+
+// Custom hook to select all Simple2DAnimatedDLA state from Redux
+function useSimple2dAnimatedDLAState() {
+  const isRunning = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).isRunning);
+  const spawnXOffset = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnXOffset);
+  const spawnYOffset = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnYOffset);
+  const spawnRotation = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnRotation);
+  const spawnSquareSize = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnSquareSize);
+  const selectedTool = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).selectedTool);
+  const brushSize = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushSize);
+  const brushParticles = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushParticles);
+  const dlaCluster = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).dlaCluster);
+  const dlaWalkers = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).dlaWalkers);
+  const dlaSteps = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).dlaSteps);
+  return {
+    isRunning,
+    spawnXOffset,
+    spawnYOffset,
+    spawnRotation,
+    spawnSquareSize,
+    selectedTool,
+    brushSize,
+    brushParticles,
+    dlaCluster,
+    dlaWalkers,
+    dlaSteps
+  };
 }
 
 export default Simple2DAnimatedDLA;
