@@ -2,7 +2,7 @@ import './App.css'
 import './tabs/tabs.css'
 import { BrowserRouter as Router, Routes, Route, Navigate, NavLink } from 'react-router-dom';
 import Simple2DAnimatedDLA from './tabs/Simple2DAnimatedDLA/simple-2d-animated-dla'
-import SVGDLA from './tabs/SVGDLA/SVGDLA'
+import { SVGDLA } from './tabs/SVGDLA/SVGDLA'
 import DistanceGradient from './tabs/DistanceGradient/distance-gradient';
 
 function App() {

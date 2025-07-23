@@ -5,46 +5,13 @@ import type { SVGDLAUIState } from './svg-dla-slice';
 import { setSvgContent } from './svg-dla-slice';
 import type { ClusterMap } from '../../dla/dla';
 import LineLengthControls from './line-length-controls/line-length-controls';
+import SquareSizeControls from './square-size-controls/square-size-controls';
 import './SVGDLA.css';
 import { setSelectedTool } from './svg-dla-slice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faSquare } from '@fortawesome/free-solid-svg-icons';
 
-const ToolBar: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const selectedTool = useAppSelector((state: RootState) => (state.svgDla as SVGDLAUIState).selectedTool);
-
-  return (
-    <div className="dlasim_tool-container">
-      <button
-        className={`dlasim_tool-btn${selectedTool === 'draw-with-lines' ? ' selected' : ' unselected'}`}
-        onClick={() => dispatch(setSelectedTool('draw-with-lines'))}
-        aria-label="Draw with Lines Tool"
-        type="button"
-      >
-        <FontAwesomeIcon
-          icon={faArrowUp}
-          className="dlasim_tool-icon"
-          color={selectedTool === 'draw-with-lines' ? '#FB8158' : '#EB2EA4'}
-        />
-      </button>
-      <button
-        className={`dlasim_tool-btn${selectedTool === 'draw-with-squares' ? ' selected' : ' unselected'}`}
-        onClick={() => dispatch(setSelectedTool('draw-with-squares'))}
-        aria-label="Draw with Squares Tool"
-        type="button"
-      >
-        <FontAwesomeIcon
-          icon={faSquare}
-          className="dlasim_tool-icon"
-          color={selectedTool === 'draw-with-squares' ? '#FB8158' : '#EB2EA4'}
-        />
-      </button>
-    </div>
-  );
-};
-
-const SVGDLA: React.FC = () => {
+export const SVGDLA: React.FC = () => {
   const CANVAS_WIDTH = 500;
   const CANVAS_HEIGHT = 500;
   const dispatch = useAppDispatch();
@@ -65,8 +32,8 @@ const SVGDLA: React.FC = () => {
   return (
     <div className="dlasim-svgdla-tab">
       <div className="dlasim-flex-row">
-        {/* Tool selection UI */}
         <ToolBar />
+
         <div className="svgdla-main-content">
           {/* SVG container */}
           <div className="svgdla-svg-container">
@@ -80,10 +47,9 @@ const SVGDLA: React.FC = () => {
               {/* SVG content will be generated here */}
             </svg>
           </div>
-          {/* Line length controls */}
-          <LineLengthControls />
+          
+          <ToolOptions />
         </div>
-        {/* End main content */}
       </div>
       <div className="svgdla-button-container">
         <button onClick={generateSVG}>
@@ -136,4 +102,49 @@ const SVGDLA: React.FC = () => {
   }
 };
 
-export default SVGDLA; 
+const ToolBar: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const selectedTool = useAppSelector((state: RootState) => (state.svgDla as SVGDLAUIState).selectedTool);
+
+  return (
+    <div className="dlasim_tool-container">
+      <button
+        className={`dlasim_tool-btn${selectedTool === 'draw-with-lines' ? ' selected' : ' unselected'}`}
+        onClick={() => dispatch(setSelectedTool('draw-with-lines'))}
+        aria-label="Draw with Lines Tool"
+        type="button"
+      >
+        <FontAwesomeIcon
+          icon={faArrowUp}
+          className="dlasim_tool-icon"
+          color={selectedTool === 'draw-with-lines' ? '#FB8158' : '#EB2EA4'}
+        />
+      </button>
+      <button
+        className={`dlasim_tool-btn${selectedTool === 'draw-with-squares' ? ' selected' : ' unselected'}`}
+        onClick={() => dispatch(setSelectedTool('draw-with-squares'))}
+        aria-label="Draw with Squares Tool"
+        type="button"
+      >
+        <FontAwesomeIcon
+          icon={faSquare}
+          className="dlasim_tool-icon"
+          color={selectedTool === 'draw-with-squares' ? '#FB8158' : '#EB2EA4'}
+        />
+      </button>
+    </div>
+  );
+};
+
+const ToolOptions: React.FC = () => {
+  const selectedTool = useAppSelector((state: RootState) => state.svgDla.selectedTool);
+
+  switch(selectedTool) {
+    case 'draw-with-lines':
+      return <LineLengthControls />
+    case 'draw-with-squares':
+      return <SquareSizeControls />
+    default:
+      return null;
+  }
+}

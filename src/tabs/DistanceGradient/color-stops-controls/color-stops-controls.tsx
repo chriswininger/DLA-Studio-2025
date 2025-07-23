@@ -6,7 +6,7 @@ import './color-stops-controls.css';
 
 const ColorStopsControls: React.FC = () => {
   const dispatch = useDispatch();
-  const { colorStops, selectedStopId } = useSelector((state: RootState) => state.distanceGradient);
+  const { colorStops } = useSelector((state: RootState) => state.distanceGradient);
 
   const handleUpdateColorStop = (id: string, field: 'color' | 'position', value: string | number) => {
     dispatch(updateColorStop({ id, field, value }));

@@ -90,5 +90,19 @@ const slice = createSlice({
   },
 });
 
-export const { setNumParticles, setSpawnXOffset, setSpawnYOffset, setSpawnRotation, setSpawnSquareSize, setBrushSize, setBrushParticles, setEraserSize, setIsRunning, setIsSimulating, setSelectedTool, saveDLAState, resetDLAState } = slice.actions;
+export const {
+  setNumParticles,
+  setSpawnXOffset,
+  setSpawnYOffset,
+  setSpawnRotation,
+  setSpawnSquareSize,
+  setBrushSize,
+  setBrushParticles,
+  setEraserSize,
+  setIsRunning,
+  setIsSimulating,
+  setSelectedTool,
+  saveDLAState,
+  resetDLAState
+} = slice.actions;
 export default slice.reducer; 

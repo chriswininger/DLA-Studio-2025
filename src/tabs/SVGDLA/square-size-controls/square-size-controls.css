@@ -1,0 +1,21 @@
+.svgdla_square-size-controls {
+  margin-left: 48px;
+  border: 2px solid var(--control-border-color);
+  border-radius: 8px;
+  padding: 24px;
+  min-width: 300px;
+}
+
+.svgdla_square-size-row {
+  margin-bottom: 16px;
+}
+
+.svgdla_square-size-input {
+  margin-left: 8px;
+  width: 120px;
+  padding: 4px 8px;
+  border: 1px solid var(--control-border-color);
+  border-radius: 4px;
+  background: #1a1a2e;
+  color: #fff;
+} 
