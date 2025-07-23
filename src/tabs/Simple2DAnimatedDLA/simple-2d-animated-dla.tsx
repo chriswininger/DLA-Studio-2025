@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../store';
-import { setIsRunning, saveDLAState, resetDLAState } from './simple-2d-animated-dla-slice';
+import { setIsRunning, saveDLAState, resetDLAState, setIsSimulating } from './simple-2d-animated-dla-slice';
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from './simple-2d-animated-dla-constants';
 import { createDLAState, stepDLA } from '../../dla/dla';
 import type { DLAState } from '../../dla/dla';
@@ -19,6 +19,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const dispatch = useDispatch();
   const {
     isRunning,
+    isSimulating,
     spawnXOffset,
     spawnYOffset,
     spawnRotation,
@@ -30,10 +31,11 @@ const Simple2DAnimatedDLA: React.FC = () => {
     dlaWalkers,
     dlaSteps
   } = useSimple2dAnimatedDLAState();
+
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const dlaStateRef = useRef<DLAState | null>(null);
+
   const [steps, setSteps] = React.useState(0);
-  const [isSimulating, setIsSimulating] = React.useState(false);
   const [cursorPosition, setCursorPosition] = React.useState<{ x: number; y: number } | null>(null);
   const [isDragging, setIsDragging] = React.useState(false);
   const workerRef = React.useRef<Worker | null>(null);
@@ -183,7 +185,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
 
   // Simulate to completion (no animation frames)
   function handleSimulateToCompletion() {
-    setIsSimulating(true);
+    dispatch(setIsSimulating(true));
     setSteps(0);
     workerRef.current = new Worker(new URL('./dla-worker.ts', import.meta.url), { type: 'module' });
     workerRef.current.onmessage = (e: MessageEvent) => {
@@ -202,13 +204,13 @@ const Simple2DAnimatedDLA: React.FC = () => {
           dlaStateRef.current.steps = msg.steps;
         }
         doDraw();
-        setIsSimulating(false);
+        dispatch(setIsSimulating(false));
         workerRef.current?.terminate();
         workerRef.current = null;
         dispatch(setIsRunning(false));
       } else if (msg.type === 'error') {
         console.error('Worker error:', msg.error);
-        setIsSimulating(false);
+        dispatch(setIsSimulating(false));
         workerRef.current?.terminate();
         workerRef.current = null;
       }
@@ -217,7 +219,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
     const currentState = dlaStateRef.current;
     if (!currentState) {
       console.error('No DLA state available for simulation');
-      setIsSimulating(false);
+      dispatch(setIsSimulating(false));
       return;
     }
 
@@ -424,6 +426,7 @@ function useAnimationLoop(callback: () => boolean, isRunning: boolean) {
 // Custom hook to select all Simple2DAnimatedDLA state from Redux
 function useSimple2dAnimatedDLAState() {
   const isRunning = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).isRunning);
+  const isSimulating = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).isSimulating);
   const spawnXOffset = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnXOffset);
   const spawnYOffset = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnYOffset);
   const spawnRotation = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnRotation);
@@ -436,6 +439,7 @@ function useSimple2dAnimatedDLAState() {
   const dlaSteps = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).dlaSteps);
   return {
     isRunning,
+    isSimulating,
     spawnXOffset,
     spawnYOffset,
     spawnRotation,
