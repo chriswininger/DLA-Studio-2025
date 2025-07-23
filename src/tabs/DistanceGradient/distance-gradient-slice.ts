@@ -60,4 +60,43 @@ export const {
   removeColorStop,
 } = distanceGradientSlice.actions;
 
-export default distanceGradientSlice.reducer; 
+export default distanceGradientSlice.reducer;
+
+// Utility: Interpolate color for a given distance
+export function getColorForDistance(
+  colorStops: ColorStop[],
+  distance: number,
+  minDistance: number,
+  maxDistance: number
+): string {
+  if (colorStops.length === 0) return '#ffff00';
+  // Normalize distance to 0-100
+  let value = 0;
+  if (maxDistance !== minDistance) {
+    value = ((distance - minDistance) / (maxDistance - minDistance)) * 100;
+  }
+  // Sort stops by position
+  const sorted = [...colorStops].sort((a, b) => a.position - b.position);
+  if (value <= sorted[0].position) return sorted[0].color;
+  if (value >= sorted[sorted.length - 1].position) return sorted[sorted.length - 1].color;
+  // Find stops to interpolate between
+  for (let i = 0; i < sorted.length - 1; i++) {
+    const left = sorted[i], right = sorted[i + 1];
+    if (value >= left.position && value <= right.position) {
+      const t = (value - left.position) / (right.position - left.position);
+      return interpolateColor(left.color, right.color, t);
+    }
+  }
+  return sorted[0].color;
+}
+
+function interpolateColor(color1: string, color2: string, t: number): string {
+  const c1 = parseInt(color1.slice(1), 16);
+  const c2 = parseInt(color2.slice(1), 16);
+  const r1 = (c1 >> 16) & 0xff, g1 = (c1 >> 8) & 0xff, b1 = c1 & 0xff;
+  const r2 = (c2 >> 16) & 0xff, g2 = (c2 >> 8) & 0xff, b2 = c2 & 0xff;
+  const r = Math.round(r1 + (r2 - r1) * t);
+  const g = Math.round(g1 + (g2 - g1) * t);
+  const b = Math.round(b1 + (b2 - b1) * t);
+  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+} 

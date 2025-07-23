@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useAppSelector } from '../../store';
 import { setIsRunning, saveDLAState, resetDLAState, setIsSimulating } from './simple-2d-animated-dla-slice';
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from './simple-2d-animated-dla-constants';
@@ -12,6 +12,7 @@ import ToolBar from './tool-bar/tool-bar';
 import ShapeSpawnControls from './shape-spawn-controls/shape-spawn-controls';
 import PaintBrushControls from './paint-brush-controls/paint-brush-controls';
 import EraserControls from './eraser-controls/eraser-controls';
+import { getColorForDistance } from '../DistanceGradient/distance-gradient-slice';
 // Vite/ESM native worker import
 // No import needed, use new Worker(new URL(...), { type: 'module' })
 
@@ -33,6 +34,8 @@ const Simple2DAnimatedDLA: React.FC = () => {
     dlaWalkers,
     dlaSteps
   } = useSimple2dAnimatedDLAState();
+
+  const colorStops = useSelector((state: any) => state.distanceGradient.colorStops);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const dlaStateRef = useRef<DLAState | null>(null);
@@ -73,10 +76,6 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const handleMouseMove = useHandleMouseMoveInCanvas({
     shouldShowBrushPreview,
     isDragging,
-    selectedTool,
-    isRunning,
-    brushSize,
-    brushParticles,
     canvasRef,
     setCursorPosition,
     spawnWalkersInBrushRadius
@@ -87,17 +86,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
     setIsDragging(false);
   }, []);
 
-  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (selectedTool === 'brush' && !isRunning) {
-      setIsDragging(true);
-      const rect = canvasRef.current?.getBoundingClientRect();
-      if (rect) {
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        spawnWalkersInBrushRadius(x, y, brushSize, brushParticles);
-      }
-    }
-  }, [selectedTool, isRunning, brushSize, brushParticles]);
+  const handleMouseDown = useCallback(mouseDown, [selectedTool, isRunning, brushSize, brushParticles]);
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
@@ -232,8 +221,6 @@ const Simple2DAnimatedDLA: React.FC = () => {
     });
   }
 
-
-
   function handleSpawn(newWalkers: { x: number; y: number }[]) {
     if (dlaStateRef.current) {
       console.log('Current cluster size:', Object.keys(dlaStateRef.current.cluster).length);
@@ -267,11 +254,16 @@ const Simple2DAnimatedDLA: React.FC = () => {
     if (shouldShowSpawnShapePreview) {
       drawShapeSpawn(ctx);
     }
-    
-    // Draw cluster
-    ctx.fillStyle = '#00d8ff';
-    Object.values(dlaStateRef.current.cluster).forEach((entry) => {
+
+    // Draw cluster with gradient coloring by distance
+    const clusterEntries = Object.values(dlaStateRef.current.cluster);
+    const distances = clusterEntries.map(entry => entry.distance ?? 0);
+    const minDistance = Math.min(...distances);
+    const maxDistance = Math.max(...distances);
+    clusterEntries.forEach((entry) => {
       const { x, y } = entry.point;
+      const color = getColorForDistance(colorStops, entry.distance ?? 0, minDistance, maxDistance);
+      ctx.fillStyle = color;
       ctx.fillRect(x, y, 1, 1);
     });
 
@@ -382,6 +374,18 @@ const Simple2DAnimatedDLA: React.FC = () => {
       doDraw();
     }
   }
+
+  function mouseDown(e: React.MouseEvent<HTMLCanvasElement>) {
+    if (selectedTool === 'brush' && !isRunning) {
+      setIsDragging(true);
+      const rect = canvasRef.current?.getBoundingClientRect();
+      if (rect) {
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        spawnWalkersInBrushRadius(x, y, brushSize, brushParticles);
+      }
+    }
+  }
 };
 
 // Custom hook for animation loop
@@ -453,24 +457,21 @@ function useSimple2dAnimatedDLAState() {
 function useHandleMouseMoveInCanvas({
   shouldShowBrushPreview,
   isDragging,
-  selectedTool,
-  isRunning,
-  brushSize,
-  brushParticles,
   canvasRef,
   setCursorPosition,
   spawnWalkersInBrushRadius
 }: {
   shouldShowBrushPreview: boolean;
   isDragging: boolean;
-  selectedTool: string;
-  isRunning: boolean;
-  brushSize: number;
-  brushParticles: number;
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
   setCursorPosition: React.Dispatch<React.SetStateAction<{ x: number; y: number } | null>>;
   spawnWalkersInBrushRadius: (x: number, y: number, brushSize: number, numWalkers: number) => void;
 }) {
+  const isRunning = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).isRunning);
+  const selectedTool = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).selectedTool);
+  const brushSize = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushSize);
+  const brushParticles = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushParticles);
+
   return React.useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     if (shouldShowBrushPreview) {
       const rect = canvasRef.current?.getBoundingClientRect();
