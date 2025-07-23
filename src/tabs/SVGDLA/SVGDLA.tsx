@@ -6,6 +6,43 @@ import { setSvgContent } from './svg-dla-slice';
 import type { ClusterMap } from '../../dla/dla';
 import LineLengthControls from './line-length-controls/line-length-controls';
 import './SVGDLA.css';
+import { setSelectedTool } from './svg-dla-slice';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowUp, faSquare } from '@fortawesome/free-solid-svg-icons';
+
+const ToolBar: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const selectedTool = useAppSelector((state: RootState) => (state.svgDla as SVGDLAUIState).selectedTool);
+
+  return (
+    <div className="dlasim_tool-container">
+      <button
+        className={`dlasim_tool-btn${selectedTool === 'draw-with-lines' ? ' selected' : ' unselected'}`}
+        onClick={() => dispatch(setSelectedTool('draw-with-lines'))}
+        aria-label="Draw with Lines Tool"
+        type="button"
+      >
+        <FontAwesomeIcon
+          icon={faArrowUp}
+          className="dlasim_tool-icon"
+          color={selectedTool === 'draw-with-lines' ? '#FB8158' : '#EB2EA4'}
+        />
+      </button>
+      <button
+        className={`dlasim_tool-btn${selectedTool === 'draw-with-squares' ? ' selected' : ' unselected'}`}
+        onClick={() => dispatch(setSelectedTool('draw-with-squares'))}
+        aria-label="Draw with Squares Tool"
+        type="button"
+      >
+        <FontAwesomeIcon
+          icon={faSquare}
+          className="dlasim_tool-icon"
+          color={selectedTool === 'draw-with-squares' ? '#FB8158' : '#EB2EA4'}
+        />
+      </button>
+    </div>
+  );
+};
 
 const SVGDLA: React.FC = () => {
   const CANVAS_WIDTH = 500;
@@ -27,21 +64,26 @@ const SVGDLA: React.FC = () => {
 
   return (
     <div className="dlasim-svgdla-tab">
-      <div className="svgdla-main-content">
-        {/* SVG container */}
-        <div className="svgdla-svg-container">
-          <svg
-            width={CANVAS_WIDTH}
-            height={CANVAS_HEIGHT}
-            className="svgdla-svg"
-            viewBox={`0 0 ${CANVAS_WIDTH} ${CANVAS_HEIGHT}`}
-            dangerouslySetInnerHTML={{ __html: svgContent }}
-          >
-            {/* SVG content will be generated here */}
-          </svg>
+      <div className="dlasim-flex-row">
+        {/* Tool selection UI */}
+        <ToolBar />
+        <div className="svgdla-main-content">
+          {/* SVG container */}
+          <div className="svgdla-svg-container">
+            <svg
+              width={CANVAS_WIDTH}
+              height={CANVAS_HEIGHT}
+              className="svgdla-svg"
+              viewBox={`0 0 ${CANVAS_WIDTH} ${CANVAS_HEIGHT}`}
+              dangerouslySetInnerHTML={{ __html: svgContent }}
+            >
+              {/* SVG content will be generated here */}
+            </svg>
+          </div>
+          {/* Line length controls */}
+          <LineLengthControls />
         </div>
-        {/* Line length controls */}
-        <LineLengthControls />
+        {/* End main content */}
       </div>
       <div className="svgdla-button-container">
         <button onClick={generateSVG}>
