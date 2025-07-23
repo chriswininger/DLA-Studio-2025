@@ -21,8 +21,8 @@ export const SVGDLA: React.FC = () => {
     (state.simple2dAnimatedDla as any).dlaCluster as ClusterMap
   );
   
-  // Get line length and SVG content from Redux
-  const { lineLength, svgContent } = useAppSelector((state: RootState) => 
+  // Get line length, SVG content, selected tool, and square size from Redux
+  const { lineLength, svgContent, selectedTool, squareSize } = useAppSelector((state: RootState) => 
     state.svgDla as SVGDLAUIState
   );
 
@@ -65,6 +65,11 @@ export const SVGDLA: React.FC = () => {
       return;
     }
 
+    if (selectedTool === 'draw-with-squares') {
+      generateSVGWithSquares();
+      return;
+    }
+
     console.log('Cluster data:', dlaCluster);
     const svgLines: string[] = [];
 
@@ -99,6 +104,36 @@ export const SVGDLA: React.FC = () => {
     dispatch(setSvgContent(svgContentString));
     
     console.log('Generated SVG with', svgLines.length, 'line segments');
+  }
+
+  function generateSVGWithSquares() {
+    if (!dlaCluster || Object.keys(dlaCluster).length === 0) {
+      console.log('No cluster data available');
+      return;
+    }
+
+    const svgSquares: string[] = [];
+
+    // Calculate the center of all points
+    const points = Object.values(dlaCluster).map(entry => entry.point);
+    const centerX = points.reduce((sum, p) => sum + p.x, 0) / points.length;
+    const centerY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
+
+    // Draw a square for each point
+    Object.values(dlaCluster).forEach((entry) => {
+      const { point } = entry;
+      // Scale from center: translate to origin, scale, then translate back
+      const scaledX = (point.x - centerX) * scaleFactor + centerX;
+      const scaledY = (point.y - centerY) * scaleFactor + centerY;
+      // Offset so the square is centered on the point
+      const x = scaledX - squareSize / 2;
+      const y = scaledY - squareSize / 2;
+      svgSquares.push(`<rect x="${x}" y="${y}" width="${squareSize}" height="${squareSize}" fill="#00d8ff" />`);
+    });
+
+    const svgContentString = svgSquares.join('\n');
+    dispatch(setSvgContent(svgContentString));
+    console.log('Generated SVG with', svgSquares.length, 'squares');
   }
 };
 
