@@ -16,6 +16,8 @@ import EraserControls from './eraser-controls/eraser-controls';
 // No import needed, use new Worker(new URL(...), { type: 'module' })
 
 const Simple2DAnimatedDLA: React.FC = () => {
+  const spawnPreviewColor = '#ffff00';
+
   const dispatch = useDispatch();
   const {
     isRunning,
@@ -42,10 +44,10 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const shouldShowSpawnShapePreview = selectedTool === 'spawn-shapes' && !isRunning;
   const shouldShowBrushPreview = selectedTool === 'brush' && !isRunning;
 
-  const spawnPreviewColor = '#ffff00';
+  const stepAnimation = useCallback(doStepAnimation, [doDraw, dispatch]);
+  const walkersCount = dlaStateRef.current?.walkers.length ?? 0;
 
   useEffect(initializeState, []);
-  const stepAnimation = useCallback(doStepAnimation, [doDraw, dispatch]);
 
   useAnimationLoop(stepAnimation, isRunning);
 
@@ -62,29 +64,23 @@ const Simple2DAnimatedDLA: React.FC = () => {
     };
   }, [dispatch]);
 
-  // Get current simulation info for display
-  const walkersCount = dlaStateRef.current?.walkers.length ?? 0;
 
   useEffect(function () {
     doDraw();
   }, [selectedTool, spawnXOffset, spawnYOffset, spawnRotation, spawnSquareSize, cursorPosition]);
 
   // Mouse event handlers for cursor tracking
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (shouldShowBrushPreview) {
-      const rect = canvasRef.current?.getBoundingClientRect();
-      if (rect) {
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        setCursorPosition({ x, y });
-        
-        // If dragging, spawn walkers continuously
-        if (isDragging && selectedTool === 'brush' && !isRunning) {
-          spawnWalkersInBrushRadius(x, y, brushSize, brushParticles);
-        }
-      }
-    }
-  }, [shouldShowBrushPreview, isDragging, selectedTool, isRunning, brushSize, brushParticles]);
+  const handleMouseMove = useHandleMouseMoveInCanvas({
+    shouldShowBrushPreview,
+    isDragging,
+    selectedTool,
+    isRunning,
+    brushSize,
+    brushParticles,
+    canvasRef,
+    setCursorPosition,
+    spawnWalkersInBrushRadius
+  });
 
   const handleMouseLeave = useCallback(() => {
     setCursorPosition(null);
@@ -451,6 +447,44 @@ function useSimple2dAnimatedDLAState() {
     dlaWalkers,
     dlaSteps
   };
+}
+
+// Custom hook for mouse move handling on the canvas
+function useHandleMouseMoveInCanvas({
+  shouldShowBrushPreview,
+  isDragging,
+  selectedTool,
+  isRunning,
+  brushSize,
+  brushParticles,
+  canvasRef,
+  setCursorPosition,
+  spawnWalkersInBrushRadius
+}: {
+  shouldShowBrushPreview: boolean;
+  isDragging: boolean;
+  selectedTool: string;
+  isRunning: boolean;
+  brushSize: number;
+  brushParticles: number;
+  canvasRef: React.RefObject<HTMLCanvasElement | null>;
+  setCursorPosition: React.Dispatch<React.SetStateAction<{ x: number; y: number } | null>>;
+  spawnWalkersInBrushRadius: (x: number, y: number, brushSize: number, numWalkers: number) => void;
+}) {
+  return React.useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (shouldShowBrushPreview) {
+      const rect = canvasRef.current?.getBoundingClientRect();
+      if (rect) {
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        setCursorPosition({ x, y });
+        // If dragging, spawn walkers continuously
+        if (isDragging && selectedTool === 'brush' && !isRunning) {
+          spawnWalkersInBrushRadius(x, y, brushSize, brushParticles);
+        }
+      }
+    }
+  }, [shouldShowBrushPreview, isDragging, selectedTool, isRunning, brushSize, brushParticles, canvasRef, setCursorPosition, spawnWalkersInBrushRadius]);
 }
 
 export default Simple2DAnimatedDLA;
