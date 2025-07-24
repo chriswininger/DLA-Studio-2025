@@ -112,7 +112,7 @@ export const SVGDLA: React.FC = () => {
       svgLines.push(`<line x1="${scaledParentX}" y1="${scaledParentY}" x2="${scaledPointX}" y2="${scaledPointY}" stroke="#00d8ff" stroke-width="1" />`);
       // Draw a circle at the parent point, colored by distance
       const color = getColorForDistance(colorStops, parent.distance ?? 0, minDistance, maxDistance);
-      svgCircles.push(`<circle cx="${scaledParentX}" cy="${scaledParentY}" r="2" fill="${color}" />`);
+      svgCircles.push(`<circle cx="${scaledParentX}" cy="${scaledParentY}" r="2" fill="none" stroke="${color}" stroke-width="1" />`);
     });
 
     const svgContentString = svgLines.concat(svgCircles).join('\n');
