@@ -7,6 +7,8 @@ export interface SVGDLAUIState {
   svgContent: string;
   selectedTool: SVGDLAUITool;
   squareSize: number;
+  showCircles: boolean;
+  circleRadius: number;
 }
 
 const initialState: SVGDLAUIState = {
@@ -14,6 +16,8 @@ const initialState: SVGDLAUIState = {
   svgContent: '',
   selectedTool: 'draw-with-lines',
   squareSize: 10,
+  showCircles: true,
+  circleRadius: 2,
 };
 
 const slice = createSlice({
@@ -32,8 +36,14 @@ const slice = createSlice({
     setSquareSize(state, action: PayloadAction<number>) {
       state.squareSize = action.payload;
     },
+    setShowCircles(state, action: PayloadAction<boolean>) {
+      state.showCircles = action.payload;
+    },
+    setCircleRadius(state, action: PayloadAction<number>) {
+      state.circleRadius = action.payload;
+    },
   },
 });
 
-export const { setLineLength, setSvgContent, setSelectedTool, setSquareSize } = slice.actions;
+export const { setLineLength, setSvgContent, setSelectedTool, setSquareSize, setShowCircles, setCircleRadius } = slice.actions;
 export default slice.reducer; 
