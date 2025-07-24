@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAppSelector, useAppDispatch } from '../../store';
 import type { RootState } from '../../store';
 import type { SVGDLAUIState } from './svg-dla-slice';
@@ -29,6 +29,11 @@ export const SVGDLA: React.FC = () => {
   // Get colorStops from Redux
   const colorStops = useAppSelector((state: RootState) => (state.distanceGradient as any).colorStops);
 
+  // Automatically generate SVG when any relevant state changes
+  useEffect(() => {
+    generateSVG();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dlaCluster, selectedTool, lineLength, squareSize, showCircles, circleRadius, colorStops]);
 
   return (
     <div className="dlasim-svgdla-tab">
@@ -48,8 +53,8 @@ export const SVGDLA: React.FC = () => {
               {/* SVG content will be generated here */}
             </svg>
 
+            {/* Remove Generate SVG button, keep Download SVG */}
             <div className="svgdla-button-container">
-              <button onClick={generateSVG}>Generate SVG</button>
               <button onClick={downloadSVG}>Download SVG</button>
             </div>
           </div>
@@ -96,7 +101,7 @@ export const SVGDLA: React.FC = () => {
 
     // Iterate through all cluster entries
     entries.forEach((entry) => {
-      const { point, parent, distance } = entry;
+      const { point, parent } = entry;
       // Skip the root entry (it has no parent to connect to)
       if (parent === 'ROOT') {
         return;
