@@ -10,6 +10,7 @@ import './SVGDLA.css';
 import { setSelectedTool } from './svg-dla-slice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faSquare } from '@fortawesome/free-solid-svg-icons';
+import { getColorForDistance } from '../DistanceGradient/distance-gradient-slice';
 
 export const SVGDLA: React.FC = () => {
   const CANVAS_WIDTH = 500;
@@ -25,6 +26,8 @@ export const SVGDLA: React.FC = () => {
   const { lineLength, svgContent, selectedTool, squareSize } = useAppSelector((state: RootState) => 
     state.svgDla as SVGDLAUIState
   );
+  // Get colorStops from Redux
+  const colorStops = useAppSelector((state: RootState) => (state.distanceGradient as any).colorStops);
 
 
   return (
@@ -78,38 +81,43 @@ export const SVGDLA: React.FC = () => {
   function generateWithLines() {
     console.log('Cluster data:', dlaCluster);
     const svgLines: string[] = [];
+    const svgCircles: string[] = [];
 
     // Calculate the center of all points
-    const points = Object.values(dlaCluster).map(entry => entry.point);
+    const entries = Object.values(dlaCluster);
+    const points = entries.map(entry => entry.point);
     const centerX = points.reduce((sum, p) => sum + p.x, 0) / points.length;
     const centerY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
 
+    // Compute min/max distance for color gradient
+    const distances = entries.map(entry => entry.distance ?? 0);
+    const minDistance = Math.min(...distances);
+    const maxDistance = Math.max(...distances);
+
     // Iterate through all cluster entries
-    Object.values(dlaCluster).forEach((entry) => {
-      const { point, parent } = entry;
-      
+    entries.forEach((entry) => {
+      const { point, parent, distance } = entry;
       // Skip the root entry (it has no parent to connect to)
       if (parent === 'ROOT') {
         return;
       }
-      
       // Get the parent point
       const parentPoint = parent.point;
-      
       // Scale from center: translate to origin, scale, then translate back
       const scaledParentX = (parentPoint.x - centerX) * lineLength + centerX;
       const scaledParentY = (parentPoint.y - centerY) * lineLength + centerY;
       const scaledPointX = (point.x - centerX) * lineLength + centerX;
       const scaledPointY = (point.y - centerY) * lineLength + centerY;
-      
       // Draw a simple line from parent to child point with scaling
       svgLines.push(`<line x1="${scaledParentX}" y1="${scaledParentY}" x2="${scaledPointX}" y2="${scaledPointY}" stroke="#00d8ff" stroke-width="1" />`);
+      // Draw a circle at the parent point, colored by distance
+      const color = getColorForDistance(colorStops, parent.distance ?? 0, minDistance, maxDistance);
+      svgCircles.push(`<circle cx="${scaledParentX}" cy="${scaledParentY}" r="2" fill="${color}" />`);
     });
 
-    const svgContentString = svgLines.join('\n');
+    const svgContentString = svgLines.concat(svgCircles).join('\n');
     dispatch(setSvgContent(svgContentString));
-    
-    console.log('Generated SVG with', svgLines.length, 'line segments');
+    console.log('Generated SVG with', svgLines.length, 'line segments and', svgCircles.length, 'circles');
   }
 
   function generateSVGWithSquares() {
