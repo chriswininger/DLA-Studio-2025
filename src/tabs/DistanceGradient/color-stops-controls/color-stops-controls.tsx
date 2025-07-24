@@ -3,10 +3,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../../../store';
 import { updateColorStop, addColorStop, removeColorStop, type ColorStop } from '../distance-gradient-slice';
 import './color-stops-controls.css';
+import ColorChooser from './color-chooser';
 
 const ColorStopsControls: React.FC = () => {
   const dispatch = useDispatch();
   const { colorStops } = useSelector((state: RootState) => state.distanceGradient);
+
+  const [activeColorId, setActiveColorId] = React.useState<string | null>(null);
 
   const handleUpdateColorStop = (id: string, field: 'color' | 'position', value: string | number) => {
     dispatch(updateColorStop({ id, field, value }));
@@ -20,6 +23,17 @@ const ColorStopsControls: React.FC = () => {
     dispatch(addColorStop());
   };
 
+  const handleSwatchClick = (id: string) => {
+    setActiveColorId(id === activeColorId ? null : id);
+  };
+
+  const handleColorChooserChange = (color: string) => {
+    if (activeColorId) {
+      handleUpdateColorStop(activeColorId, 'color', color);
+    }
+  };
+
+  const activeColor = colorStops.find(stop => stop.id === activeColorId)?.color || '';
 
   return (
     <div className="color-stops-section">
@@ -32,7 +46,8 @@ const ColorStopsControls: React.FC = () => {
           >
             <div 
               className="color-swatch"
-              style={{ backgroundColor: stop.color }}
+              style={{ backgroundColor: stop.color, border: stop.id === activeColorId ? '2px solid var(--dlasim-primary-color)' : undefined }}
+              onClick={() => handleSwatchClick(stop.id)}
             />
             <input
               type="text"
@@ -63,6 +78,9 @@ const ColorStopsControls: React.FC = () => {
       <button className="add-stop-btn" onClick={handleAddColorStop}>
         + Add Stop
       </button>
+      {activeColorId && (
+        <ColorChooser color={activeColor} onChange={handleColorChooserChange} />
+      )}
     </div>
   );
 };
