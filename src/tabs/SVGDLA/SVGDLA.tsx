@@ -23,7 +23,7 @@ export const SVGDLA: React.FC = () => {
   );
   
   // Get line length, SVG content, selected tool, and square size from Redux
-  const { lineLength, svgContent, selectedTool, squareSize } = useAppSelector((state: RootState) => 
+  const { lineLength, svgContent, selectedTool, squareSize, showCircles, circleRadius } = useAppSelector((state: RootState) => 
     state.svgDla as SVGDLAUIState
   );
   // Get colorStops from Redux
@@ -110,9 +110,11 @@ export const SVGDLA: React.FC = () => {
       const scaledPointY = (point.y - centerY) * lineLength + centerY;
       // Draw a simple line from parent to child point with scaling
       svgLines.push(`<line x1="${scaledParentX}" y1="${scaledParentY}" x2="${scaledPointX}" y2="${scaledPointY}" stroke="#00d8ff" stroke-width="1" />`);
-      // Draw a circle at the parent point, colored by distance
-      const color = getColorForDistance(colorStops, parent.distance ?? 0, minDistance, maxDistance);
-      svgCircles.push(`<circle cx="${scaledParentX}" cy="${scaledParentY}" r="2" fill="none" stroke="${color}" stroke-width="1" />`);
+      // Draw a circle at the parent point, colored by distance, using the Redux radius
+      if (showCircles) {
+        const color = getColorForDistance(colorStops, parent.distance ?? 0, minDistance, maxDistance);
+        svgCircles.push(`<circle cx="${scaledParentX}" cy="${scaledParentY}" r="${circleRadius}" fill="none" stroke="${color}" stroke-width="1" />`);
+      }
     });
 
     const svgContentString = svgLines.concat(svgCircles).join('\n');

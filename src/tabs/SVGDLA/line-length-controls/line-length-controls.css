@@ -4,6 +4,7 @@
   border-radius: 8px;
   padding: 24px;
   min-width: 300px;
+  text-align: left;
 }
 
 .svgdla_line-length-row {
@@ -53,17 +54,14 @@
 }
 
 .svgdla-checkbox:checked {
-  background: #5a6ee6;
+  color: #5a6ee6;
   border-color: #5a6ee6;
 }
 
 .svgdla-checkbox:checked::after {
   content: '\2714';
-  color: #fff;
   font-size: 1.5em;
   position: absolute;
-  left: 0.35em;
-  top: 0.05em;
 }
 
 .svgdla-checkbox:focus {
