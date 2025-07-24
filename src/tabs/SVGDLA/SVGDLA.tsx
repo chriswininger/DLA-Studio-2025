@@ -26,8 +26,6 @@ export const SVGDLA: React.FC = () => {
     state.svgDla as SVGDLAUIState
   );
 
-  // Scaling factor for the visualization
-  const scaleFactor = lineLength;
 
   return (
     <div className="dlasim-svgdla-tab">
@@ -65,11 +63,19 @@ export const SVGDLA: React.FC = () => {
       return;
     }
 
-    if (selectedTool === 'draw-with-squares') {
-      generateSVGWithSquares();
-      return;
+    switch (selectedTool) {
+      case 'draw-with-lines':
+        generateWithLines();
+        break;
+      case 'draw-with-squares':
+        generateSVGWithSquaresAlt();
+        break;
+      default:
+        console.log('no generation strategy selected');
     }
+  }
 
+  function generateWithLines() {
     console.log('Cluster data:', dlaCluster);
     const svgLines: string[] = [];
 
@@ -91,10 +97,10 @@ export const SVGDLA: React.FC = () => {
       const parentPoint = parent.point;
       
       // Scale from center: translate to origin, scale, then translate back
-      const scaledParentX = (parentPoint.x - centerX) * scaleFactor + centerX;
-      const scaledParentY = (parentPoint.y - centerY) * scaleFactor + centerY;
-      const scaledPointX = (point.x - centerX) * scaleFactor + centerX;
-      const scaledPointY = (point.y - centerY) * scaleFactor + centerY;
+      const scaledParentX = (parentPoint.x - centerX) * lineLength + centerX;
+      const scaledParentY = (parentPoint.y - centerY) * lineLength + centerY;
+      const scaledPointX = (point.x - centerX) * lineLength + centerX;
+      const scaledPointY = (point.y - centerY) * lineLength + centerY;
       
       // Draw a simple line from parent to child point with scaling
       svgLines.push(`<line x1="${scaledParentX}" y1="${scaledParentY}" x2="${scaledPointX}" y2="${scaledPointY}" stroke="#00d8ff" stroke-width="1" />`);
@@ -106,12 +112,46 @@ export const SVGDLA: React.FC = () => {
     console.log('Generated SVG with', svgLines.length, 'line segments');
   }
 
-  function generateSVGWithSquares() {
-    if (!dlaCluster || Object.keys(dlaCluster).length === 0) {
-      console.log('No cluster data available');
-      return;
-    }
+  function generateSVGWithSquaresAlt() {
+    console.info("generating svg using squares");
+    const svgSquares: string[] = [];
 
+    // Calculate the center of all points
+    const points = Object.values(dlaCluster).map(entry => entry.point);
+    const centerX = points.reduce((sum, p) => sum + p.x, 0) / points.length;
+    const centerY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
+
+    Object.values(dlaCluster).forEach((entry) => {
+      const { point, parent } = entry;
+      
+      // Skip the root entry (it has no parent to connect to)
+      if (parent === 'ROOT') {
+        return;
+      }
+      
+      // Get the parent point
+      const parentPoint = parent.point;
+      
+      // Scale from center: translate to origin, scale, then translate back
+      const scaledParentX = (parentPoint.x - centerX) * squareSize + centerX;
+      const scaledParentY = (parentPoint.y - centerY) * squareSize + centerY;
+      const scaledPointX = (point.x - centerX) * squareSize + centerX;
+      const scaledPointY = (point.y - centerY) * squareSize + centerY;
+
+      const width = Math.abs(scaledParentX - scaledPointX);
+      const height = Math.abs(scaledParentY - scaledPointY);
+      
+      // Draw a simple line from parent to child point with scaling
+      svgSquares.push(`<rect x="${scaledPointX -  (width/2)}" y="${scaledPointY - (height/2)}" width="${width}" height="${height}" fill="#00d8ff" />`);
+      svgSquares.push(`<rect x="${scaledParentX - (width/2)}" y="${scaledParentY - (height/2)}" width="${width}" height="${height}" fill="#77d8ff" />`);
+    });
+
+    const svgContentString = svgSquares.join('\n');
+    dispatch(setSvgContent(svgContentString));
+    console.log('Generated SVG with', svgSquares.length, 'squares');
+  }
+
+  function generateSVGWithSquares() {
     const svgSquares: string[] = [];
 
     // Calculate the center of all points
@@ -123,8 +163,8 @@ export const SVGDLA: React.FC = () => {
     Object.values(dlaCluster).forEach((entry) => {
       const { point } = entry;
       // Scale from center: translate to origin, scale, then translate back
-      const scaledX = (point.x - centerX) * scaleFactor + centerX;
-      const scaledY = (point.y - centerY) * scaleFactor + centerY;
+      const scaledX = (point.x - centerX) * lineLength + centerX;
+      const scaledY = (point.y - centerY) * lineLength + centerY;
       // Offset so the square is centered on the point
       const x = scaledX - squareSize / 2;
       const y = scaledY - squareSize / 2;
