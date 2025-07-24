@@ -68,7 +68,7 @@ export const SVGDLA: React.FC = () => {
         generateWithLines();
         break;
       case 'draw-with-squares':
-        generateSVGWithSquaresAlt();
+        generateSVGWithSquares();
         break;
       default:
         console.log('no generation strategy selected');
@@ -112,7 +112,7 @@ export const SVGDLA: React.FC = () => {
     console.log('Generated SVG with', svgLines.length, 'line segments');
   }
 
-  function generateSVGWithSquaresAlt() {
+  function generateSVGWithSquares() {
     console.info("generating svg using squares");
     const svgSquares: string[] = [];
 
@@ -121,59 +121,32 @@ export const SVGDLA: React.FC = () => {
     const centerX = points.reduce((sum, p) => sum + p.x, 0) / points.length;
     const centerY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
 
-    Object.values(dlaCluster).forEach((entry) => {
-      const { point, parent } = entry;
-      
-      // Skip the root entry (it has no parent to connect to)
-      if (parent === 'ROOT') {
-        return;
+    // 1. Find the minimum distance between any two points
+    let minDist = Infinity;
+    for (let i = 0; i < points.length; i++) {
+      for (let j = i + 1; j < points.length; j++) {
+        const dx = points[i].x - points[j].x;
+        const dy = points[i].y - points[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > 0 && dist < minDist) minDist = dist;
       }
-      
-      // Get the parent point
-      const parentPoint = parent.point;
-      
-      // Scale from center: translate to origin, scale, then translate back
-      const scaledParentX = (parentPoint.x - centerX) * squareSize + centerX;
-      const scaledParentY = (parentPoint.y - centerY) * squareSize + centerY;
-      const scaledPointX = (point.x - centerX) * squareSize + centerX;
-      const scaledPointY = (point.y - centerY) * squareSize + centerY;
+    }
+    // 2. Compute scaling factor
+    const scalingFactor = squareSize / minDist;
 
-      const width = Math.abs(scaledParentX - scaledPointX);
-      const height = Math.abs(scaledParentY - scaledPointY);
-      
-      // Draw a simple line from parent to child point with scaling
-      svgSquares.push(`<rect x="${scaledPointX -  (width/2)}" y="${scaledPointY - (height/2)}" width="${width}" height="${height}" fill="#00d8ff" />`);
-      svgSquares.push(`<rect x="${scaledParentX - (width/2)}" y="${scaledParentY - (height/2)}" width="${width}" height="${height}" fill="#77d8ff" />`);
-    });
-
-    const svgContentString = svgSquares.join('\n');
-    dispatch(setSvgContent(svgContentString));
-    console.log('Generated SVG with', svgSquares.length, 'squares');
-  }
-
-  function generateSVGWithSquares() {
-    const svgSquares: string[] = [];
-
-    // Calculate the center of all points
-    const points = Object.values(dlaCluster).map(entry => entry.point);
-    const centerX = points.reduce((sum, p) => sum + p.x, 0) / points.length;
-    const centerY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
-
-    // Draw a square for each point
+    // 3. Draw a square at each scaled point
     Object.values(dlaCluster).forEach((entry) => {
       const { point } = entry;
-      // Scale from center: translate to origin, scale, then translate back
-      const scaledX = (point.x - centerX) * lineLength + centerX;
-      const scaledY = (point.y - centerY) * lineLength + centerY;
-      // Offset so the square is centered on the point
+      const scaledX = (point.x - centerX) * scalingFactor + centerX;
+      const scaledY = (point.y - centerY) * scalingFactor + centerY;
       const x = scaledX - squareSize / 2;
       const y = scaledY - squareSize / 2;
       svgSquares.push(`<rect x="${x}" y="${y}" width="${squareSize}" height="${squareSize}" fill="#00d8ff" />`);
-    });
+  });
 
-    const svgContentString = svgSquares.join('\n');
-    dispatch(setSvgContent(svgContentString));
-    console.log('Generated SVG with', svgSquares.length, 'squares');
+  const svgContentString = svgSquares.join('\n');
+  dispatch(setSvgContent(svgContentString));
+  console.log('Generated SVG with', svgSquares.length, 'squares');
   }
 };
 
