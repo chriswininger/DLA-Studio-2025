@@ -44,15 +44,15 @@ export const SVGDLA: React.FC = () => {
             >
               {/* SVG content will be generated here */}
             </svg>
+
+            <div className="svgdla-button-container">
+              <button onClick={generateSVG}>Generate SVG</button>
+              <button onClick={downloadSVG}>Download SVG</button>
+            </div>
           </div>
           
           <ToolOptions />
         </div>
-      </div>
-      <div className="svgdla-button-container">
-        <button onClick={generateSVG}>
-          Generate SVG
-        </button>
       </div>
     </div>
   );
@@ -147,6 +147,23 @@ export const SVGDLA: React.FC = () => {
   const svgContentString = svgSquares.join('\n');
   dispatch(setSvgContent(svgContentString));
   console.log('Generated SVG with', svgSquares.length, 'squares');
+  }
+
+  function downloadSVG() {
+    // Wrap the svgContent in a full SVG element
+    const svgHeader = `<svg xmlns="http://www.w3.org/2000/svg" width="${CANVAS_WIDTH}" height="${CANVAS_HEIGHT}" viewBox="0 0 ${CANVAS_WIDTH} ${CANVAS_HEIGHT}">`;
+    const svgFooter = '</svg>';
+    const fullSVG = `${svgHeader}\n${svgContent}\n${svgFooter}`;
+
+    const blob = new Blob([fullSVG], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'dla-output.svg';
+    document.body.appendChild(a); // Required for Firefox
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   }
 };
 
