@@ -127,7 +127,8 @@ export const SVGDLA: React.FC = () => {
     const svgSquares: string[] = [];
 
     // Calculate the center of all points
-    const points = Object.values(dlaCluster).map(entry => entry.point);
+    const entries = Object.values(dlaCluster);
+    const points = entries.map(entry => entry.point);
     const centerX = points.reduce((sum, p) => sum + p.x, 0) / points.length;
     const centerY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
 
@@ -144,19 +145,25 @@ export const SVGDLA: React.FC = () => {
     // 2. Compute scaling factor
     const scalingFactor = squareSize / minDist;
 
-    // 3. Draw a square at each scaled point
-    Object.values(dlaCluster).forEach((entry) => {
-      const { point } = entry;
+    // Compute min/max distance for color gradient
+    const distances = entries.map(entry => entry.distance ?? 0);
+    const minDistance = Math.min(...distances);
+    const maxDistance = Math.max(...distances);
+
+    // 3. Draw a square at each scaled point, colored by distance
+    entries.forEach((entry) => {
+      const { point, distance } = entry;
       const scaledX = (point.x - centerX) * scalingFactor + centerX;
       const scaledY = (point.y - centerY) * scalingFactor + centerY;
       const x = scaledX - squareSize / 2;
       const y = scaledY - squareSize / 2;
-      svgSquares.push(`<rect x="${x}" y="${y}" width="${squareSize}" height="${squareSize}" fill="#00d8ff" />`);
-  });
+      const color = getColorForDistance(colorStops, distance ?? 0, minDistance, maxDistance);
+      svgSquares.push(`<rect x="${x}" y="${y}" width="${squareSize}" height="${squareSize}" fill="${color}" />`);
+    });
 
-  const svgContentString = svgSquares.join('\n');
-  dispatch(setSvgContent(svgContentString));
-  console.log('Generated SVG with', svgSquares.length, 'squares');
+    const svgContentString = svgSquares.join('\n');
+    dispatch(setSvgContent(svgContentString));
+    console.log('Generated SVG with', svgSquares.length, 'squares');
   }
 
   function downloadSVG() {
