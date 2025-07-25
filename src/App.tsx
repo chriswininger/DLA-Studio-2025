@@ -8,11 +8,10 @@ import DistanceGradient from './tabs/DistanceGradient/distance-gradient';
 function App() {
   return (
     <Router basename="/DLA-Studio-2025">
-      {/* <RedirectHandler /> */}
       <div>
         <nav className="dlasim_tab-nav">
           <NavLink to="/simple-2d-animated-dla" className={({ isActive }) => `dlasim_tab-link${isActive ? ' dlasim_active' : ''}`}>
-            Simple DLA (TEST)
+            Simple DLA
           </NavLink>
           <NavLink to="/distance-gradient" className={({ isActive }) => `dlasim_tab-link${isActive ? ' dlasim_active' : ''}`}>
             Distance Gradient
