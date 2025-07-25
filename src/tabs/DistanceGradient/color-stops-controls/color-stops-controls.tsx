@@ -1,15 +1,13 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../../../store';
-import { updateColorStop, addColorStop, removeColorStop, type ColorStop } from '../distance-gradient-slice';
+import { updateColorStop, addColorStop, removeColorStop, setActiveColorId, type ColorStop } from '../distance-gradient-slice';
 import './color-stops-controls.css';
-import ColorChooser from './color-chooser';
+import ColorChooser from './color-chooser'
 
 const ColorStopsControls: React.FC = () => {
   const dispatch = useDispatch();
-  const { colorStops } = useSelector((state: RootState) => state.distanceGradient);
-
-  const [activeColorId, setActiveColorId] = React.useState<string | null>(null);
+  const { colorStops, activeColorId } = useSelector((state: RootState) => state.distanceGradient);
 
   const handleUpdateColorStop = (id: string, field: 'color' | 'position', value: string | number) => {
     dispatch(updateColorStop({ id, field, value }));
@@ -24,7 +22,7 @@ const ColorStopsControls: React.FC = () => {
   };
 
   const handleSwatchClick = (id: string) => {
-    setActiveColorId(id === activeColorId ? null : id);
+    dispatch(setActiveColorId(id === activeColorId ? null : id));
   };
 
   const handleColorChooserChange = (color: string) => {
