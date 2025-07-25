@@ -1,0 +1,28 @@
+---
+alwaysApply: true
+---
+# dla-sim Project Coding Rules
+
+## Critical Rules
+
+- Components must be in named folders using PascalCase (e.g., ShapeSpawnControls).
+- Component files must use all lowercase with dashes (e.g., shape-spawn-controls.tsx).
+- Each component must have a corresponding CSS file; avoid inline styles.
+- All CSS class names must be prefixed with dlasim-.
+- Use Redux for app state; useState only for local/animation state.
+- Place supporting logic as function declarations below the JSX return.
+- Use CSS variables for colors and theme values.
+
+## Examples
+
+<example>
+Folder: /ShapeSpawnControls/
+  shape-spawn-controls.tsx
+  shape-spawn-controls.css
+
+.dlasim-shape-spawn-controls { color: var(--dlasim-primary-color); }
+</example>
+
+<example type="invalid">
+<div style="color: red">No inline styles</div>
+</example>
