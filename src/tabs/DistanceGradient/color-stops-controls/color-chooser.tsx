@@ -6,33 +6,6 @@ interface ColorChooserProps {
   onChange: (color: string) => void;
 }
 
-function clamp(val: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, val));
-}
-
-function hexToRgb(hex: string): [number, number, number] {
-  let c = hex.replace('#', '');
-  if (c.length === 3) c = c.split('').map(x => x + x).join('');
-  const num = parseInt(c, 16);
-  return [
-    (num >> 16) & 0xff,
-    (num >> 8) & 0xff,
-    num & 0xff
-  ];
-}
-
-function rgbToHex(r: number, g: number, b: number): string {
-  return (
-    '#' +
-    [r, g, b]
-      .map(x => {
-        const hex = x.toString(16);
-        return hex.length === 1 ? '0' + hex : hex;
-      })
-      .join('')
-  );
-}
-
 const ColorChooser: React.FC<ColorChooserProps> = ({ color, onChange }) => {
   const [rgb, setRgb] = useState<[number, number, number]>(hexToRgb(color));
   const [hex, setHex] = useState(color.startsWith('#') ? color : '#' + color);
@@ -97,6 +70,33 @@ const ColorChooser: React.FC<ColorChooserProps> = ({ color, onChange }) => {
       </div>
     </div>
   );
+
+  function clamp(val: number, min: number, max: number) {
+    return Math.max(min, Math.min(max, val));
+  }
+  
+  function hexToRgb(hex: string): [number, number, number] {
+    let c = hex.replace('#', '');
+    if (c.length === 3) c = c.split('').map(x => x + x).join('');
+    const num = parseInt(c, 16);
+    return [
+      (num >> 16) & 0xff,
+      (num >> 8) & 0xff,
+      num & 0xff
+    ];
+  }
+  
+  function rgbToHex(r: number, g: number, b: number): string {
+    return (
+      '#' +
+      [r, g, b]
+        .map(x => {
+          const hex = x.toString(16);
+          return hex.length === 1 ? '0' + hex : hex;
+        })
+        .join('')
+    );
+  }
 };
 
 export default ColorChooser; 
