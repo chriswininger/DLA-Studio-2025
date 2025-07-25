@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redirecting...</title>
+    <base href="/DLA-Studio-2025/" />
+    <script>
+      // Redirect to index.html with the original path as a query param
+      (function () {
+        var path = window.location.pathname.replace(/^\//, '');
+        var search = window.location.search;
+        var hash = window.location.hash;
+        var newUrl = '/DLA-Studio-2025/?redirect=' + encodeURIComponent(path + search + hash);
+        window.location.replace(newUrl);
+      })();
+    </script>
+  </head>
+  <body>
+    <p>Redirecting...</p>
+  </body>
+</html> 
