@@ -28,43 +28,106 @@
   gap: 12px;
 }
 
-.dlasim-color-chooser-row {
+.dlasim-color-chooser-field {
   display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dlasim-color-chooser-label {
+  font-size: 0.9rem;
+  color: var(--dlasim-text-color, #fff);
+  font-weight: 500;
+}
+
+.dlasim-color-chooser-inputs {
+  display: flex;
+  gap: 8px;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 4px;
 }
 
-.dlasim-color-chooser-row label {
-  width: 32px;
-  color: var(--dlasim-primary-color, #2de2e6);
-  font-weight: 600;
-  font-size: 1rem;
-}
-
-.dlasim-color-chooser-row input[type="range"] {
+.dlasim-color-chooser-slider {
   flex: 1;
-  margin: 0 8px;
-  accent-color: var(--dlasim-primary-color, #2de2e6);
-  height: 4px;
+  height: 6px;
+  border-radius: 3px;
+  background: #333;
+  outline: none;
+  cursor: pointer;
 }
 
-.dlasim-color-chooser-row input[type="number"] {
-  width: 56px;
-  padding: 4px 8px;
-  border: 1.5px solid var(--dlasim-primary-color, #2de2e6);
-  border-radius: 4px;
-  background: var(--dlasim-bg, #232323);
-  color: #fff;
-  font-size: 1rem;
+.dlasim-color-chooser-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--dlasim-primary-color, #2de2e6);
+  cursor: pointer;
 }
 
-.dlasim-color-chooser-row input[type="text"] {
-  width: 90px;
+.dlasim-color-chooser-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--dlasim-primary-color, #2de2e6);
+  cursor: pointer;
+  border: none;
+}
+
+.dlasim-color-chooser-number {
+  width: 50px;
   padding: 4px 8px;
-  border: 1.5px solid var(--dlasim-primary-color, #2de2e6);
+  border: 1px solid #444;
   border-radius: 4px;
-  background: var(--dlasim-bg, #232323);
+  background: #222;
   color: #fff;
-  font-size: 1rem;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.dlasim-color-chooser-hex {
+  width: 80px;
+  padding: 4px 8px;
+  border: 1px solid #444;
+  border-radius: 4px;
+  background: #222;
+  color: #fff;
+  font-size: 0.9rem;
+  text-align: center;
+  font-family: monospace;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .dlasim-color-chooser {
+    flex-direction: column;
+    gap: 16px;
+    max-width: 100%;
+    padding: 16px;
+  }
+  
+  .dlasim-color-chooser-preview {
+    margin-right: 0;
+    align-self: center;
+  }
+  
+  .dlasim-color-chooser-fields {
+    width: 100%;
+  }
+  
+  .dlasim-color-chooser-inputs {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  
+  .dlasim-color-chooser-slider {
+    min-width: 120px;
+  }
+  
+  .dlasim-color-chooser-number {
+    width: 60px;
+  }
+  
+  .dlasim-color-chooser-hex {
+    width: 100px;
+  }
 } 

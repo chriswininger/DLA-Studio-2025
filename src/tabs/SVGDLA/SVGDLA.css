@@ -64,4 +64,62 @@
 
 .dlasim_tool-icon {
   pointer-events: none;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .svgdla-container {
+    width: 100%;
+    padding: 0 1rem;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  
+  .svgdla-main-content {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .dlasim_tool-container {
+    margin-right: 0;
+    margin-bottom: 1rem;
+    flex-direction: row;
+    gap: 1rem;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .svgdla-svg-container {
+    margin-right: 0;
+    margin-bottom: 1rem;
+    order: 2;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .svgdla-svg {
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+    min-width: 0;
+  }
+  
+  .svgdla-button-container {
+    order: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .svgdla-button-container button {
+    margin-right: 0;
+    margin-bottom: 0.5rem;
+    width: 100%;
+    max-width: 300px;
+  }
 } 

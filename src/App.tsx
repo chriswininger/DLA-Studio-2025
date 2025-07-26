@@ -6,8 +6,6 @@ import { SVGDLA } from './tabs/SVGDLA/SVGDLA'
 import DistanceGradient from './tabs/DistanceGradient/distance-gradient';
 
 function App() {
-  const baseUrl = import.meta.env.BASE_URL || '/';
-
   return (
     <Router basename="/DLA-Studio-2025">
       <div>
