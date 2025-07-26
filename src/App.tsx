@@ -11,13 +11,13 @@ function App() {
       <div>
         <nav className="dlasim_tab-nav">
           <NavLink to="/simple-2d-animated-dla" className={({ isActive }) => `dlasim_tab-link${isActive ? ' dlasim_active' : ''}`}>
-            Simple DLA
+            Simulation
           </NavLink>
           <NavLink to="/distance-gradient" className={({ isActive }) => `dlasim_tab-link${isActive ? ' dlasim_active' : ''}`}>
-            Distance Gradient
-            </NavLink>
+            Gradient
+          </NavLink>
           <NavLink to="/svg-dla" className={({ isActive }) => `dlasim_tab-link${isActive ? ' dlasim_active' : ''}`}>
-            SVG DLA
+            SVG
           </NavLink>
         </nav>
         <Routes>
