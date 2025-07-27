@@ -5,21 +5,18 @@
   flex-direction: column;
   align-items: center;
   width: 600px; /* Match your canvas width */
+  margin: 0 auto; /* Center the entire column */
 }
 
-.dlasim_button-row {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 24px;
-  width: 100%;
-}
 
 .dlasim_status-row {
   margin-top: 12px;
   color: #888;
   text-align: center;
   width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .dlasim-simple-2d-animated-dla-tab {
@@ -51,8 +48,21 @@
   user-select: none; /* Prevent text selection */
 }
 
+.dlasim_button-row {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  width: 100%;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
 /* Mobile responsive styles */
 @media (max-width: 768px) {
+  .dlasim_button-row {
+    flex-direction: column;
+  }
+
   .dlasim-simple-2d-animated-dla-tab {
     width: 100%;
     padding: 0 1rem;
@@ -72,6 +82,7 @@
     width: 100%;
     max-width: 100%;
     min-width: 0;
+    align-items: center;
   }
   
   .dlasim-canvas {
@@ -80,15 +91,21 @@
     height: auto;
     min-width: 0;
   }
-  
-  .dlasim_button-row {
-    flex-direction: column;
-    gap: 0.5rem;
-    width: 100%;
-  }
+
   
   .dlasim_button-row button {
     width: 100%;
     max-width: 300px;
+    align-self: center;
+    margin: 0;
+  }
+  
+  /* Center control components on mobile */
+  .dlasim_paint-controls,
+  .dlasim_spawn-controls,
+  .dlasim_eraser-controls {
+    margin-left: 0;
+    margin: 0 auto;
+    align-self: center;
   }
 } 

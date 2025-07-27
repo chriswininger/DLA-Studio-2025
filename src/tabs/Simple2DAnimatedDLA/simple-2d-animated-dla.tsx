@@ -114,12 +114,19 @@ const Simple2DAnimatedDLA: React.FC = () => {
           />
           <div className="dlasim_button-row">
             {!isRunning ? (
-              <button onClick={handleStart} style={{ marginRight: 8 }}>Start</button>
+              <button onClick={handleStart}>
+                Start
+              </button>
             ) : (
-              <button onClick={handleStop} style={{ marginRight: 8 }}>Stop</button>
+              <button onClick={handleStop}>
+                Stop
+              </button>
             )}
             <button onClick={handleReset} disabled={isRunning}>Reset</button>
-            <button onClick={handleSimulateToCompletion} disabled={isRunning || isSimulating} style={{ marginLeft: 8 }}>
+            <button
+              onClick={handleSimulateToCompletion}
+              disabled={isRunning || isSimulating}
+              >
               {isSimulating ? 'Simulating...' : 'Simulate to Completion'}
             </button>
           </div>
