@@ -108,6 +108,9 @@ const Simple2DAnimatedDLA: React.FC = () => {
             onMouseLeave={handleMouseLeave}
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           />
           <div className="dlasim_button-row">
             {!isRunning ? (
@@ -385,6 +388,41 @@ const Simple2DAnimatedDLA: React.FC = () => {
         spawnWalkersInBrushRadius(x, y, brushSize, brushParticles);
       }
     }
+  }
+
+  function handleTouchStart(e: React.TouchEvent<HTMLCanvasElement>) {
+    e.preventDefault(); // Prevent scrolling while using brush
+    if (selectedTool === 'brush' && !isRunning) {
+      setIsDragging(true);
+      const rect = canvasRef.current?.getBoundingClientRect();
+      if (rect) {
+        const x = e.touches[0].clientX - rect.left;
+        const y = e.touches[0].clientY - rect.top;
+        setCursorPosition({ x, y });
+        spawnWalkersInBrushRadius(x, y, brushSize, brushParticles);
+      }
+    }
+  }
+
+  function handleTouchMove(e: React.TouchEvent<HTMLCanvasElement>) {
+    e.preventDefault(); // Prevent scrolling while using brush
+    if (selectedTool === 'brush' && !isRunning) {
+      const rect = canvasRef.current?.getBoundingClientRect();
+      if (rect) {
+        const x = e.touches[0].clientX - rect.left;
+        const y = e.touches[0].clientY - rect.top;
+        setCursorPosition({ x, y });
+        if (isDragging) {
+          spawnWalkersInBrushRadius(x, y, brushSize, brushParticles);
+        }
+      }
+    }
+  }
+
+  function handleTouchEnd(e: React.TouchEvent<HTMLCanvasElement>) {
+    e.preventDefault();
+    setIsDragging(false);
+    setCursorPosition(null);
   }
 };
 
