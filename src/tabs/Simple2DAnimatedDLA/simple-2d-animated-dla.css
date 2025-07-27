@@ -24,10 +24,10 @@
   width: var(--page-size-desktop);
 }
 
-/* Prevent scrolling when brush tool is active */
+/* Prevent scrolling when brush tool is active - but allow scrolling in non-interactive areas */
 .dlasim-simple-2d-animated-dla-tab.brush-active {
-  touch-action: none;
-  overflow: hidden;
+  /* Remove the overflow: hidden to allow scrolling */
+  /* Only prevent touch actions on the canvas itself */
 }
 
 .dlasim-flex-row {
@@ -40,12 +40,16 @@
 .dlasim-canvas {
   border: 1px solid #ccc;
   background: #111;
-  touch-action: none; /* Prevent all touch actions including scrolling */
   -webkit-touch-callout: none; /* Prevent callout on iOS */
   -webkit-user-select: none; /* Prevent text selection on iOS */
   -moz-user-select: none; /* Prevent text selection on Firefox */
   -ms-user-select: none; /* Prevent text selection on IE/Edge */
   user-select: none; /* Prevent text selection */
+}
+
+/* Only prevent touch actions on canvas when brush tool is active */
+.dlasim-simple-2d-animated-dla-tab.brush-active .dlasim-canvas {
+  touch-action: none; /* Prevent all touch actions including scrolling */
 }
 
 .dlasim_button-row {
