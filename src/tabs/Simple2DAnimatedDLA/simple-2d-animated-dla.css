@@ -27,6 +27,12 @@
   width: var(--page-size-desktop);
 }
 
+/* Prevent scrolling when brush tool is active */
+.dlasim-simple-2d-animated-dla-tab.brush-active {
+  touch-action: none;
+  overflow: hidden;
+}
+
 .dlasim-flex-row {
   display: flex;
   flex-direction: row;
@@ -37,6 +43,12 @@
 .dlasim-canvas {
   border: 1px solid #ccc;
   background: #111;
+  touch-action: none; /* Prevent all touch actions including scrolling */
+  -webkit-touch-callout: none; /* Prevent callout on iOS */
+  -webkit-user-select: none; /* Prevent text selection on iOS */
+  -moz-user-select: none; /* Prevent text selection on Firefox */
+  -ms-user-select: none; /* Prevent text selection on IE/Edge */
+  user-select: none; /* Prevent text selection */
 }
 
 /* Mobile responsive styles */

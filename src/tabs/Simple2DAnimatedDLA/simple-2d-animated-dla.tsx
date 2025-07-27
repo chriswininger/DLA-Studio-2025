@@ -93,7 +93,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
   }, []);
 
   return (
-    <div className="dlasim-simple-2d-animated-dla-tab">
+    <div className={`dlasim-simple-2d-animated-dla-tab ${selectedTool === 'brush' ? 'brush-active' : ''}`}>
       <div className="dlasim-flex-row">
         {/* Tool selection UI */}
         <ToolBar />
@@ -405,7 +405,10 @@ const Simple2DAnimatedDLA: React.FC = () => {
   }
 
   function handleTouchStart(e: React.TouchEvent<HTMLCanvasElement>) {
-    e.preventDefault(); // Prevent scrolling while using brush
+    // Prevent all default touch behaviors including scrolling
+    e.preventDefault();
+    e.stopPropagation();
+    
     if (selectedTool === 'brush' && !isRunning) {
       setIsDragging(true);
       const coords = getCanvasCoordinates(e.touches[0].clientX, e.touches[0].clientY);
@@ -417,7 +420,10 @@ const Simple2DAnimatedDLA: React.FC = () => {
   }
 
   function handleTouchMove(e: React.TouchEvent<HTMLCanvasElement>) {
-    e.preventDefault(); // Prevent scrolling while using brush
+    // Prevent all default touch behaviors including scrolling
+    e.preventDefault();
+    e.stopPropagation();
+    
     if (selectedTool === 'brush' && !isRunning) {
       const coords = getCanvasCoordinates(e.touches[0].clientX, e.touches[0].clientY);
       if (coords) {
@@ -430,7 +436,9 @@ const Simple2DAnimatedDLA: React.FC = () => {
   }
 
   function handleTouchEnd(e: React.TouchEvent<HTMLCanvasElement>) {
+    // Prevent any default touch behaviors
     e.preventDefault();
+    e.stopPropagation();
     setIsDragging(false);
     setCursorPosition(null);
   }
