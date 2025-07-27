@@ -6,6 +6,41 @@
   text-align: left;
 }
 
+/* Mobile responsive styles to prevent horizontal scroll */
+@media (max-width: 768px) {
+  .svgdla_line-length-controls {
+    min-width: auto;
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+  
+  .svgdla_line-length-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .svgdla_line-length-input {
+    margin-left: 0;
+    width: 100%;
+    max-width: 200px;
+  }
+  
+  .svgdla-radius-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .svgdla-radius-input {
+    margin-left: 0;
+    width: 100%;
+    max-width: 200px;
+  }
+}
+
 .svgdla_line-length-row {
   margin-bottom: 16px;
 }

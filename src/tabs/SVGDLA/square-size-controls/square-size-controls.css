@@ -5,6 +5,29 @@
   min-width: 300px;
 }
 
+/* Mobile responsive styles to prevent horizontal scroll */
+@media (max-width: 768px) {
+  .svgdla_square-size-controls {
+    min-width: auto;
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+  
+  .svgdla_square-size-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .svgdla_square-size-input {
+    margin-left: 0;
+    width: 100%;
+    max-width: 200px;
+  }
+}
+
 .svgdla_square-size-row {
   margin-bottom: 16px;
 }
