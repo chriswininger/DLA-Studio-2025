@@ -381,25 +381,37 @@ const Simple2DAnimatedDLA: React.FC = () => {
   function mouseDown(e: React.MouseEvent<HTMLCanvasElement>) {
     if (selectedTool === 'brush' && !isRunning) {
       setIsDragging(true);
-      const rect = canvasRef.current?.getBoundingClientRect();
-      if (rect) {
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        spawnWalkersInBrushRadius(x, y, brushSize, brushParticles);
+      const coords = getCanvasCoordinates(e.clientX, e.clientY);
+      if (coords) {
+        setCursorPosition(coords);
+        spawnWalkersInBrushRadius(coords.x, coords.y, brushSize, brushParticles);
       }
     }
+  }
+
+  // Helper function to get accurate coordinates accounting for canvas scaling
+  function getCanvasCoordinates(clientX: number, clientY: number): { x: number; y: number } | null {
+    const canvas = canvasRef.current;
+    if (!canvas) return null;
+    
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
+    const x = (clientX - rect.left) * scaleX;
+    const y = (clientY - rect.top) * scaleY;
+    
+    return { x, y };
   }
 
   function handleTouchStart(e: React.TouchEvent<HTMLCanvasElement>) {
     e.preventDefault(); // Prevent scrolling while using brush
     if (selectedTool === 'brush' && !isRunning) {
       setIsDragging(true);
-      const rect = canvasRef.current?.getBoundingClientRect();
-      if (rect) {
-        const x = e.touches[0].clientX - rect.left;
-        const y = e.touches[0].clientY - rect.top;
-        setCursorPosition({ x, y });
-        spawnWalkersInBrushRadius(x, y, brushSize, brushParticles);
+      const coords = getCanvasCoordinates(e.touches[0].clientX, e.touches[0].clientY);
+      if (coords) {
+        setCursorPosition(coords);
+        spawnWalkersInBrushRadius(coords.x, coords.y, brushSize, brushParticles);
       }
     }
   }
@@ -407,13 +419,11 @@ const Simple2DAnimatedDLA: React.FC = () => {
   function handleTouchMove(e: React.TouchEvent<HTMLCanvasElement>) {
     e.preventDefault(); // Prevent scrolling while using brush
     if (selectedTool === 'brush' && !isRunning) {
-      const rect = canvasRef.current?.getBoundingClientRect();
-      if (rect) {
-        const x = e.touches[0].clientX - rect.left;
-        const y = e.touches[0].clientY - rect.top;
-        setCursorPosition({ x, y });
+      const coords = getCanvasCoordinates(e.touches[0].clientX, e.touches[0].clientY);
+      if (coords) {
+        setCursorPosition(coords);
         if (isDragging) {
-          spawnWalkersInBrushRadius(x, y, brushSize, brushParticles);
+          spawnWalkersInBrushRadius(coords.x, coords.y, brushSize, brushParticles);
         }
       }
     }
@@ -512,10 +522,15 @@ function useHandleMouseMoveInCanvas({
 
   return React.useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     if (shouldShowBrushPreview) {
-      const rect = canvasRef.current?.getBoundingClientRect();
-      if (rect) {
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top) * scaleY;
+        
         setCursorPosition({ x, y });
         // If dragging, spawn walkers continuously
         if (isDragging && selectedTool === 'brush' && !isRunning) {
