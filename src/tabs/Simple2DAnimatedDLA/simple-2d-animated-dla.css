@@ -78,6 +78,19 @@
     max-width: 100%;
   }
   
+  /* Reorder elements on mobile: ToolBar -> Controls -> Canvas */
+  .dlasim-flex-row > *:nth-child(1) {
+    order: 1; /* ToolBar stays first */
+  }
+  
+  .dlasim-flex-row > *:nth-child(2) {
+    order: 3; /* Canvas moves to third position */
+  }
+  
+  .dlasim-flex-row > *:nth-child(3) {
+    order: 2; /* Controls move to second position (between ToolBar and Canvas) */
+  }
+  
   .dlasim_canvas-col {
     width: 100%;
     max-width: 100%;

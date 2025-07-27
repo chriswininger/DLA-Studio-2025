@@ -93,7 +93,9 @@ const Simple2DAnimatedDLA: React.FC = () => {
   }, []);
 
   return (
-    <div className={`dlasim-simple-2d-animated-dla-tab ${selectedTool === 'brush' ? 'brush-active' : ''}`}>
+    <div className={`dlasim-simple-2d-animated-dla-tab
+    ${selectedTool === 'brush' ? 'brush-active' : ''}`}
+    >
       <div className="dlasim-flex-row">
         {/* Tool selection UI */}
         <ToolBar />
