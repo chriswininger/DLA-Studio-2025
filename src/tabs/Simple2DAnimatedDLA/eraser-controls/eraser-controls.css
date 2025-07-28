@@ -22,4 +22,27 @@
 .dlasim_eraser-input:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .dlasim_eraser-controls {
+    min-width: auto;
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+  
+  .dlasim_eraser-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .dlasim_eraser-input {
+    margin-left: 0;
+    width: 100%;
+    max-width: 200px;
+  }
 } 

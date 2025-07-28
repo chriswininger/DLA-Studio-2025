@@ -25,6 +25,8 @@ const EraserControls: React.FC<EraserControlsProps> = ({
         <input
           id="dla-eraser-size"
           type="number"
+          inputMode="numeric"
+          pattern="[0-9]*"
           min={1}
           value={eraserSize}
           onChange={handleEraserSizeChange}

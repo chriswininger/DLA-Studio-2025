@@ -28,6 +28,8 @@ const PaintBrushControls: React.FC<PaintBrushControlsProps> = ({
         <input
           id="dla-brush-size"
           type="number"
+          inputMode="numeric"
+          pattern="[0-9]*"
           min={1}
           value={brushSize}
           onChange={handleBrushSizeChange}
@@ -40,6 +42,8 @@ const PaintBrushControls: React.FC<PaintBrushControlsProps> = ({
         <input
           id="dla-brush-particles"
           type="number"
+          inputMode="numeric"
+          pattern="[0-9]*"
           min={1}
           value={brushParticles}
           onChange={handleBrushParticlesChange}

@@ -43,6 +43,8 @@ const ShapeSpawnControls: React.FC<ShapeSpawnControlsProps> = ({
         <input
           id="dla-spawn-count"
           type="number"
+          inputMode="numeric"
+          pattern="[0-9]*"
           min={1}
           value={numParticles}
           onChange={handleParticlesChange}
@@ -55,6 +57,8 @@ const ShapeSpawnControls: React.FC<ShapeSpawnControlsProps> = ({
         <input
           id="dla-spawn-size"
           type="number"
+          inputMode="numeric"
+          pattern="[0-9]*"
           min={1}
           value={spawnSquareSize}
           onChange={handleSpawnSquareSizeChange}
@@ -67,6 +71,8 @@ const ShapeSpawnControls: React.FC<ShapeSpawnControlsProps> = ({
         <input
           id="dla-spawn-x-offset"
           type="number"
+          inputMode="numeric"
+          pattern="[0-9-]*"
           value={spawnXOffset}
           onChange={handleXOffsetChange}
           disabled={isRunning}
@@ -78,6 +84,8 @@ const ShapeSpawnControls: React.FC<ShapeSpawnControlsProps> = ({
         <input
           id="dla-spawn-y-offset"
           type="number"
+          inputMode="numeric"
+          pattern="[0-9-]*"
           value={spawnYOffset}
           onChange={handleYOffsetChange}
           disabled={isRunning}
@@ -89,6 +97,8 @@ const ShapeSpawnControls: React.FC<ShapeSpawnControlsProps> = ({
         <input
           id="dla-spawn-rotation"
           type="number"
+          inputMode="numeric"
+          pattern="[0-9]*"
           min={0}
           max={360}
           step={1}

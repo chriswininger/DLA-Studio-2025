@@ -22,4 +22,27 @@
 .dlasim_paint-input:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .dlasim_paint-controls {
+    min-width: auto;
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+  
+  .dlasim_paint-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .dlasim_paint-input {
+    margin-left: 0;
+    width: 100%;
+    max-width: 200px;
+  }
 } 

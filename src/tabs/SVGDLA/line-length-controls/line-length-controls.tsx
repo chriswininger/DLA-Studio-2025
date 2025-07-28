@@ -26,6 +26,8 @@ const LineLengthControls: React.FC = () => {
         <input
           id="svg-line-length"
           type="number"
+          inputMode="numeric"
+          pattern="[0-9]*"
           min={0}
           value={lineLength}
           onChange={handleLineLengthChange}
@@ -47,6 +49,8 @@ const LineLengthControls: React.FC = () => {
           <input
             id="svg-circle-radius"
             type="number"
+            inputMode="numeric"
+            pattern="[0-9]*"
             min={1}
             value={circleRadius}
             onChange={e => dispatch(setCircleRadius(Number(e.target.value)))}

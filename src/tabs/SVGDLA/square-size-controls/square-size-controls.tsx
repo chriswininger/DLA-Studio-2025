@@ -19,6 +19,8 @@ const SquareSizeControls: React.FC = () => {
         <input
           id="svg-square-size"
           type="number"
+          inputMode="numeric"
+          pattern="[0-9]*"
           min={0}
           value={squareSize}
           onChange={handleSquareSizeChange}
