@@ -109,15 +109,14 @@
 }
 
 .svgdla-radius-input {
-  margin-left: 0.7em;
-  padding: 0.3em 1.2em;
-  font-size: 1.5rem;
-  border: 3px solid #5a6ee6;
-  border-radius: 0.6em;
-  background: #18191c;
+  margin-left: 8px;
+  width: 120px;
+  padding: 4px 8px;
+  border: 1px solid var(--control-border-color);
+  border-radius: 4px;
+  background: #1a1a2e;
   color: #fff;
   outline: none;
-  box-shadow: 0 2px 8px #0002;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
