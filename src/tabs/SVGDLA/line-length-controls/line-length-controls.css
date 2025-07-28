@@ -103,9 +103,7 @@
 }
 
 .svgdla-radius-row {
-  display: flex;
-  align-items: center;
-  margin-top: 0.5em;
+  margin-bottom: 16px;
 }
 
 .svgdla-radius-input {
