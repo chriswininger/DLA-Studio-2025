@@ -91,6 +91,16 @@
     justify-content: center;
   }
   
+  .dlasim_tool-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1.5rem;
+  }
+  
+  .dlasim_tool-icon {
+    font-size: 1.2rem;
+  }
+  
   .svgdla-svg-container {
     margin-right: 0;
     margin-bottom: 1rem;
