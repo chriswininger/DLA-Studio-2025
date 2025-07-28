@@ -30,6 +30,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
     selectedTool,
     brushSize,
     brushParticles,
+    eraserSize,
     dlaCluster,
     dlaWalkers,
     dlaSteps
@@ -46,6 +47,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
   const workerRef = React.useRef<Worker | null>(null);
   const shouldShowSpawnShapePreview = selectedTool === 'spawn-shapes' && !isRunning;
   const shouldShowBrushPreview = selectedTool === 'brush' && !isRunning;
+  const shouldShowEraserPreview = selectedTool === 'eraser' && !isRunning;
 
   const stepAnimation = useCallback(doStepAnimation, [doDraw, dispatch]);
   const walkersCount = dlaStateRef.current?.walkers.length ?? 0;
@@ -53,6 +55,8 @@ const Simple2DAnimatedDLA: React.FC = () => {
   useEffect(initializeState, []);
 
   useAnimationLoop(stepAnimation, isRunning);
+
+
 
   // Save DLA state when component unmounts or when switching tabs
   useEffect(() => {
@@ -70,11 +74,12 @@ const Simple2DAnimatedDLA: React.FC = () => {
 
   useEffect(function () {
     doDraw();
-  }, [selectedTool, spawnXOffset, spawnYOffset, spawnRotation, spawnSquareSize, cursorPosition]);
+  }, [selectedTool, spawnXOffset, spawnYOffset, spawnRotation, spawnSquareSize, cursorPosition, eraserSize]);
 
   // Mouse event handlers for cursor tracking
   const handleMouseMove = useHandleMouseMoveInCanvas({
     shouldShowBrushPreview,
+    shouldShowEraserPreview,
     isDragging,
     canvasRef,
     setCursorPosition,
@@ -94,7 +99,8 @@ const Simple2DAnimatedDLA: React.FC = () => {
 
   return (
     <div className={`dlasim-simple-2d-animated-dla-tab
-    ${selectedTool === 'brush' ? 'brush-active' : ''}`}
+    ${selectedTool === 'brush' ? 'brush-active' : ''}
+    ${selectedTool === 'eraser' ? 'eraser-active' : ''}`}
     >
       <div className="dlasim-flex-row">
         {/* Tool selection UI */}
@@ -289,6 +295,11 @@ const Simple2DAnimatedDLA: React.FC = () => {
     if (shouldShowBrushPreview && cursorPosition) {
       drawBrushPreview(ctx, cursorPosition, brushSize);
     }
+
+    // Draw eraser preview
+    if (shouldShowEraserPreview && cursorPosition) {
+      drawEraserPreview(ctx, cursorPosition, eraserSize);
+    }
   }
 
   function drawShapeSpawn(ctx: CanvasRenderingContext2D) {
@@ -337,6 +348,26 @@ const Simple2DAnimatedDLA: React.FC = () => {
     ctx.restore();
   }
 
+  function drawEraserPreview(ctx: CanvasRenderingContext2D, position: { x: number; y: number }, size: number) {
+    const radius = size / 2;
+    
+    ctx.save();
+    
+    // Draw eraser preview circle with red color to distinguish from brush
+    ctx.strokeStyle = '#ff0000';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]); // Dashed line to indicate eraser
+    ctx.beginPath();
+    ctx.arc(position.x, position.y, radius, 0, 2 * Math.PI);
+    ctx.stroke();
+    
+    // Draw center point
+    ctx.fillStyle = '#ff0000';
+    ctx.fillRect(position.x - 1, position.y - 1, 2, 2);
+    
+    ctx.restore();
+  }
+
   function spawnWalkersInBrushRadius(centerX: number, centerY: number, brushSize: number, numWalkers: number) {
     if (!dlaStateRef.current) return;
     
@@ -364,6 +395,23 @@ const Simple2DAnimatedDLA: React.FC = () => {
     doDraw();
   }
 
+  function removeWalkersInEraserRadius(centerX: number, centerY: number, eraserSize: number) {
+    if (!dlaStateRef.current) return;
+    
+    const radius = eraserSize / 2;
+    const radiusSquared = radius * radius;
+    
+    // Filter out walkers that are within the eraser radius
+    dlaStateRef.current.walkers = dlaStateRef.current.walkers.filter(walker => {
+      const dx = walker.x - centerX;
+      const dy = walker.y - centerY;
+      const distanceSquared = dx * dx + dy * dy;
+      return distanceSquared > radiusSquared;
+    });
+    
+    doDraw();
+  }
+
   function initializeState() {
     // Only initialize cluster and walkers on first mount or reset
     if (!dlaStateRef.current) {
@@ -388,12 +436,16 @@ const Simple2DAnimatedDLA: React.FC = () => {
   }
 
   function mouseDown(e: React.MouseEvent<HTMLCanvasElement>) {
-    if (selectedTool === 'brush' && !isRunning) {
+    if ((selectedTool === 'brush' || selectedTool === 'eraser') && !isRunning) {
       setIsDragging(true);
       const coords = getCanvasCoordinates(e.clientX, e.clientY);
       if (coords) {
         setCursorPosition(coords);
-        spawnWalkersInBrushRadius(coords.x, coords.y, brushSize, brushParticles);
+        if (selectedTool === 'brush') {
+          spawnWalkersInBrushRadius(coords.x, coords.y, brushSize, brushParticles);
+        } else if (selectedTool === 'eraser') {
+          removeWalkersInEraserRadius(coords.x, coords.y, eraserSize);
+        }
       }
     }
   }
@@ -414,31 +466,39 @@ const Simple2DAnimatedDLA: React.FC = () => {
   }
 
   function handleTouchStart(e: React.TouchEvent<HTMLCanvasElement>) {
-    // Prevent all default touch behaviors including scrolling
-    e.preventDefault();
-    e.stopPropagation();
-    
-    if (selectedTool === 'brush' && !isRunning) {
+    if ((selectedTool === 'brush' || selectedTool === 'eraser') && !isRunning) {
+      // Only prevent default behavior when using drawing tools
+      e.preventDefault();
+      e.stopPropagation();
+      
       setIsDragging(true);
       const coords = getCanvasCoordinates(e.touches[0].clientX, e.touches[0].clientY);
       if (coords) {
         setCursorPosition(coords);
-        spawnWalkersInBrushRadius(coords.x, coords.y, brushSize, brushParticles);
+        if (selectedTool === 'brush') {
+          spawnWalkersInBrushRadius(coords.x, coords.y, brushSize, brushParticles);
+        } else if (selectedTool === 'eraser') {
+          removeWalkersInEraserRadius(coords.x, coords.y, eraserSize);
+        }
       }
     }
   }
 
   function handleTouchMove(e: React.TouchEvent<HTMLCanvasElement>) {
-    // Prevent all default touch behaviors including scrolling
-    e.preventDefault();
-    e.stopPropagation();
-    
-    if (selectedTool === 'brush' && !isRunning) {
+    if ((selectedTool === 'brush' || selectedTool === 'eraser') && !isRunning) {
+      // Only prevent default behavior when using drawing tools
+      e.preventDefault();
+      e.stopPropagation();
+      
       const coords = getCanvasCoordinates(e.touches[0].clientX, e.touches[0].clientY);
       if (coords) {
         setCursorPosition(coords);
         if (isDragging) {
-          spawnWalkersInBrushRadius(coords.x, coords.y, brushSize, brushParticles);
+          if (selectedTool === 'brush') {
+            spawnWalkersInBrushRadius(coords.x, coords.y, brushSize, brushParticles);
+          } else if (selectedTool === 'eraser') {
+            removeWalkersInEraserRadius(coords.x, coords.y, eraserSize);
+          }
         }
       }
     }
@@ -499,6 +559,7 @@ function useSimple2dAnimatedDLAState() {
   const selectedTool = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).selectedTool);
   const brushSize = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushSize);
   const brushParticles = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushParticles);
+  const eraserSize = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).eraserSize);
   const dlaCluster = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).dlaCluster);
   const dlaWalkers = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).dlaWalkers);
   const dlaSteps = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).dlaSteps);
@@ -512,6 +573,7 @@ function useSimple2dAnimatedDLAState() {
     selectedTool,
     brushSize,
     brushParticles,
+    eraserSize,
     dlaCluster,
     dlaWalkers,
     dlaSteps
@@ -521,12 +583,14 @@ function useSimple2dAnimatedDLAState() {
 // Custom hook for mouse move handling on the canvas
 function useHandleMouseMoveInCanvas({
   shouldShowBrushPreview,
+  shouldShowEraserPreview,
   isDragging,
   canvasRef,
   setCursorPosition,
   spawnWalkersInBrushRadius
 }: {
   shouldShowBrushPreview: boolean;
+  shouldShowEraserPreview: boolean;
   isDragging: boolean;
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
   setCursorPosition: React.Dispatch<React.SetStateAction<{ x: number; y: number } | null>>;
@@ -538,7 +602,7 @@ function useHandleMouseMoveInCanvas({
   const brushParticles = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushParticles);
 
   return React.useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (shouldShowBrushPreview) {
+    if (shouldShowBrushPreview || shouldShowEraserPreview) {
       const canvas = canvasRef.current;
       if (canvas) {
         const rect = canvas.getBoundingClientRect();
@@ -549,13 +613,13 @@ function useHandleMouseMoveInCanvas({
         const y = (e.clientY - rect.top) * scaleY;
         
         setCursorPosition({ x, y });
-        // If dragging, spawn walkers continuously
+        // If dragging, spawn walkers continuously for brush
         if (isDragging && selectedTool === 'brush' && !isRunning) {
           spawnWalkersInBrushRadius(x, y, brushSize, brushParticles);
         }
       }
     }
-  }, [shouldShowBrushPreview, isDragging, selectedTool, isRunning, brushSize, brushParticles, canvasRef, setCursorPosition, spawnWalkersInBrushRadius]);
+  }, [shouldShowBrushPreview, shouldShowEraserPreview, isDragging, selectedTool, isRunning, brushSize, brushParticles, canvasRef, setCursorPosition, spawnWalkersInBrushRadius]);
 }
 
 export default Simple2DAnimatedDLA;

@@ -52,6 +52,11 @@
   touch-action: none; /* Prevent all touch actions including scrolling */
 }
 
+/* Only prevent touch actions on canvas when eraser tool is active */
+.dlasim-simple-2d-animated-dla-tab.eraser-active .dlasim-canvas {
+  touch-action: none; /* Prevent all touch actions including scrolling */
+}
+
 .dlasim_button-row {
   display: flex;
   flex-direction: row;
