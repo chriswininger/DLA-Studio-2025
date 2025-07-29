@@ -152,10 +152,10 @@ export const SVGDLA: React.FC = () => {
         setMaxY(possibleMaxY);
       }
 
-      const possibleMinY = Math.max(scaledParentY, scaledParentY);
-      if (possibleMinY < minY) {
-        setMinY(possibleMaxY);
-      }  
+             const possibleMinY = Math.min(scaledPointY, scaledParentY);
+       if (possibleMinY < minY) {
+         setMinY(possibleMinY);
+       }  
     
       // Draw a circle at the parent point, colored by distance, using the Redux radius
       if (showCircles) {
@@ -236,12 +236,14 @@ export const SVGDLA: React.FC = () => {
       ? `<rect width="100%" height="100%" fill="#111" />`
       : '';
     
-    const width = onlyVisible ? CANVAS_WIDTH : maxX + Math.abs(minX);
-    const height = onlyVisible ? CANVAS_HEIGHT : maxY + Math.abs(minY);
+    const width = onlyVisible ? CANVAS_WIDTH : maxX - minX;
+    const height = onlyVisible ? CANVAS_HEIGHT : maxY - minY;
+    const viewBoxX = onlyVisible ? 0 : minX;
+    const viewBoxY = onlyVisible ? 0 : minY;
 
-    console.log(`using -> width: ${width}, height: ${height}`);
+    console.log(`using -> width: ${width}, height: ${height}, viewBox: ${viewBoxX} ${viewBoxY} ${width} ${height}`);
     // Wrap the svgContent in a full SVG element
-    const svgHeader = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`;
+    const svgHeader = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="${viewBoxX} ${viewBoxY} ${width} ${height}">`;
     const svgFooter = '</svg>';
     const fullSVG = `${svgHeader}\n${backgroundRect}\n${svgContent}\n${svgFooter}`;
 
