@@ -28,6 +28,12 @@
   margin-right: 1rem;
 }
 
+.svgdla-tool-options {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .dlasim_tool-container {
   display: flex;
   flex-direction: column;

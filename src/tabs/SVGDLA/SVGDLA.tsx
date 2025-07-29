@@ -6,6 +6,7 @@ import { setSvgContent } from './svg-dla-slice';
 import type { ClusterMap } from '../../dla/dla';
 import LineLengthControls from './line-length-controls/line-length-controls';
 import SquareSizeControls from './square-size-controls/square-size-controls';
+import OnlyVisibleControls from './only-visible-controls/only-visible-controls';
 import './SVGDLA.css';
 import { setSelectedTool } from './svg-dla-slice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -23,7 +24,7 @@ export const SVGDLA: React.FC = () => {
   );
   
   // Get line length, SVG content, selected tool, and square size from Redux
-  const { lineLength, svgContent, selectedTool, squareSize, showCircles, circleRadius } = useAppSelector((state: RootState) => 
+  const { lineLength, svgContent, selectedTool, squareSize, showCircles, circleRadius, onlyVisible } = useAppSelector((state: RootState) => 
     state.svgDla as SVGDLAUIState
   );
   // Get colorStops from Redux
@@ -33,7 +34,7 @@ export const SVGDLA: React.FC = () => {
   useEffect(() => {
     generateSVG();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dlaCluster, selectedTool, lineLength, squareSize, showCircles, circleRadius, colorStops]);
+  }, [dlaCluster, selectedTool, lineLength, squareSize, showCircles, circleRadius, onlyVisible, colorStops]);
 
   return (
     <div className="dlasim-svgdla-tab">
@@ -113,6 +114,20 @@ export const SVGDLA: React.FC = () => {
       const scaledParentY = (parentPoint.y - centerY) * lineLength + centerY;
       const scaledPointX = (point.x - centerX) * lineLength + centerX;
       const scaledPointY = (point.y - centerY) * lineLength + centerY;
+      
+      // Check if elements are within the visible area when onlyVisible is enabled
+      if (onlyVisible) {
+        const isParentVisible = scaledParentX >= 0 && scaledParentX <= CANVAS_WIDTH && 
+                               scaledParentY >= 0 && scaledParentY <= CANVAS_HEIGHT;
+        const isPointVisible = scaledPointX >= 0 && scaledPointX <= CANVAS_WIDTH && 
+                              scaledPointY >= 0 && scaledPointY <= CANVAS_HEIGHT;
+        
+        // Only draw if both points are visible
+        if (!isParentVisible || !isPointVisible) {
+          return;
+        }
+      }
+      
       // Draw a simple line from parent to child point with scaling
       svgLines.push(`<line x1="${scaledParentX}" y1="${scaledParentY}" x2="${scaledPointX}" y2="${scaledPointY}" stroke="#00d8ff" stroke-width="1" />`);
       // Draw a circle at the parent point, colored by distance, using the Redux radius
@@ -162,6 +177,19 @@ export const SVGDLA: React.FC = () => {
       const scaledY = (point.y - centerY) * scalingFactor + centerY;
       const x = scaledX - squareSize / 2;
       const y = scaledY - squareSize / 2;
+      
+      // Check if square is within the visible area when onlyVisible is enabled
+      if (onlyVisible) {
+        const isSquareVisible = x >= 0 && x <= CANVAS_WIDTH && 
+                               y >= 0 && y <= CANVAS_HEIGHT &&
+                               x + squareSize >= 0 && x + squareSize <= CANVAS_WIDTH &&
+                               y + squareSize >= 0 && y + squareSize <= CANVAS_HEIGHT;
+        
+        if (!isSquareVisible) {
+          return;
+        }
+      }
+      
       const color = getColorForDistance(colorStops, distance ?? 0, minDistance, maxDistance);
       svgSquares.push(`<rect x="${x}" y="${y}" width="${squareSize}" height="${squareSize}" fill="${color}" />`);
     });
@@ -226,12 +254,11 @@ const ToolBar: React.FC = () => {
 const ToolOptions: React.FC = () => {
   const selectedTool = useAppSelector((state: RootState) => state.svgDla.selectedTool);
 
-  switch(selectedTool) {
-    case 'draw-with-lines':
-      return <LineLengthControls />
-    case 'draw-with-squares':
-      return <SquareSizeControls />
-    default:
-      return null;
-  }
+  return (
+    <div className="svgdla-tool-options">
+      {selectedTool === 'draw-with-lines' && <LineLengthControls />}
+      {selectedTool === 'draw-with-squares' && <SquareSizeControls />}
+      <OnlyVisibleControls />
+    </div>
+  );
 }
