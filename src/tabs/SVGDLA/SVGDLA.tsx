@@ -24,7 +24,7 @@ export const SVGDLA: React.FC = () => {
   );
   
   // Get line length, SVG content, selected tool, and square size from Redux
-  const { lineLength, svgContent, selectedTool, squareSize, showCircles, circleRadius, onlyVisible } = useAppSelector((state: RootState) => 
+  const { lineLength, svgContent, selectedTool, squareSize, showCircles, circleRadius, onlyVisible, includeBackgroundColor } = useAppSelector((state: RootState) => 
     state.svgDla as SVGDLAUIState
   );
   // Get colorStops from Redux
@@ -34,7 +34,7 @@ export const SVGDLA: React.FC = () => {
   useEffect(() => {
     generateSVG();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dlaCluster, selectedTool, lineLength, squareSize, showCircles, circleRadius, onlyVisible, colorStops]);
+  }, [dlaCluster, selectedTool, lineLength, squareSize, showCircles, circleRadius, onlyVisible, includeBackgroundColor, colorStops]);
 
   return (
     <div className="dlasim-svgdla-tab">
@@ -200,10 +200,15 @@ export const SVGDLA: React.FC = () => {
   }
 
   function downloadSVG() {
+    // Add background rect if includeBackgroundColor is checked
+    const backgroundRect = includeBackgroundColor 
+      ? `<rect width="100%" height="100%" fill="#111" />`
+      : '';
+    
     // Wrap the svgContent in a full SVG element
     const svgHeader = `<svg xmlns="http://www.w3.org/2000/svg" width="${CANVAS_WIDTH}" height="${CANVAS_HEIGHT}" viewBox="0 0 ${CANVAS_WIDTH} ${CANVAS_HEIGHT}">`;
     const svgFooter = '</svg>';
-    const fullSVG = `${svgHeader}\n${svgContent}\n${svgFooter}`;
+    const fullSVG = `${svgHeader}\n${backgroundRect}\n${svgContent}\n${svgFooter}`;
 
     const blob = new Blob([fullSVG], { type: 'image/svg+xml' });
     const url = URL.createObjectURL(blob);

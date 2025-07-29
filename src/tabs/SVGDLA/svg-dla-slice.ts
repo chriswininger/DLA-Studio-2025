@@ -10,6 +10,7 @@ export interface SVGDLAUIState {
   showCircles: boolean;
   circleRadius: number;
   onlyVisible: boolean;
+  includeBackgroundColor: boolean;
 }
 
 const initialState: SVGDLAUIState = {
@@ -20,6 +21,7 @@ const initialState: SVGDLAUIState = {
   showCircles: true,
   circleRadius: 2,
   onlyVisible: true,
+  includeBackgroundColor: true,
 };
 
 const slice = createSlice({
@@ -47,8 +49,11 @@ const slice = createSlice({
     setOnlyVisible(state, action: PayloadAction<boolean>) {
       state.onlyVisible = action.payload;
     },
+    setIncludeBackgroundColor(state, action: PayloadAction<boolean>) {
+      state.includeBackgroundColor = action.payload;
+    },
   },
 });
 
-export const { setLineLength, setSvgContent, setSelectedTool, setSquareSize, setShowCircles, setCircleRadius, setOnlyVisible } = slice.actions;
+export const { setLineLength, setSvgContent, setSelectedTool, setSquareSize, setShowCircles, setCircleRadius, setOnlyVisible, setIncludeBackgroundColor } = slice.actions;
 export default slice.reducer; 

@@ -22,6 +22,11 @@
   align-items: center;
   font-weight: 500;
   cursor: pointer;
+  margin-bottom: 12px;
+}
+
+.svgdla-checkbox-label:last-child {
+  margin-bottom: 0;
 }
 
 .svgdla-checkbox {
