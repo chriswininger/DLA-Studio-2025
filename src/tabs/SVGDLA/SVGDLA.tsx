@@ -231,15 +231,15 @@ export const SVGDLA: React.FC = () => {
   }
 
   function downloadSVG() {
-    // Add background rect if includeBackgroundColor is checked
-    const backgroundRect = includeBackgroundColor 
-      ? `<rect width="100%" height="100%" fill="#111" />`
-      : '';
-    
     const width = onlyVisible ? CANVAS_WIDTH : maxX - minX;
     const height = onlyVisible ? CANVAS_HEIGHT : maxY - minY;
     const viewBoxX = onlyVisible ? 0 : minX;
     const viewBoxY = onlyVisible ? 0 : minY;
+
+    // Add background rect if includeBackgroundColor is checked
+    const backgroundRect = includeBackgroundColor 
+      ? `<rect x="${viewBoxX}" y="${viewBoxY}" width="${width}" height="${height}" fill="#111" />`
+      : '';
 
     console.log(`using -> width: ${width}, height: ${height}, viewBox: ${viewBoxX} ${viewBoxY} ${width} ${height}`);
     // Wrap the svgContent in a full SVG element
