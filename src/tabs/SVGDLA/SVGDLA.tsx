@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAppSelector, useAppDispatch } from '../../store';
 import type { RootState } from '../../store';
 import type { SVGDLAUIState } from './svg-dla-slice';
@@ -35,6 +35,11 @@ export const SVGDLA: React.FC = () => {
     generateSVG();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dlaCluster, selectedTool, lineLength, squareSize, showCircles, circleRadius, onlyVisible, includeBackgroundColor, colorStops]);
+
+  const [maxX, setMaxX] = useState(0);
+  const [maxY, setMaxY] = useState(0);
+  const [minX, setMinX] = useState(Number.MAX_VALUE);
+  const [minY, setMinY] = useState(Number.MAX_VALUE);
 
   return (
     <div className="dlasim-svgdla-tab">
@@ -130,6 +135,28 @@ export const SVGDLA: React.FC = () => {
       
       // Draw a simple line from parent to child point with scaling
       svgLines.push(`<line x1="${scaledParentX}" y1="${scaledParentY}" x2="${scaledPointX}" y2="${scaledPointY}" stroke="#00d8ff" stroke-width="1" />`);
+
+      // TODO: Account for circle radius
+      const possibleMaxX = Math.max(scaledPointX, scaledParentX);
+      if (possibleMaxX > maxX) {
+        setMaxX(possibleMaxX);
+      }
+
+      const possibleMinX = Math.min(scaledParentX, scaledPointX);
+      if (possibleMinX < minX) {
+        setMinX(possibleMinX);
+      }
+
+      const possibleMaxY = Math.max(scaledPointY, scaledParentY);
+      if (possibleMaxY > maxY) {
+        setMaxY(possibleMaxY);
+      }
+
+      const possibleMinY = Math.max(scaledParentY, scaledParentY);
+      if (possibleMinY < minY) {
+        setMinY(possibleMaxY);
+      }  
+    
       // Draw a circle at the parent point, colored by distance, using the Redux radius
       if (showCircles) {
         const color = getColorForDistance(colorStops, parent.distance ?? 0, minDistance, maxDistance);
@@ -140,6 +167,10 @@ export const SVGDLA: React.FC = () => {
     const svgContentString = svgLines.concat(svgCircles).join('\n');
     dispatch(setSvgContent(svgContentString));
     console.log('Generated SVG with', svgLines.length, 'line segments and', svgCircles.length, 'circles');
+    console.log('Max x: ', maxX);
+    console.log('Max Y: ', maxY);
+    console.log('Min x: ', minX);
+    console.log('Min Y: ', minY);
   }
 
   function generateSVGWithSquares() {
@@ -205,8 +236,12 @@ export const SVGDLA: React.FC = () => {
       ? `<rect width="100%" height="100%" fill="#111" />`
       : '';
     
+    const width = onlyVisible ? CANVAS_WIDTH : maxX + Math.abs(minX);
+    const height = onlyVisible ? CANVAS_HEIGHT : maxY + Math.abs(minY);
+
+    console.log(`using -> width: ${width}, height: ${height}`);
     // Wrap the svgContent in a full SVG element
-    const svgHeader = `<svg xmlns="http://www.w3.org/2000/svg" width="${CANVAS_WIDTH}" height="${CANVAS_HEIGHT}" viewBox="0 0 ${CANVAS_WIDTH} ${CANVAS_HEIGHT}">`;
+    const svgHeader = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`;
     const svgFooter = '</svg>';
     const fullSVG = `${svgHeader}\n${backgroundRect}\n${svgContent}\n${svgFooter}`;
 
