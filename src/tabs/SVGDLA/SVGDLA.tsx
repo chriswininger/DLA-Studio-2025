@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAppSelector, useAppDispatch } from '../../store';
 import type { RootState } from '../../store';
 import type { SVGDLAUIState } from './svg-dla-slice';
@@ -35,6 +35,13 @@ export const SVGDLA: React.FC = () => {
     generateSVG();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dlaCluster, selectedTool, lineLength, squareSize, showCircles, circleRadius, onlyVisible, includeBackgroundColor, colorStops]);
+
+  const [minX, setMinX] = useState(Infinity);
+  const [minY, setMinY] = useState(Infinity);
+
+  const [maxX, setMaxX] = useState(-Infinity);
+  const [maxY, setMaxY] = useState(-Infinity);
+
 
   return (
     <div className="dlasim-svgdla-tab">
@@ -88,6 +95,12 @@ export const SVGDLA: React.FC = () => {
     console.log('Cluster data:', dlaCluster);
     const svgLines: string[] = [];
     const svgCircles: string[] = [];
+    
+    // Reset bounds for new generation
+    let currentMaxX = -Infinity;
+    let currentMaxY = -Infinity;
+    let currentMinX = Infinity;
+    let currentMinY = Infinity;
 
     // Calculate the center of all points
     const entries = Object.values(dlaCluster);
@@ -130,6 +143,28 @@ export const SVGDLA: React.FC = () => {
       
       // Draw a simple line from parent to child point with scaling
       svgLines.push(`<line x1="${scaledParentX}" y1="${scaledParentY}" x2="${scaledPointX}" y2="${scaledPointY}" stroke="#00d8ff" stroke-width="1" />`);
+
+      // TODO: Account for circle radius
+      const possibleMaxX = Math.max(scaledPointX, scaledParentX);
+      if (possibleMaxX > currentMaxX) {
+        currentMaxX = possibleMaxX;
+      }
+
+      const possibleMinX = Math.min(scaledParentX, scaledPointX);
+      if (possibleMinX < currentMinX) {
+        currentMinX = possibleMinX;
+      }
+
+      const possibleMaxY = Math.max(scaledPointY, scaledParentY);
+      if (possibleMaxY > currentMaxY) {
+        currentMaxY = possibleMaxY;
+      }
+
+       const possibleMinY = Math.min(scaledPointY, scaledParentY);
+       if (possibleMinY < currentMinY) {
+         currentMinY = possibleMinY;
+       }  
+    
       // Draw a circle at the parent point, colored by distance, using the Redux radius
       if (showCircles) {
         const color = getColorForDistance(colorStops, parent.distance ?? 0, minDistance, maxDistance);
@@ -140,11 +175,26 @@ export const SVGDLA: React.FC = () => {
     const svgContentString = svgLines.concat(svgCircles).join('\n');
     dispatch(setSvgContent(svgContentString));
     console.log('Generated SVG with', svgLines.length, 'line segments and', svgCircles.length, 'circles');
+    console.log('Max x: ', currentMaxX);
+    console.log('Max Y: ', currentMaxY);
+    console.log('Min x: ', currentMinX);
+    console.log('Min Y: ', currentMinY);
+
+    setMinX(currentMinX);
+    setMinY(currentMinY);
+    setMaxX(currentMaxX);
+    setMaxY(currentMaxY);
   }
 
   function generateSVGWithSquares() {
     console.info("generating svg using squares");
     const svgSquares: string[] = [];
+    
+    // Reset bounds for new generation
+    let currentMaxX = -Infinity;
+    let currentMaxY = -Infinity;
+    let currentMinX = Infinity;
+    let currentMinY = Infinity;
 
     // Calculate the center of all points
     const entries = Object.values(dlaCluster);
@@ -190,6 +240,27 @@ export const SVGDLA: React.FC = () => {
         }
       }
       
+      // Track bounds for squares
+      const possibleMaxX = x + squareSize;
+      if (possibleMaxX > currentMaxX) {
+        currentMaxX = possibleMaxX;
+      }
+
+      const possibleMinX = x;
+      if (possibleMinX < currentMinX) {
+        currentMinX = possibleMinX;
+      }
+
+      const possibleMaxY = y + squareSize;
+      if (possibleMaxY > currentMaxY) {
+        currentMaxY = possibleMaxY;
+      }
+
+      const possibleMinY = y;
+      if (possibleMinY < currentMinY) {
+        currentMinY = possibleMinY;
+      }
+      
       const color = getColorForDistance(colorStops, distance ?? 0, minDistance, maxDistance);
       svgSquares.push(`<rect x="${x}" y="${y}" width="${squareSize}" height="${squareSize}" fill="${color}" />`);
     });
@@ -197,16 +268,37 @@ export const SVGDLA: React.FC = () => {
     const svgContentString = svgSquares.join('\n');
     dispatch(setSvgContent(svgContentString));
     console.log('Generated SVG with', svgSquares.length, 'squares');
+    console.log('Max x: ', currentMaxX);
+    console.log('Max Y: ', currentMaxY);
+    console.log('Min x: ', currentMinX);
+    console.log('Min Y: ', currentMinY);
+    
+    setMinX(currentMinX);
+    setMinY(currentMinY);
+    setMaxX(currentMaxX);
+    setMaxY(currentMaxY);
   }
 
   function downloadSVG() {
+    // Handle case where no bounds were set (no elements processed)
+    const effectiveMaxX = maxX === -Infinity ? CANVAS_WIDTH : maxX;
+    const effectiveMaxY = maxY === -Infinity ? CANVAS_HEIGHT : maxY;
+    const effectiveMinX = minX === Infinity ? 0 : minX;
+    const effectiveMinY = minY === Infinity ? 0 : minY;
+    
+    const width = onlyVisible ? CANVAS_WIDTH : effectiveMaxX - effectiveMinX;
+    const height = onlyVisible ? CANVAS_HEIGHT : effectiveMaxY - effectiveMinY;
+    const viewBoxX = onlyVisible ? 0 : effectiveMinX;
+    const viewBoxY = onlyVisible ? 0 : effectiveMinY;
+
     // Add background rect if includeBackgroundColor is checked
     const backgroundRect = includeBackgroundColor 
-      ? `<rect width="100%" height="100%" fill="#111" />`
+      ? `<rect x="${viewBoxX}" y="${viewBoxY}" width="${width}" height="${height}" fill="#111" />`
       : '';
-    
+
+    console.log(`using -> width: ${width}, height: ${height}, viewBox: ${viewBoxX} ${viewBoxY} ${width} ${height}`);
     // Wrap the svgContent in a full SVG element
-    const svgHeader = `<svg xmlns="http://www.w3.org/2000/svg" width="${CANVAS_WIDTH}" height="${CANVAS_HEIGHT}" viewBox="0 0 ${CANVAS_WIDTH} ${CANVAS_HEIGHT}">`;
+    const svgHeader = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="${viewBoxX} ${viewBoxY} ${width} ${height}">`;
     const svgFooter = '</svg>';
     const fullSVG = `${svgHeader}\n${backgroundRect}\n${svgContent}\n${svgFooter}`;
 
