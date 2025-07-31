@@ -7,7 +7,7 @@ import type { ClusterMap } from '../../dla/dla';
 import LineLengthControls from './line-length-controls/line-length-controls';
 import SquareSizeControls from './square-size-controls/square-size-controls';
 import OnlyVisibleControls from './only-visible-controls/only-visible-controls';
-import './SVGDLA.css';
+import './svg-dla.css';
 import { setSelectedTool } from './svg-dla-slice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faSquare } from '@fortawesome/free-solid-svg-icons';
