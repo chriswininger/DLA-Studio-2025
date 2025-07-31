@@ -1,0 +1,98 @@
+.dlasim-about-container {
+  width: var(--page-size-desktop);
+  margin: 0 auto;
+  color: var(--dlasim-text-color, #ffffff);
+  text-align: justify;
+}
+
+
+.dlasim-about-title {
+  font-size: 2.5rem;
+  color: var(--dlasim-primary-color, #ff00a6);
+  margin-bottom: 0;
+  text-align: left;
+}
+
+.dlasim-about-version {
+  color: var(--dlasim-secondary-color, #888);
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+  margin-top: 0;
+}
+
+.dlasim-about-section {
+  margin-bottom: 2rem;
+}
+
+.dlasim-about-section-title {
+  color: var(--dlasim-accent-color, #00d8ff);
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--dlasim-accent-color, #00d8ff);
+  padding-bottom: 0.5rem;
+}
+
+.dlasim-about-description {
+  line-height: 1.6;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.dlasim-about-features {
+  list-style-type: none;
+  padding: 0;
+}
+
+.dlasim-about-features li {
+  margin-bottom: 0.8rem;
+  padding-left: 1.5rem;
+  position: relative;
+  line-height: 1.5;
+}
+
+.dlasim-about-features li::before {
+  content: "•";
+  color: var(--dlasim-accent-color, #00d8ff);
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+}
+
+.dlasim-about-instructions {
+  padding-left: 1.5rem;
+}
+
+.dlasim-about-instructions li {
+  margin-bottom: 0.8rem;
+  line-height: 1.5;
+}
+
+.dlasim-about-author {
+  text-align: center;
+  font-style: italic;
+  color: var(--dlasim-secondary-color, #888);
+  font-size: 1.1rem;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .dlasim-about-container {
+    width: 100%;
+  }
+  
+  .dlasim-about-content {
+    padding: 1.5rem;
+  }
+  
+  .dlasim-about-title {
+    font-size: 2rem;
+  }
+  
+  .dlasim-about-section-title {
+    font-size: 1.3rem;
+  }
+  
+  .dlasim-about-description {
+    font-size: 1rem;
+  }
+} 

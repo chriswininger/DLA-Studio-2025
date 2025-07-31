@@ -14,6 +14,14 @@
 
   --control-border-color: #5a6cff;
   --page-size-desktop: 1000px;
+  
+  /* DLA Studio theme variables */
+  --dlasim-primary-color: #ff00a6;
+  --dlasim-secondary-color: #888;
+  --dlasim-accent-color: #00d8ff;
+  --dlasim-text-color: #ffffff;
+  --dlasim-background-color: #1a1a2e;
+  --dlasim-border-color: #333;
 }
 
 a {
