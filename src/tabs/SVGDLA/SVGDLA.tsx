@@ -24,7 +24,7 @@ export const SVGDLA: React.FC = () => {
   );
   
   // Get line length, SVG content, selected tool, and square size from Redux
-  const { lineLength, svgContent, selectedTool, squareSize, rotations, showCircles, circleRadius, onlyVisible, includeBackgroundColor } = useAppSelector((state: RootState) => 
+  const { lineLength, svgContent, selectedTool, squareSize, rotations, stroke, showCircles, circleRadius, onlyVisible, includeBackgroundColor } = useAppSelector((state: RootState) => 
     state.svgDla as SVGDLAUIState
   );
   // Get colorStops from Redux
@@ -34,7 +34,7 @@ export const SVGDLA: React.FC = () => {
   useEffect(() => {
     generateSVG();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dlaCluster, selectedTool, lineLength, squareSize, rotations, showCircles, circleRadius, onlyVisible, includeBackgroundColor, colorStops]);
+  }, [dlaCluster, selectedTool, lineLength, squareSize, rotations, stroke, showCircles, circleRadius, onlyVisible, includeBackgroundColor, colorStops]);
 
   const [minX, setMinX] = useState(Infinity);
   const [minY, setMinY] = useState(Infinity);
@@ -265,7 +265,12 @@ export const SVGDLA: React.FC = () => {
       
       // Apply rotation if rotations value is greater than 0
       const transform = rotations > 0 ? ` transform="rotate(${rotations} ${scaledX} ${scaledY})"` : '';
-      svgSquares.push(`<rect x="${x}" y="${y}" width="${squareSize}" height="${squareSize}" fill="${color}"${transform} />`);
+      
+      // Apply stroke or fill based on stroke setting
+      const fillAttr = stroke ? 'fill="none"' : `fill="${color}"`;
+      const strokeAttr = stroke ? `stroke="${color}" stroke-width="1"` : '';
+      
+      svgSquares.push(`<rect x="${x}" y="${y}" width="${squareSize}" height="${squareSize}" ${fillAttr} ${strokeAttr}${transform} />`);
     });
 
     const svgContentString = svgSquares.join('\n');

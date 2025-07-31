@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../store';
-import { setSquareSize, setRotations } from '../svg-dla-slice';
+import { setSquareSize, setRotations, setStroke } from '../svg-dla-slice';
 import type { RootState } from '../../../store';
 import type { SVGDLAUIState } from '../svg-dla-slice';
 import './square-size-controls.css';
@@ -13,6 +13,9 @@ const SquareSizeControls: React.FC = () => {
   );
   const rotations = useAppSelector((state: RootState) => 
     (state.svgDla as SVGDLAUIState).rotations
+  );
+  const stroke = useAppSelector((state: RootState) => 
+    (state.svgDla as SVGDLAUIState).stroke
   );
 
   return (
@@ -44,6 +47,18 @@ const SquareSizeControls: React.FC = () => {
           className="svgdla_square-size-input"
         />
       </div>
+      <div className="svgdla_square-size-row">
+        <label htmlFor="svg-stroke">
+          <input
+            id="svg-stroke"
+            type="checkbox"
+            checked={stroke}
+            onChange={handleStrokeChange}
+            className="svgdla_square-size-checkbox"
+          />
+          Stroke
+        </label>
+      </div>
     </div>
   );
 
@@ -59,6 +74,10 @@ const SquareSizeControls: React.FC = () => {
     if (!isNaN(val) && val >= 0 && val <= 360) {
       dispatch(setRotations(val));
     }
+  }
+
+  function handleStrokeChange(e: React.ChangeEvent<HTMLInputElement>) {
+    dispatch(setStroke(e.target.checked));
   }
 };
 
