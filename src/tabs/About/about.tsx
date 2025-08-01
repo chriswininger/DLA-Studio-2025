@@ -12,6 +12,14 @@ const About: React.FC = () => {
         
         <p className="dlasim-about-version">Version 0.0.1</p>
         
+        <div className="dlasim-about-image-container">
+          <img 
+            src="/DLA-Studio-2025/example-1.png" 
+            alt="DLA Studio Example" 
+            className="dlasim-about-image"
+          />
+        </div>
+        
         <div className="dlasim-about-section">
           <h2 className="dlasim-about-section-title">About</h2>
           <p className="dlasim-about-description">
