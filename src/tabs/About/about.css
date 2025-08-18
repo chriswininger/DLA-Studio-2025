@@ -50,7 +50,6 @@
 }
 
 .dlasim-about-features li {
-  margin-bottom: 0.8rem;
   padding-left: 1.5rem;
   position: relative;
   line-height: 1.5;
@@ -64,13 +63,31 @@
   left: 0;
 }
 
+.dlasim-video-container {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.dlasim-video-container iframe {
+  width: 100%;
+  max-width: 560px;
+  height: 315px;
+  border: none;
+  display: block;
+}
+
 .dlasim-about-instructions {
   padding-left: 1.5rem;
 }
 
 .dlasim-about-instructions li {
-  margin-bottom: 0.8rem;
+  margin-bottom: 2rem;
   line-height: 1.5;
+}
+
+.dlasim-about-instructions li:last-child {
+  margin-bottom: 0;
 }
 
 .dlasim-about-author {
@@ -100,5 +117,9 @@
   
   .dlasim-about-description {
     font-size: 1rem;
+  }
+  
+  .dlasim-video-container iframe {
+    height: 200px;
   }
 } 
