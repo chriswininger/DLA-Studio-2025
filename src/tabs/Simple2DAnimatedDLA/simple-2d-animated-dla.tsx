@@ -13,11 +13,13 @@ import ShapeSpawnControls from './shape-spawn-controls/shape-spawn-controls';
 import PaintBrushControls from './paint-brush-controls/paint-brush-controls';
 import EraserControls from './eraser-controls/eraser-controls';
 import { getColorForDistance } from '../DistanceGradient/distance-gradient-slice';
+import { useAnalytics } from '../../hooks/useAnalytics';
 // Vite/ESM native worker import
 // No import needed, use new Worker(new URL(...), { type: 'module' })
 
 const Simple2DAnimatedDLA: React.FC = () => {
   const spawnPreviewColor = '#ffff00';
+  const { trackUserInteraction } = useAnalytics();
 
   const dispatch = useDispatch();
   const {
@@ -172,14 +174,17 @@ const Simple2DAnimatedDLA: React.FC = () => {
   // Handle start/stop/reset
   function handleStart() {
     console.info("started")
+    trackUserInteraction('start_simulation', 'simulation_started');
     dispatch(setIsRunning(true));
   }
 
   function handleStop() {
+    trackUserInteraction('stop_simulation', 'simulation_stopped');
     dispatch(setIsRunning(false));
   }
 
   function handleReset() {
+    trackUserInteraction('reset_simulation', 'simulation_reset');
     dispatch(setIsRunning(false));
     dispatch(resetDLAState());
     dlaStateRef.current = createDLAState(CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -189,6 +194,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
 
   // Simulate to completion (no animation frames)
   function handleSimulateToCompletion() {
+    trackUserInteraction('simulate_to_completion', 'simulation_completion_started');
     dispatch(setIsSimulating(true));
     setSteps(0);
     workerRef.current = new Worker(new URL('./dla-worker.ts', import.meta.url), { type: 'module' });
@@ -246,6 +252,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
       console.log('Cluster positions:', Object.keys(dlaStateRef.current.cluster));
       console.log('Spawning walkers:', newWalkers.length);
       
+      trackUserInteraction('spawn_walkers', `spawned_${newWalkers.length}_walkers`);
       dlaStateRef.current.walkers = [...dlaStateRef.current.walkers, ...newWalkers];
       doDraw();
     }

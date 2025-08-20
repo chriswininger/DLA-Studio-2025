@@ -1,16 +1,19 @@
 import './App.css'
 import './tabs/tabs.css'
-import { BrowserRouter as Router, Routes, Route, Navigate, NavLink } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, NavLink, useLocation } from 'react-router-dom';
 import Simple2DAnimatedDLA from './tabs/Simple2DAnimatedDLA/simple-2d-animated-dla'
 import { SVGDLA } from './tabs/SVGDLA/svg-dla'
 import DistanceGradient from './tabs/DistanceGradient/distance-gradient';
 import About from './tabs/About/about';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
+import { useEffect } from 'react';
+import { trackPageView } from './config/analytics';
 
 function App() {
   return (
     <Router basename="/DLA-Studio-2025">
+      <PageTracker />
       <div>
         <nav className="dlasim_tab-nav">
           <NavLink to="/simple-2d-animated-dla" className={({ isActive }) => `dlasim_tab-link${isActive ? ' dlasim_active' : ''}`}>
@@ -36,6 +39,17 @@ function App() {
       </div>
     </Router>
   )
+}
+
+// Component to track page views
+function PageTracker() {
+  const location = useLocation();
+  
+  useEffect(() => {
+    trackPageView(location.pathname);
+  }, [location]);
+  
+  return null;
 }
 
 export default App
