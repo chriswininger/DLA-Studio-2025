@@ -8,7 +8,7 @@ import About from './tabs/About/about';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { useEffect } from 'react';
-import { trackPageView } from './config/analytics';
+import { trackPageView } from './analytics/analytics.ts';
 
 function App() {
   return (
@@ -44,11 +44,11 @@ function App() {
 // Component to track page views
 function PageTracker() {
   const location = useLocation();
-  
+
   useEffect(() => {
     trackPageView(location.pathname);
   }, [location]);
-  
+
   return null;
 }
 

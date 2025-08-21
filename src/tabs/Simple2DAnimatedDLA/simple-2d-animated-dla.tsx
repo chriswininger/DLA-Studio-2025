@@ -13,7 +13,7 @@ import ShapeSpawnControls from './shape-spawn-controls/shape-spawn-controls';
 import PaintBrushControls from './paint-brush-controls/paint-brush-controls';
 import EraserControls from './eraser-controls/eraser-controls';
 import { getColorForDistance } from '../DistanceGradient/distance-gradient-slice';
-import { useAnalytics } from '../../hooks/useAnalytics';
+import { useAnalytics } from '../../analytics/useAnalytics.ts';
 // Vite/ESM native worker import
 // No import needed, use new Worker(new URL(...), { type: 'module' })
 
@@ -251,7 +251,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
       console.log('Current cluster size:', Object.keys(dlaStateRef.current.cluster).length);
       console.log('Cluster positions:', Object.keys(dlaStateRef.current.cluster));
       console.log('Spawning walkers:', newWalkers.length);
-      
+
       trackUserInteraction('spawn_walkers', `spawned_${newWalkers.length}_walkers`);
       dlaStateRef.current.walkers = [...dlaStateRef.current.walkers, ...newWalkers];
       doDraw();
@@ -276,7 +276,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
     const ctx = canvasRef.current?.getContext('2d');
     if (!ctx || !dlaStateRef.current) return;
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    
+
     if (shouldShowSpawnShapePreview) {
       drawShapeSpawn(ctx);
     }
@@ -314,33 +314,33 @@ const Simple2DAnimatedDLA: React.FC = () => {
     const centerX = Math.floor(CANVAS_WIDTH / 2) + spawnXOffset;
     const centerY = Math.floor(CANVAS_HEIGHT / 2) + spawnYOffset;
     const halfSize = Math.floor(spawnSquareSize / 2);
-    
+
     // Save the current context state
     ctx.save();
-    
+
     // Translate to the center of the spawn shape
     ctx.translate(centerX, centerY);
-    
+
     // Apply rotation (convert degrees to radians)
     const rotationRadians = (spawnRotation * Math.PI) / 180;
     ctx.rotate(rotationRadians);
-    
+
     // Draw the rectangle centered at the origin (after translation)
     ctx.strokeStyle = spawnPreviewColor;
     ctx.lineWidth = 1;
     ctx.setLineDash([5, 5]);
     ctx.strokeRect(-halfSize, -halfSize, spawnSquareSize, spawnSquareSize);
     ctx.setLineDash([]);
-    
+
     // Restore the context state
     ctx.restore();
   }
 
   function drawBrushPreview(ctx: CanvasRenderingContext2D, position: { x: number; y: number }, size: number) {
     const radius = size / 2;
-    
+
     ctx.save();
-    
+
     // Draw brush preview circle
     ctx.strokeStyle = spawnPreviewColor;
     ctx.lineWidth = 2;
@@ -348,19 +348,19 @@ const Simple2DAnimatedDLA: React.FC = () => {
     ctx.beginPath();
     ctx.arc(position.x, position.y, radius, 0, 2 * Math.PI);
     ctx.stroke();
-    
+
     // Draw center point
     ctx.fillStyle = spawnPreviewColor;
     ctx.fillRect(position.x - 1, position.y - 1, 2, 2);
-    
+
     ctx.restore();
   }
 
   function drawEraserPreview(ctx: CanvasRenderingContext2D, position: { x: number; y: number }, size: number) {
     const radius = size / 2;
-    
+
     ctx.save();
-    
+
     // Draw eraser preview circle with red color to distinguish from brush
     ctx.strokeStyle = '#ff0000';
     ctx.lineWidth = 2;
@@ -368,36 +368,36 @@ const Simple2DAnimatedDLA: React.FC = () => {
     ctx.beginPath();
     ctx.arc(position.x, position.y, radius, 0, 2 * Math.PI);
     ctx.stroke();
-    
+
     // Draw center point
     ctx.fillStyle = '#ff0000';
     ctx.fillRect(position.x - 1, position.y - 1, 2, 2);
-    
+
     ctx.restore();
   }
 
   function spawnWalkersInBrushRadius(centerX: number, centerY: number, brushSize: number, numWalkers: number) {
     if (!dlaStateRef.current) return;
-    
+
     const radius = brushSize / 2;
     const walkers: { x: number; y: number }[] = [];
-    
+
     for (let i = 0; i < numWalkers; i++) {
       // Generate random angle and distance within the circle
       const angle = Math.random() * 2 * Math.PI;
       const distance = Math.random() * radius;
-      
+
       // Convert polar coordinates to Cartesian
       const x = Math.floor(centerX + distance * Math.cos(angle));
       const y = Math.floor(centerY + distance * Math.sin(angle));
-      
+
       // Clamp to canvas bounds
       const clampedX = Math.max(0, Math.min(CANVAS_WIDTH - 1, x));
       const clampedY = Math.max(0, Math.min(CANVAS_HEIGHT - 1, y));
-      
+
       walkers.push({ x: clampedX, y: clampedY });
     }
-    
+
     // Add walkers to the current state
     dlaStateRef.current.walkers = [...dlaStateRef.current.walkers, ...walkers];
     doDraw();
@@ -405,10 +405,10 @@ const Simple2DAnimatedDLA: React.FC = () => {
 
   function removeWalkersInEraserRadius(centerX: number, centerY: number, eraserSize: number) {
     if (!dlaStateRef.current) return;
-    
+
     const radius = eraserSize / 2;
     const radiusSquared = radius * radius;
-    
+
     // Filter out walkers that are within the eraser radius
     dlaStateRef.current.walkers = dlaStateRef.current.walkers.filter(walker => {
       const dx = walker.x - centerX;
@@ -416,7 +416,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
       const distanceSquared = dx * dx + dy * dy;
       return distanceSquared > radiusSquared;
     });
-    
+
     doDraw();
   }
 
@@ -462,14 +462,14 @@ const Simple2DAnimatedDLA: React.FC = () => {
   function getCanvasCoordinates(clientX: number, clientY: number): { x: number; y: number } | null {
     const canvas = canvasRef.current;
     if (!canvas) return null;
-    
+
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
-    
+
     const x = (clientX - rect.left) * scaleX;
     const y = (clientY - rect.top) * scaleY;
-    
+
     return { x, y };
   }
 
@@ -478,7 +478,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
       // Only prevent default behavior when using drawing tools
       e.preventDefault();
       e.stopPropagation();
-      
+
       setIsDragging(true);
       const coords = getCanvasCoordinates(e.touches[0].clientX, e.touches[0].clientY);
       if (coords) {
@@ -497,7 +497,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
       // Only prevent default behavior when using drawing tools
       e.preventDefault();
       e.stopPropagation();
-      
+
       const coords = getCanvasCoordinates(e.touches[0].clientX, e.touches[0].clientY);
       if (coords) {
         setCursorPosition(coords);
@@ -619,10 +619,10 @@ function useHandleMouseMoveInCanvas({
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
         const scaleY = canvas.height / rect.height;
-        
+
         const x = (e.clientX - rect.left) * scaleX;
         const y = (e.clientY - rect.top) * scaleY;
-        
+
         setCursorPosition({ x, y });
         // If dragging, handle tool operations
         if (isDragging && !isRunning) {

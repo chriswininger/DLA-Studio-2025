@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { trackEvent } from '../config/analytics';
+import { trackEvent } from './analytics.ts';
 
 export const useAnalytics = () => {
   const trackSimulationEvent = useCallback((action: string, label?: string, value?: number) => {
