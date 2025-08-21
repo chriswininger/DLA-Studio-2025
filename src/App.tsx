@@ -1,14 +1,13 @@
 import './App.css'
 import './tabs/tabs.css'
-import { BrowserRouter as Router, Routes, Route, Navigate, NavLink, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, NavLink } from 'react-router-dom';
 import Simple2DAnimatedDLA from './tabs/Simple2DAnimatedDLA/simple-2d-animated-dla'
 import { SVGDLA } from './tabs/SVGDLA/svg-dla'
 import DistanceGradient from './tabs/DistanceGradient/distance-gradient';
 import About from './tabs/About/about';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
-import { useEffect } from 'react';
-import { trackPageView } from './analytics/analytics.ts';
+import {PageTracker} from "./analytics/page-tracker.ts";
 
 function App() {
   return (
@@ -39,17 +38,6 @@ function App() {
       </div>
     </Router>
   )
-}
-
-// Component to track page views
-function PageTracker() {
-  const location = useLocation();
-
-  useEffect(() => {
-    trackPageView(location.pathname);
-  }, [location]);
-
-  return null;
 }
 
 export default App
