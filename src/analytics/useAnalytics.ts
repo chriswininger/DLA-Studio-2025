@@ -10,7 +10,7 @@ export const useAnalytics = () => {
     trackEvent(action, 'user_interaction', label, value);
   }, []);
 
-  const trackError = useCallback((error: string, context?: string) => {
+  const trackError = useCallback((context?: string) => {
     trackEvent('error', 'error_tracking', context);
   }, []);
 
