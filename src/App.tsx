@@ -7,10 +7,12 @@ import DistanceGradient from './tabs/DistanceGradient/distance-gradient';
 import About from './tabs/About/about';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
+import {PageTracker} from "./analytics/page-tracker.ts";
 
 function App() {
   return (
     <Router basename="/DLA-Studio-2025">
+      <PageTracker />
       <div>
         <nav className="dlasim_tab-nav">
           <NavLink to="/simple-2d-animated-dla" className={({ isActive }) => `dlasim_tab-link${isActive ? ' dlasim_active' : ''}`}>
