@@ -11,7 +11,7 @@ import {PageTracker} from "./analytics/page-tracker.ts";
 
 function App() {
   return (
-    <Router basename="/DLA-Studio-2025">
+    <Router basename="/">
       <PageTracker />
       <div>
         <nav className="dlasim_tab-nav">

@@ -17,7 +17,7 @@ npm run dev
 
 run: `npm run deploy` 
 
-This is hosted on github pages at http://localhost:5173/DLA-Studio-2025
+This is hosted on github pages at https://dlastudio.org
 
 The run command will build, commit and push to the gh-pages branch
 
