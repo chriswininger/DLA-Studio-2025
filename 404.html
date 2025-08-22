@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Redirecting...</title>
-    <base href="/DLA-Studio-2025/" />
+    <base href="/" />
     <script>
       // Redirect to index.html with the original path as a query param
       (function () {
         var path = window.location.pathname.replace(/^\//, '');
         var search = window.location.search;
         var hash = window.location.hash;
-        var newUrl = '/DLA-Studio-2025/?redirect=' + encodeURIComponent(path + search + hash);
+        var newUrl = '/?redirect=' + encodeURIComponent(path + search + hash);
         window.location.replace(newUrl);
       })();
     </script>
