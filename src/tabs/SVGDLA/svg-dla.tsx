@@ -44,33 +44,37 @@ export const SVGDLA: React.FC = () => {
 
 
   return (
-    <div className="dlasim-svgdla-tab">
-      <div className="dlasim-flex-row">
-        <ToolBar />
+    <>
+      <title>DLA Studio - SVG Export</title>
+      <meta name="description" content="Generate and export high-quality, scalable vector graphics (SVG) of your DLA fractal creations. Customize the output with various rendering options." />
+      <div className="dlasim-svgdla-tab">
+        <div className="dlasim-flex-row">
+          <ToolBar />
 
-        <div className="svgdla-main-content">
-          {/* SVG container */}
-          <div className="svgdla-svg-container">
-            <svg
-              width={CANVAS_WIDTH}
-              height={CANVAS_HEIGHT}
-              className="svgdla-svg"
-              viewBox={`0 0 ${CANVAS_WIDTH} ${CANVAS_HEIGHT}`}
-              dangerouslySetInnerHTML={{ __html: svgContent }}
-            >
-              {/* SVG content will be generated here */}
-            </svg>
+          <div className="svgdla-main-content">
+            {/* SVG container */}
+            <div className="svgdla-svg-container">
+              <svg
+                width={CANVAS_WIDTH}
+                height={CANVAS_HEIGHT}
+                className="svgdla-svg"
+                viewBox={`0 0 ${CANVAS_WIDTH} ${CANVAS_HEIGHT}`}
+                dangerouslySetInnerHTML={{ __html: svgContent }}
+              >
+                {/* SVG content will be generated here */}
+              </svg>
 
-            {/* Remove Generate SVG button, keep Download SVG */}
-            <div className="svgdla-button-container">
-              <button onClick={downloadSVG}>Download SVG</button>
+              {/* Remove Generate SVG button, keep Download SVG */}
+              <div className="svgdla-button-container">
+                <button onClick={downloadSVG}>Download SVG</button>
+              </div>
             </div>
+            
+            <ToolOptions />
           </div>
-          
-          <ToolOptions />
         </div>
       </div>
-    </div>
+    </>
   );
 
   function generateSVG() {

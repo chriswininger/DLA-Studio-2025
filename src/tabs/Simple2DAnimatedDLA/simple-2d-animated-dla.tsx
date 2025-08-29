@@ -101,7 +101,10 @@ const Simple2DAnimatedDLA: React.FC = () => {
   }, []);
 
   return (
-    <div className={`dlasim-simple-2d-animated-dla-tab
+    <>
+      <title>DLA Studio - 2D Simulation</title>
+      <meta name="description" content="Run a real-time, interactive 2D Diffusion-Limited Aggregation (DLA) simulation. Watch fractal patterns emerge as particles aggregate." />
+      <div className={`dlasim-simple-2d-animated-dla-tab
     ${selectedTool === 'brush' ? 'brush-active' : ''}
     ${selectedTool === 'eraser' ? 'eraser-active' : ''}`}
     >
@@ -169,6 +172,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
         )}
       </div>
     </div>
+    </>
   );
 
   // Handle start/stop/reset
