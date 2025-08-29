@@ -10,8 +10,16 @@ import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import {PageTracker} from "./analytics/page-tracker.ts";
 import { useNavigation } from './navigation/use-navigation';
 
-function AppContent() {
-  // Initialize navigation system - now inside Router context
+function App() {
+  return (
+    <Router basename="/">
+      <PageTracker />
+      <Tabs />
+    </Router>
+  )
+}
+
+function Tabs() {
   useNavigation();
 
   return (
@@ -39,15 +47,6 @@ function AppContent() {
       </Routes>
     </div>
   );
-}
-
-function App() {
-  return (
-    <Router basename="/">
-      <PageTracker />
-      <AppContent />
-    </Router>
-  )
 }
 
 export default App
