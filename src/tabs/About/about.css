@@ -20,6 +20,18 @@
   margin-top: 0;
 }
 
+.dlasim-about-link {
+  color: var(--dlasim-primary-color, #ff00a6);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.dlasim-about-link:hover {
+  color: var(--dlasim-accent-color, #00d8ff);
+  text-decoration: underline;
+}
+
 
 .dlasim-about-image {
   max-width: 100%;

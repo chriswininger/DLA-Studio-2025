@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './about.css';
 
 const About: React.FC = () => {
@@ -11,10 +12,13 @@ const About: React.FC = () => {
         </h1>
         
         <p className="dlasim-about-version">Version 0.0.1</p>
+
+        <p>Skip the Readme and start right away with the <Link to="/simple-2d-animated-dla" className="dlasim-about-link">simulation tab</Link></p>
+
         
         <div className="dlasim-about-image-container">
           <img 
-            src="/DLA-Studio-2025/example-1.png" 
+            src="/example-1.png" 
             alt="DLA Studio Example" 
             className="dlasim-about-image"
           />
