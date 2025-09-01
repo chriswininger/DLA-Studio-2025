@@ -1,3 +1,11 @@
 User-agent: *
 Allow: /
-Sitemap: https://dla-studio.com/sitemap.xml
+
+# Sitemap location
+Sitemap: https://dlastudio.org/sitemap.xml
+
+# Allow crawling of all content
+Disallow:
+
+# Crawl delay (optional)
+Crawl-delay: 1
