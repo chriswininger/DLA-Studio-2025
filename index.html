@@ -4,7 +4,19 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/fav.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DLA Studio</title>
+    <title>DLA Studio - Interactive Diffusion Limited Aggregation Simulations</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Interactive Diffusion Limited Aggregation (DLA) simulation studio. Create, explore, and visualize complex fractal patterns through real-time simulations with customizable parameters." />
+    <meta name="keywords" content="DLA, diffusion limited aggregation, fractal, simulation, interactive, mathematics, visualization, pattern formation" />
+    <meta name="author" content="DLA Studio" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="DLA Studio - Interactive Diffusion Limited Aggregation Simulations" />
+    <meta property="og:description" content="Create and explore complex fractal patterns through interactive DLA simulations with real-time controls and visualization." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://dlastudio.org" />
+    
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q8XCMPXL8B"></script>
     <script>
@@ -22,7 +34,37 @@
       ></script>
   </head>
   <body>
+    <!-- Pre-rendered content for SEO and crawlers -->
+    <header style="display: none;">
+      <h1>DLA Studio</h1>
+      <p>Interactive Diffusion Limited Aggregation Simulation Studio</p>
+      <p>Explore the fascinating world of fractal patterns through real-time DLA simulations. Our interactive tools allow you to create, customize, and visualize complex mathematical patterns with ease.</p>
+    </header>
+    
     <div id="root"></div>
+    
+    <!-- Fallback content for crawlers -->
+    <noscript>
+      <div style="padding: 20px; text-align: center;">
+        <h1>DLA Studio</h1>
+        <p>Interactive Diffusion Limited Aggregation Simulation Studio</p>
+        <p>This application requires JavaScript to run. Please enable JavaScript in your browser to access the interactive DLA simulations.</p>
+        <p>DLA Studio features:</p>
+        <ul style="text-align: left; max-width: 600px; margin: 0 auto;">
+          <li>Real-time DLA pattern generation</li>
+          <li>Customizable simulation parameters</li>
+          <li>Multiple visualization modes</li>
+          <li>Interactive controls and tools</li>
+          <li>Export and sharing capabilities</li>
+        </ul>
+
+        <p>
+          This is fallback content which are seeing because JavaScript is not enabled. For a complete experience
+          you must enable JavaScript.
+        </p>
+      </div>
+    </noscript>
+    
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
