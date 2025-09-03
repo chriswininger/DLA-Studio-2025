@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const routes = [
-  { path: '/', output: 'index.html' },
+  { path: '/', output: 'index.html' }, // Root route
   { path: '/about', output: 'about/index.html' },
   { path: '/simple-2d-animated-dla', output: 'simple-2d-animated-dla/index.html' },
   { path: '/svg-dla', output: 'svg-dla/index.html' },
@@ -51,16 +51,17 @@ async function prerenderRoute(page, route) {
   });
   
   // Wait for React to render
-  await new Promise(resolve => setTimeout(resolve, 3000));
+  await new Promise(resolve => setTimeout(resolve, 2000));
   
-  // Wait for the app-ready event if it exists
+  // Simple check that content is loaded
   try {
     await page.waitForFunction(() => {
-      return document.querySelector('#root') && 
-             document.querySelector('#root').children.length > 0;
+      const root = document.querySelector('#root');
+      return root && root.children.length > 0;
     }, { timeout: 5000 });
+    console.log(`✓ Route ${route.path} rendered`);
   } catch (error) {
-    console.log('App ready event not detected, continuing...');
+    console.log(`Route ${route.path} content not detected, continuing...`);
   }
   
   const html = await page.content();

@@ -18,3 +18,8 @@ TODO
 
 
 fix issue where hung on "Pre-rendering completed successfully!"
+
+
+!!! There was a simple bug where we were redirecting new users to about even if
+they went diretc to another route. it could be this was what google was complaing about, consider just merging that fix, trying google fetch and seeing if that was
+the only problem, it would be great not to need all this complexity

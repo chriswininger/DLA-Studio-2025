@@ -16,9 +16,10 @@ export const useNavigation = () => {
       const storedTab = navigationStorage.getStoredTab();
       dispatch(initializeFromStorage(storedTab));
       
-      // Navigate to stored tab or default to about
-      const targetTab = storedTab || '/about';
-      if (location.pathname !== targetTab) {
+      // Only redirect to stored tab if we're on the root path
+      // This allows direct route access to work properly
+      if (location.pathname === '/') {
+        const targetTab = storedTab || '/about';
         navigate(targetTab, { replace: true });
       }
     }

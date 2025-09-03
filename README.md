@@ -23,10 +23,11 @@ The run command will build, commit and push to the gh-pages branch
 
 # Deploy Process
 
-Before publishing you should build the site using `npm run build`
+The `deploy` process will run `github-pages -d dist`. This will automatically run
+the `prerender` task which runs `build` and coppies addtional resources.
 
-The `deploy` process will run `github-pages -d dist` which simply coppies everything from the dist directory to the gh-pages branch, triggering a built in github action
-which will update what is served
+After prerender it will simply coppy everything from the dist directory to the root of the gh-pages branch and push it. This triggers a built in github action
+which will update what is served.
 
 # About the build
 
@@ -40,3 +41,10 @@ step Google could not see the site content and would not allow ads to be served 
 believed the page to be mostly empty. This should also help with search indexing.
 
 The prerender phase, serves the inital vite build from dist, visits the routes with puppet and creates new static assets from them.
+
+# Preview
+
+`npm run preview`, this is not to be confusd with `npm run dev` which is an easy way
+to server the site during development. Preview is used to serve the dist folder and was primarily added to allow generation of the static pages. You can run it youself
+to see how things will serve. To truly see what will be seen durring prerender, first
+run `npm run build:base` to generate the base vite site in the dist folder
