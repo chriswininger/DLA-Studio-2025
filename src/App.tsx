@@ -1,5 +1,6 @@
 import './App.css'
 import './tabs/tabs.css'
+import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, NavLink } from 'react-router-dom';
 import Simple2DAnimatedDLA from './tabs/Simple2DAnimatedDLA/simple-2d-animated-dla'
 import { SVGDLA } from './tabs/SVGDLA/svg-dla'
@@ -21,6 +22,16 @@ function App() {
 
 function Tabs() {
   useNavigation();
+
+  // Dispatch event when app is ready for pre-rendering
+  useEffect(() => {
+    // Wait a bit for all components to render
+    const timer = setTimeout(() => {
+      document.dispatchEvent(new Event('app-ready'));
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div>
