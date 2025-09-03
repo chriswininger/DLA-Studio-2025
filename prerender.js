@@ -19,7 +19,9 @@ async function startServer() {
   return new Promise((resolve, reject) => {
     const server = spawn('npm', ['run', 'preview'], {
       stdio: 'pipe',
-      cwd: __dirname
+      cwd: __dirname,
+      // Ensure child processes are properly managed
+      detached: false
     });
     
     server.stdout.on('data', (data) => {
@@ -89,7 +91,15 @@ async function runPrerendering() {
     console.log('Launching browser...');
     browser = await puppeteer.launch({
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+        '--no-first-run',
+        '--no-zygote',
+        '--single-process'
+      ]
     });
     
     const page = await browser.newPage();
@@ -106,12 +116,47 @@ async function runPrerendering() {
     console.error('Pre-rendering failed:', error);
     process.exit(1);
   } finally {
+    console.log('Cleaning up...');
+    
     if (browser) {
       await browser.close();
+      console.log('Browser closed');
     }
+    
     if (server) {
-      server.kill();
+      // Kill the entire process tree
+      try {
+        const { exec } = await import('child_process');
+        
+        // Kill the main server process
+        server.kill('SIGTERM');
+        console.log('Server termination signal sent');
+        
+        // Kill all npm preview processes to ensure cleanup
+        exec('pkill -f "npm run preview"', (error) => {
+          if (!error) {
+            console.log('Cleaned up npm preview processes');
+          }
+        });
+        
+        // Force kill after a short delay
+        setTimeout(() => {
+          try {
+            server.kill('SIGKILL');
+            console.log('Server force killed');
+          } catch (e) {
+            console.log('Server already terminated');
+          }
+        }, 1000);
+        
+      } catch (e) {
+        console.log('Error during server cleanup:', e.message);
+      }
     }
+    
+    console.log('Cleanup completed');
+    
+    process.exit(0);
   }
 }
 

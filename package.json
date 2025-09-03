@@ -7,9 +7,9 @@
   "license": "mit",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build:base": "tsc -b && vite build",
     "prerender": "node prerender.js",
-    "build:prerendered": "npm run build && npm run prerender",
+    "build": "npm run build:base && npm run prerender",
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build:prerendered && cp public/CNAME dist/ && cp .nojekyll dist/",
