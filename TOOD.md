@@ -12,3 +12,9 @@ TODO
 # Thoughts for next blog at 2 weeks
 * Issues with light/dark mode
 * fake tests
+
+
+"Testing: After setup, use the “Fetch as Google” or Google Search Console tools to see what content is visible to crawlers."
+
+
+fix issue where hung on "Pre-rendering completed successfully!"
