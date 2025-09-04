@@ -15,10 +15,11 @@ export const useNavigation = () => {
     if (!isInitialized) {
       const storedTab = navigationStorage.getStoredTab();
       dispatch(initializeFromStorage(storedTab));
-      
+
       // Navigate to stored tab or default to about
-      const targetTab = storedTab || '/about';
-      if (location.pathname !== targetTab) {
+      // unless page is specified explicitly
+      if (location.pathname === '/') {
+        const targetTab = storedTab || '/about';
         navigate(targetTab, { replace: true });
       }
     }
