@@ -4,7 +4,7 @@ import { useAppSelector } from '../../store';
 import { setIsRunning, saveDLAState, resetDLAState, setIsSimulating } from './simple-2d-animated-dla-slice';
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from './simple-2d-animated-dla-constants';
 import { createDLAState, stepDLA } from '../../dla/dla';
-import type { DLAState } from '../../dla/dla';
+import type { DLAState, ClusterMap } from '../../dla/dla';
 import type { RootState } from '../../store';
 import type { Simple2DAnimatedDLAUIState } from './simple-2d-animated-dla-slice';
 import './simple-2d-animated-dla.css';
@@ -86,6 +86,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
     canvasRef,
     setCursorPosition,
     spawnWalkersInBrushRadius,
+    spawnStickyPointsInBrushRadius,
     removeWalkersInEraserRadius
   });
 
@@ -380,6 +381,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
     ctx.restore();
   }
 
+
   function spawnWalkersInBrushRadius(centerX: number, centerY: number, brushSize: number, numWalkers: number) {
     if (!dlaStateRef.current) return;
 
@@ -387,24 +389,54 @@ const Simple2DAnimatedDLA: React.FC = () => {
     const walkers: { x: number; y: number }[] = [];
 
     for (let i = 0; i < numWalkers; i++) {
-      // Generate random angle and distance within the circle
-      const angle = Math.random() * 2 * Math.PI;
-      const distance = Math.random() * radius;
-
-      // Convert polar coordinates to Cartesian
-      const x = Math.floor(centerX + distance * Math.cos(angle));
-      const y = Math.floor(centerY + distance * Math.sin(angle));
-
-      // Clamp to canvas bounds
-      const clampedX = Math.max(0, Math.min(CANVAS_WIDTH - 1, x));
-      const clampedY = Math.max(0, Math.min(CANVAS_HEIGHT - 1, y));
-
-      walkers.push({ x: clampedX, y: clampedY });
+      const point = generateRandomPointInBrushCircle(centerX, centerY, radius);
+      walkers.push(point);
     }
 
     // Add walkers to the current state
     dlaStateRef.current.walkers = [...dlaStateRef.current.walkers, ...walkers];
     doDraw();
+  }
+
+  function spawnStickyPointsInBrushRadius(centerX: number, centerY: number, brushSize: number, numPoints: number) {
+    if (!dlaStateRef.current) return;
+
+    const radius = brushSize / 2;
+    const newCluster: ClusterMap = {};
+
+    for (let i = 0; i < numPoints; i++) {
+      const point = generateRandomPointInBrushCircle(centerX, centerY, radius);
+      const pointKey = `${point.x},${point.y}`;
+
+      // Only add if the point doesn't already exist in the cluster
+      if (!dlaStateRef.current.cluster[pointKey]) {
+        newCluster[pointKey] = {
+          point,
+          distance: 0,
+          parent: 'ROOT'
+        };
+      }
+    }
+
+    // Add new cluster points to the current state
+    dlaStateRef.current.cluster = { ...dlaStateRef.current.cluster, ...newCluster };
+    doDraw();
+  }
+
+  function generateRandomPointInBrushCircle(centerX: number, centerY: number, radius: number): { x: number; y: number } {
+    // Generate random angle and distance within the circle
+    const angle = Math.random() * 2 * Math.PI;
+    const distance = Math.random() * radius;
+
+    // Convert polar coordinates to Cartesian
+    const x = Math.floor(centerX + distance * Math.cos(angle));
+    const y = Math.floor(centerY + distance * Math.sin(angle));
+
+    // Clamp to canvas bounds
+    const clampedX = Math.max(0, Math.min(CANVAS_WIDTH - 1, x));
+    const clampedY = Math.max(0, Math.min(CANVAS_HEIGHT - 1, y));
+
+    return { x: clampedX, y: clampedY };
   }
 
   function removeWalkersInEraserRadius(centerX: number, centerY: number, eraserSize: number) {
@@ -600,6 +632,7 @@ function useHandleMouseMoveInCanvas({
   canvasRef,
   setCursorPosition,
   spawnWalkersInBrushRadius,
+  spawnStickyPointsInBrushRadius,
   removeWalkersInEraserRadius
 }: {
   shouldShowBrushPreview: boolean;
@@ -608,12 +641,14 @@ function useHandleMouseMoveInCanvas({
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
   setCursorPosition: React.Dispatch<React.SetStateAction<{ x: number; y: number } | null>>;
   spawnWalkersInBrushRadius: (x: number, y: number, brushSize: number, numWalkers: number) => void;
+  spawnStickyPointsInBrushRadius: (x: number, y: number, brushSize: number, numPoints: number) => void;
   removeWalkersInEraserRadius: (x: number, y: number, eraserSize: number) => void;
 }) {
   const isRunning = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).isRunning);
   const selectedTool = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).selectedTool);
   const brushSize = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushSize);
   const brushParticles = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushParticles);
+  const brushSpawnType = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushSpawnType);
   const eraserSize = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).eraserSize);
 
   return React.useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -631,14 +666,18 @@ function useHandleMouseMoveInCanvas({
         // If dragging, handle tool operations
         if (isDragging && !isRunning) {
           if (selectedTool === 'brush') {
-            spawnWalkersInBrushRadius(x, y, brushSize, brushParticles);
+            if (brushSpawnType === 'walkers') {
+              spawnWalkersInBrushRadius(x, y, brushSize, brushParticles);
+            } else if (brushSpawnType === 'stuck points') {
+              spawnStickyPointsInBrushRadius(x, y, brushSize, brushParticles);
+            }
           } else if (selectedTool === 'eraser') {
             removeWalkersInEraserRadius(x, y, eraserSize);
           }
         }
       }
     }
-  }, [shouldShowBrushPreview, shouldShowEraserPreview, isDragging, selectedTool, isRunning, brushSize, brushParticles, eraserSize, canvasRef, setCursorPosition, spawnWalkersInBrushRadius, removeWalkersInEraserRadius]);
+  }, [shouldShowBrushPreview, shouldShowEraserPreview, isDragging, selectedTool, isRunning, brushSize, brushParticles, brushSpawnType, eraserSize, canvasRef, setCursorPosition, spawnWalkersInBrushRadius, spawnStickyPointsInBrushRadius, removeWalkersInEraserRadius]);
 }
 
 export default Simple2DAnimatedDLA;

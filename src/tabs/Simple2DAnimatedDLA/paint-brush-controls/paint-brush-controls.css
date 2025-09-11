@@ -24,6 +24,32 @@
   cursor: not-allowed;
 }
 
+.dlasim_radio-group {
+  display: flex;
+  gap: 16px;
+  margin-left: 8px;
+}
+
+.dlasim_radio-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: #fff;
+  font-size: 14px;
+}
+
+.dlasim_radio-input {
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--control-border-color);
+}
+
+.dlasim_radio-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Mobile responsive styles */
 @media (max-width: 768px) {
   .dlasim_paint-controls {
@@ -45,5 +71,11 @@
     width: 100%;
     max-width: 200px;
     font-size: 16px; /* Prevent zoom on mobile */
+  }
+  
+  .dlasim_radio-group {
+    margin-left: 0;
+    flex-direction: column;
+    gap: 12px;
   }
 } 
