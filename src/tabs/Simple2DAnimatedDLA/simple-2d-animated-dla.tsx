@@ -87,7 +87,8 @@ const Simple2DAnimatedDLA: React.FC = () => {
     setCursorPosition,
     spawnWalkersInBrushRadius,
     spawnStickyPointsInBrushRadius,
-    removeWalkersInEraserRadius
+    removeWalkersInEraserRadius,
+    removeStuckPointsInEraserRadius
   });
 
   const handleMouseLeave = useCallback(() => {
@@ -456,6 +457,28 @@ const Simple2DAnimatedDLA: React.FC = () => {
     doDraw();
   }
 
+  function removeStuckPointsInEraserRadius(centerX: number, centerY: number, eraserSize: number) {
+    if (!dlaStateRef.current) return;
+
+    const radius = eraserSize / 2;
+    const radiusSquared = radius * radius;
+
+    // Filter out cluster points that are within the eraser radius
+    const newCluster: ClusterMap = {};
+    for (const [key, entry] of Object.entries(dlaStateRef.current.cluster)) {
+      const dx = entry.point.x - centerX;
+      const dy = entry.point.y - centerY;
+      const distanceSquared = dx * dx + dy * dy;
+      
+      if (distanceSquared > radiusSquared) {
+        newCluster[key] = entry;
+      }
+    }
+
+    dlaStateRef.current.cluster = newCluster;
+    doDraw();
+  }
+
   function initializeState() {
     // Only initialize cluster and walkers on first mount or reset
     if (!dlaStateRef.current) {
@@ -633,7 +656,8 @@ function useHandleMouseMoveInCanvas({
   setCursorPosition,
   spawnWalkersInBrushRadius,
   spawnStickyPointsInBrushRadius,
-  removeWalkersInEraserRadius
+  removeWalkersInEraserRadius,
+  removeStuckPointsInEraserRadius
 }: {
   shouldShowBrushPreview: boolean;
   shouldShowEraserPreview: boolean;
@@ -643,12 +667,14 @@ function useHandleMouseMoveInCanvas({
   spawnWalkersInBrushRadius: (x: number, y: number, brushSize: number, numWalkers: number) => void;
   spawnStickyPointsInBrushRadius: (x: number, y: number, brushSize: number, numPoints: number) => void;
   removeWalkersInEraserRadius: (x: number, y: number, eraserSize: number) => void;
+  removeStuckPointsInEraserRadius: (x: number, y: number, eraserSize: number) => void;
 }) {
   const isRunning = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).isRunning);
   const selectedTool = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).selectedTool);
   const brushSize = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushSize);
   const brushParticles = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushParticles);
   const brushSpawnType = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushSpawnType);
+  const eraseParticleType = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).eraseParticleType);
   const eraserSize = useAppSelector((state: RootState) => (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).eraserSize);
 
   return React.useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -672,12 +698,16 @@ function useHandleMouseMoveInCanvas({
               spawnStickyPointsInBrushRadius(x, y, brushSize, brushParticles);
             }
           } else if (selectedTool === 'eraser') {
-            removeWalkersInEraserRadius(x, y, eraserSize);
+            if (eraseParticleType === 'walkers') {
+              removeWalkersInEraserRadius(x, y, eraserSize);
+            } else if (eraseParticleType === 'stuck points') {
+              removeStuckPointsInEraserRadius(x, y, eraserSize);
+            }
           }
         }
       }
     }
-  }, [shouldShowBrushPreview, shouldShowEraserPreview, isDragging, selectedTool, isRunning, brushSize, brushParticles, brushSpawnType, eraserSize, canvasRef, setCursorPosition, spawnWalkersInBrushRadius, spawnStickyPointsInBrushRadius, removeWalkersInEraserRadius]);
+  }, [shouldShowBrushPreview, shouldShowEraserPreview, isDragging, selectedTool, isRunning, brushSize, brushParticles, brushSpawnType, eraseParticleType, eraserSize, canvasRef, setCursorPosition, spawnWalkersInBrushRadius, spawnStickyPointsInBrushRadius, removeWalkersInEraserRadius, removeStuckPointsInEraserRadius]);
 }
 
 export default Simple2DAnimatedDLA;

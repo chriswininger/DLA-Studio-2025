@@ -5,6 +5,7 @@ import type { ClusterMap } from '../../dla/dla';
 
 export type Simple2DAnimatedDLATool = 'brush' | 'eraser' | 'spawn-shapes';
 export type BrushSpawnType = 'walkers' | 'stuck points';
+export type EraseParticleType = 'walkers' | 'stuck points';
 export interface Simple2DAnimatedDLAUIState {
   numParticles: number;
   spawnXOffset: number;
@@ -18,6 +19,7 @@ export interface Simple2DAnimatedDLAUIState {
   isSimulating: boolean;
   selectedTool: Simple2DAnimatedDLATool;
   brushSpawnType: BrushSpawnType;
+  eraseParticleType: EraseParticleType;
   // DLA simulation state
   dlaCluster: ClusterMap;
   dlaWalkers: { x: number; y: number }[];
@@ -37,6 +39,7 @@ const initialState: Simple2DAnimatedDLAUIState = {
   isSimulating: false,
   selectedTool: 'brush',
   brushSpawnType: 'walkers',
+  eraseParticleType: 'walkers',
   // DLA simulation state
   dlaCluster: {},
   dlaWalkers: [],
@@ -83,6 +86,9 @@ const slice = createSlice({
     setBrushSpawnType(state, action: PayloadAction<BrushSpawnType>) {
       state.brushSpawnType = action.payload;
     },
+    setEraseParticleType(state, action: PayloadAction<EraseParticleType>) {
+      state.eraseParticleType = action.payload;
+    },
     saveDLAState(state, action: PayloadAction<{ cluster: ClusterMap; walkers: { x: number; y: number }[]; steps: number }>) {
       state.dlaCluster = action.payload.cluster;
       state.dlaWalkers = action.payload.walkers;
@@ -109,6 +115,7 @@ export const {
   setIsSimulating,
   setSelectedTool,
   setBrushSpawnType,
+  setEraseParticleType,
   saveDLAState,
   resetDLAState
 } = slice.actions;

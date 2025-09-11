@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../store';
-import { setEraserSize } from '../simple-2d-animated-dla-slice';
+import { setEraserSize, setEraseParticleType } from '../simple-2d-animated-dla-slice';
 import type { RootState } from '../../../store';
 import type { Simple2DAnimatedDLAUIState } from '../simple-2d-animated-dla-slice';
 import './eraser-controls.css';
@@ -16,6 +16,9 @@ const EraserControls: React.FC<EraserControlsProps> = ({
   const dispatch = useDispatch();
   const eraserSize = useAppSelector((state: RootState) => 
     (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).eraserSize
+  );
+  const eraseParticleType = useAppSelector((state: RootState) => 
+    (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).eraseParticleType
   );
 
   return (
@@ -34,6 +37,34 @@ const EraserControls: React.FC<EraserControlsProps> = ({
           className="dlasim_eraser-input"
         />
       </div>
+      <div className="dlasim_eraser-row">
+        <div className="dlasim_radio-group">
+          <label className="dlasim_radio-label">
+            <input
+              type="radio"
+              name="erase-particle-type"
+              value="walkers"
+              checked={eraseParticleType === 'walkers'}
+              onChange={handleEraseParticleTypeChange}
+              disabled={isRunning}
+              className="dlasim_radio-input"
+            />
+            Walkers
+          </label>
+          <label className="dlasim_radio-label">
+            <input
+              type="radio"
+              name="erase-particle-type"
+              value="stuck points"
+              checked={eraseParticleType === 'stuck points'}
+              onChange={handleEraseParticleTypeChange}
+              disabled={isRunning}
+              className="dlasim_radio-input"
+            />
+            Stuck Points
+          </label>
+        </div>
+      </div>
     </div>
   );
 
@@ -42,6 +73,11 @@ const EraserControls: React.FC<EraserControlsProps> = ({
     if (!isNaN(val) && val > 0) {
       dispatch(setEraserSize(val));
     }
+  }
+
+  function handleEraseParticleTypeChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const value = e.target.value as 'walkers' | 'stuck points';
+    dispatch(setEraseParticleType(value));
   }
 };
 
