@@ -381,6 +381,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
     ctx.restore();
   }
 
+
   function spawnWalkersInBrushRadius(centerX: number, centerY: number, brushSize: number, numWalkers: number) {
     if (!dlaStateRef.current) return;
 
@@ -388,19 +389,8 @@ const Simple2DAnimatedDLA: React.FC = () => {
     const walkers: { x: number; y: number }[] = [];
 
     for (let i = 0; i < numWalkers; i++) {
-      // Generate random angle and distance within the circle
-      const angle = Math.random() * 2 * Math.PI;
-      const distance = Math.random() * radius;
-
-      // Convert polar coordinates to Cartesian
-      const x = Math.floor(centerX + distance * Math.cos(angle));
-      const y = Math.floor(centerY + distance * Math.sin(angle));
-
-      // Clamp to canvas bounds
-      const clampedX = Math.max(0, Math.min(CANVAS_WIDTH - 1, x));
-      const clampedY = Math.max(0, Math.min(CANVAS_HEIGHT - 1, y));
-
-      walkers.push({ x: clampedX, y: clampedY });
+      const point = generateRandomPointInBrushCircle(centerX, centerY, radius);
+      walkers.push(point);
     }
 
     // Add walkers to the current state
@@ -415,19 +405,7 @@ const Simple2DAnimatedDLA: React.FC = () => {
     const newCluster: ClusterMap = {};
 
     for (let i = 0; i < numPoints; i++) {
-      // Generate random angle and distance within the circle
-      const angle = Math.random() * 2 * Math.PI;
-      const distance = Math.random() * radius;
-
-      // Convert polar coordinates to Cartesian
-      const x = Math.floor(centerX + distance * Math.cos(angle));
-      const y = Math.floor(centerY + distance * Math.sin(angle));
-
-      // Clamp to canvas bounds
-      const clampedX = Math.max(0, Math.min(CANVAS_WIDTH - 1, x));
-      const clampedY = Math.max(0, Math.min(CANVAS_HEIGHT - 1, y));
-
-      const point = { x: clampedX, y: clampedY };
+      const point = generateRandomPointInBrushCircle(centerX, centerY, radius);
       const pointKey = `${point.x},${point.y}`;
 
       // Only add if the point doesn't already exist in the cluster
@@ -443,6 +421,22 @@ const Simple2DAnimatedDLA: React.FC = () => {
     // Add new cluster points to the current state
     dlaStateRef.current.cluster = { ...dlaStateRef.current.cluster, ...newCluster };
     doDraw();
+  }
+
+  function generateRandomPointInBrushCircle(centerX: number, centerY: number, radius: number): { x: number; y: number } {
+    // Generate random angle and distance within the circle
+    const angle = Math.random() * 2 * Math.PI;
+    const distance = Math.random() * radius;
+
+    // Convert polar coordinates to Cartesian
+    const x = Math.floor(centerX + distance * Math.cos(angle));
+    const y = Math.floor(centerY + distance * Math.sin(angle));
+
+    // Clamp to canvas bounds
+    const clampedX = Math.max(0, Math.min(CANVAS_WIDTH - 1, x));
+    const clampedY = Math.max(0, Math.min(CANVAS_HEIGHT - 1, y));
+
+    return { x: clampedX, y: clampedY };
   }
 
   function removeWalkersInEraserRadius(centerX: number, centerY: number, eraserSize: number) {
