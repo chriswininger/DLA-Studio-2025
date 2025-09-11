@@ -9,10 +9,14 @@ const __dirname = path.dirname(__filename);
 
 const routes = [
   { path: '/', output: 'index.html' }, // Root route
-  { path: '/about', output: 'about/index.html' },
-  { path: '/simple-2d-animated-dla', output: 'simple-2d-animated-dla/index.html' },
-  { path: '/svg-dla', output: 'svg-dla/index.html' },
-  { path: '/distance-gradient', output: 'distance-gradient/index.html' }
+  { path: '/about', output: 'about.html' }, // Without trailing slash
+  { path: '/about/', output: 'about/index.html' }, // With trailing slash
+  { path: '/simple-2d-animated-dla', output: 'simple-2d-animated-dla.html' },
+  { path: '/simple-2d-animated-dla/', output: 'simple-2d-animated-dla/index.html' },
+  { path: '/svg-dla', output: 'svg-dla.html' },
+  { path: '/svg-dla/', output: 'svg-dla/index.html' },
+  { path: '/distance-gradient', output: 'distance-gradient.html' },
+  { path: '/distance-gradient/', output: 'distance-gradient/index.html' }
 ];
 
 runPrerendering();
