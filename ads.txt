@@ -3,4 +3,4 @@
 # Format: google.com, YOUR_PUBLISHER_ID, DIRECT, f08c47fec0942fa0
 
 # Example (replace with your actual publisher ID):
-google.com, pub-3529119184598386, DIRECT, f08c47fec0942fa0
+google.com, pub-3529119184598386, DIRECT, f08c47fec0942f
