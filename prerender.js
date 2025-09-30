@@ -19,6 +19,58 @@ const routes = [
   { path: '/distance-gradient/', output: 'distance-gradient/index.html' }
 ];
 
+// Helper function to determine canonical URL for a route
+function getCanonicalUrl(routePath) {
+  const baseUrl = 'https://dlastudio.org';
+  
+  // For routes without trailing slash, canonical should point to the version with trailing slash
+  if (routePath === '/about') {
+    return `${baseUrl}/about/`;
+  }
+  if (routePath === '/simple-2d-animated-dla') {
+    return `${baseUrl}/simple-2d-animated-dla/`;
+  }
+  if (routePath === '/svg-dla') {
+    return `${baseUrl}/svg-dla/`;
+  }
+  if (routePath === '/distance-gradient') {
+    return `${baseUrl}/distance-gradient/`;
+  }
+  
+  // For routes with trailing slash or root, canonical points to itself
+  return `${baseUrl}${routePath}`;
+}
+
+// Helper function to add canonical tag to HTML
+function addCanonicalTag(html, canonicalUrl) {
+  // Check if canonical tag already exists
+  if (html.includes('rel="canonical"')) {
+    // Replace existing canonical tag
+    const canonicalRegex = /<link[^>]*rel="canonical"[^>]*>/g;
+    const canonicalTag = `    <link rel="canonical" href="${canonicalUrl}">`;
+    return html.replace(canonicalRegex, canonicalTag);
+  }
+  
+  const canonicalTag = `    <link rel="canonical" href="${canonicalUrl}">`;
+  
+  // Find the position after the Open Graph meta tags
+  const ogUrlIndex = html.indexOf('<meta property="og:url"');
+  if (ogUrlIndex === -1) {
+    // Fallback: add after the last meta tag
+    const lastMetaIndex = html.lastIndexOf('</meta>');
+    if (lastMetaIndex !== -1) {
+      return html.slice(0, lastMetaIndex + 7) + '\n' + canonicalTag + '\n    ' + html.slice(lastMetaIndex + 7);
+    }
+    return html;
+  }
+  
+  // Find the end of the og:url meta tag
+  const ogUrlEndIndex = html.indexOf('>', ogUrlIndex) + 1;
+  
+  // Insert canonical tag after the og:url meta tag
+  return html.slice(0, ogUrlEndIndex) + '\n    ' + canonicalTag + '\n    ' + html.slice(ogUrlEndIndex);
+}
+
 runPrerendering();
 
 async function runPrerendering() {
@@ -124,7 +176,15 @@ async function prerenderRoute(page, route, port) {
     console.log(`Route ${route.path} content not detected, continuing...`);
   }
 
-  const html = await page.content();
+  let html = await page.content();
+
+  // Add canonical tag based on the route (this is to make google indexing happy)
+  // It did not like that the index page the about page initially render the same thing
+  // And was reporting Duplicate without user-selected canonical
+  const canonicalUrl = getCanonicalUrl(route.path);
+  if (canonicalUrl) {
+    html = addCanonicalTag(html, canonicalUrl);
+  }
 
   // Create directory if it doesn't exist
   const outputPath = path.join(__dirname, 'dist', route.output);
