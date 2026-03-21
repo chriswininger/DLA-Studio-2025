@@ -3,6 +3,7 @@ import simple2dAnimatedDlaReducer from './tabs/Simple2DAnimatedDLA/simple-2d-ani
 import svgDlaReducer from './tabs/SVGDLA/svg-dla-slice';
 import distanceGradientReducer from './tabs/DistanceGradient/distance-gradient-slice';
 import navigationReducer from './navigation/navigation-slice';
+import threeDimensionalDlaReducer from './tabs/three-dimensional-dla/three-dimensional-dla-slice';
 import { useSelector, useDispatch } from 'react-redux';
 import type { TypedUseSelectorHook } from 'react-redux';
 
@@ -12,6 +13,7 @@ export const store = configureStore({
     svgDla: svgDlaReducer,
     distanceGradient: distanceGradientReducer,
     navigation: navigationReducer,
+    threeDimensionalDla: threeDimensionalDlaReducer,
   },
 });
 
