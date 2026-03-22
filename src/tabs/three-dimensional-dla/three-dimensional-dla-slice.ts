@@ -1,18 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { DEFAULT_PARTICLES_3D, DEFAULT_SPAWN_RADIUS } from './three-dimensional-dla-constants';
-
-export interface Walker3D {
-  x: number;
-  y: number;
-  z: number;
-}
+import type { Point3D, ClusterMap3D } from './dla-3d';
 
 export interface ThreeDimensionalDLAState {
   isRunning: boolean;
   numParticles: number;
   spawnSphereRadius: number;
-  walkers: Walker3D[];
+  walkers: Point3D[];
+  cluster: ClusterMap3D;
+  steps: number;
 }
 
 const initialState: ThreeDimensionalDLAState = {
@@ -20,6 +17,8 @@ const initialState: ThreeDimensionalDLAState = {
   numParticles: DEFAULT_PARTICLES_3D,
   spawnSphereRadius: DEFAULT_SPAWN_RADIUS,
   walkers: [],
+  cluster: {},
+  steps: 0,
 };
 
 const slice = createSlice({
@@ -35,15 +34,19 @@ const slice = createSlice({
     setSpawnSphereRadius(state, action: PayloadAction<number>) {
       state.spawnSphereRadius = action.payload;
     },
-    addWalkers(state, action: PayloadAction<Walker3D[]>) {
+    addWalkers(state, action: PayloadAction<Point3D[]>) {
       state.walkers = [...state.walkers, ...action.payload];
     },
-    clearWalkers(state) {
-      state.walkers = [];
+    saveDLA3DState(state, action: PayloadAction<{ cluster: ClusterMap3D; walkers: Point3D[]; steps: number }>) {
+      state.cluster = action.payload.cluster;
+      state.walkers = action.payload.walkers;
+      state.steps = action.payload.steps;
     },
     resetState(state) {
       state.isRunning = false;
       state.walkers = [];
+      state.cluster = {};
+      state.steps = 0;
     },
   },
 });
@@ -53,7 +56,7 @@ export const {
   setNumParticles,
   setSpawnSphereRadius,
   addWalkers,
-  clearWalkers,
+  saveDLA3DState,
   resetState,
 } = slice.actions;
 

@@ -2,7 +2,7 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../store';
 import { setNumParticles, setSpawnSphereRadius, addWalkers } from '../three-dimensional-dla-slice';
 import type { RootState } from '../../../store';
-import type { Walker3D } from '../three-dimensional-dla-slice';
+import type { Point3D } from '../dla-3d';
 import './sphere-spawn-controls.css';
 
 interface SphereSpawnControlsProps {
@@ -75,8 +75,8 @@ function SphereSpawnControls({ isRunning }: SphereSpawnControlsProps) {
   }
 }
 
-function spawnWalkersInSphere(count: number, radius: number): Walker3D[] {
-  const walkers: Walker3D[] = [];
+function spawnWalkersInSphere(count: number, radius: number): Point3D[] {
+  const walkers: Point3D[] = [];
   for (let i = 0; i < count; i++) {
     const u = Math.random();
     const v = Math.random();
