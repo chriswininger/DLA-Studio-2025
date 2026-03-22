@@ -57,6 +57,12 @@
   font-size: 14px;
 }
 
+.dlasim-3d-controls-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 @media (max-width: 768px) {
   .dlasim-three-dimensional-dla {
     padding: 10px;

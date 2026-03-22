@@ -10,6 +10,7 @@ export interface ClusterEntry3D {
   point: Point3D;
   distance: number;
   parent: ClusterEntry3D | typeof ROOT;
+  parentPoint: Point3D | null;
 }
 
 export interface ClusterMap3D {
@@ -25,17 +26,17 @@ export interface DLA3DState {
   boundHalfExtent: number;
 }
 
-export function createDLA3DState(boundHalfExtent: number): DLA3DState {
+export function createDLA3DState(boundHalfExtent: number, stickDistance: number): DLA3DState {
   const cluster: ClusterMap3D = {};
   const origin: Point3D = { x: 0, y: 0, z: 0 };
-  cluster[pointKey(origin)] = { point: origin, distance: 0, parent: ROOT };
+  cluster[pointKey(origin)] = { point: origin, distance: 0, parent: ROOT, parentPoint: null };
 
   return {
     cluster,
     walkers: [],
     steps: 0,
     stepSize: 0.2,
-    stickDistance: 0.3,
+    stickDistance,
     boundHalfExtent,
   };
 }
@@ -77,6 +78,7 @@ export function stepDLA3D(state: DLA3DState): DLA3DState {
           point: moved,
           distance: stuckParent.distance + 1,
           parent: stuckParent,
+          parentPoint: stuckParent.point,
         };
       }
     } else {

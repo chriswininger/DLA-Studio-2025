@@ -1,12 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { DEFAULT_PARTICLES_3D, DEFAULT_SPAWN_RADIUS } from './three-dimensional-dla-constants';
+import { DEFAULT_PARTICLES_3D, DEFAULT_SPAWN_RADIUS, DEFAULT_STICK_DISTANCE } from './three-dimensional-dla-constants';
 import type { Point3D, ClusterMap3D } from './dla-3d';
 
 export interface ThreeDimensionalDLAState {
   isRunning: boolean;
   numParticles: number;
   spawnSphereRadius: number;
+  stickDistance: number;
   walkers: Point3D[];
   cluster: ClusterMap3D;
   steps: number;
@@ -16,6 +17,7 @@ const initialState: ThreeDimensionalDLAState = {
   isRunning: false,
   numParticles: DEFAULT_PARTICLES_3D,
   spawnSphereRadius: DEFAULT_SPAWN_RADIUS,
+  stickDistance: DEFAULT_STICK_DISTANCE,
   walkers: [],
   cluster: {},
   steps: 0,
@@ -33,6 +35,9 @@ const slice = createSlice({
     },
     setSpawnSphereRadius(state, action: PayloadAction<number>) {
       state.spawnSphereRadius = action.payload;
+    },
+    setStickDistance(state, action: PayloadAction<number>) {
+      state.stickDistance = action.payload;
     },
     addWalkers(state, action: PayloadAction<Point3D[]>) {
       state.walkers = [...state.walkers, ...action.payload];
@@ -55,6 +60,7 @@ export const {
   setIsRunning,
   setNumParticles,
   setSpawnSphereRadius,
+  setStickDistance,
   addWalkers,
   saveDLA3DState,
   resetState,

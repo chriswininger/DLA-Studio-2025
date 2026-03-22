@@ -7,10 +7,14 @@ import { useAppSelector } from '../../store';
 import type { RootState } from '../../store';
 import { setIsRunning, saveDLA3DState, resetState } from './three-dimensional-dla-slice';
 import { createDLA3DState, stepDLA3D } from './dla-3d';
-import type { DLA3DState, ClusterEntry3D } from './dla-3d';
-import { BOUND_HALF_EXTENT } from './three-dimensional-dla-constants';
+import type { DLA3DState } from './dla-3d';
+import { BOUND_HALF_EXTENT, MAX_WALKERS, MAX_CLUSTER, MAX_CONNECTIONS } from './three-dimensional-dla-constants';
 import SphereSpawnControls from './sphere-spawn-controls/sphere-spawn-controls';
+import SimulationControls from './simulation-controls/simulation-controls';
 import './three-dimensional-dla.css';
+
+const STATUS_UPDATE_INTERVAL = 10;
+const HIDDEN_POSITION = new THREE.Matrix4().makeTranslation(0, -9999, 0);
 
 function ThreeDimensionalDLA() {
   const dispatch = useDispatch();
@@ -18,11 +22,10 @@ function ThreeDimensionalDLA() {
   const reduxWalkers = useAppSelector((state: RootState) => state.threeDimensionalDla.walkers);
   const reduxCluster = useAppSelector((state: RootState) => state.threeDimensionalDla.cluster);
   const reduxSteps = useAppSelector((state: RootState) => state.threeDimensionalDla.steps);
+  const stickDistance = useAppSelector((state: RootState) => state.threeDimensionalDla.stickDistance);
 
   const dlaStateRef = useRef<DLA3DState | null>(null);
-  const [steps, setSteps] = React.useState(0);
-  const [walkerPositions, setWalkerPositions] = React.useState<{ x: number; y: number; z: number }[]>([]);
-  const [clusterEntries, setClusterEntries] = React.useState<ClusterEntry3D[]>([]);
+  const [statusText, setStatusText] = React.useState('Steps: 0 | Walkers: 0 | Cluster: 1');
 
   useEffect(initializeState, []);
 
@@ -40,6 +43,12 @@ function ThreeDimensionalDLA() {
 
   useEffect(syncSpawnedWalkers, [reduxWalkers]);
 
+  useEffect(() => {
+    if (dlaStateRef.current) {
+      dlaStateRef.current.stickDistance = stickDistance;
+    }
+  }, [stickDistance]);
+
   return (
     <div className="dlasim-three-dimensional-dla">
       <div className="dlasim-3d-flex-row">
@@ -49,12 +58,13 @@ function ThreeDimensionalDLA() {
               <ambientLight intensity={0.5} />
               <pointLight position={[10, 10, 10]} intensity={1} />
               <BoundingBox halfExtent={BOUND_HALF_EXTENT} />
-              <ClusterSpheres entries={clusterEntries} />
-              <WalkerSpheres walkers={walkerPositions} />
+              <InstancedWalkers dlaStateRef={dlaStateRef} />
+              <InstancedCluster dlaStateRef={dlaStateRef} />
+              <ClusterLines dlaStateRef={dlaStateRef} />
               <SimulationLoop
                 dlaStateRef={dlaStateRef}
                 isRunning={isRunning}
-                onStep={handleStepUpdate}
+                setStatusText={setStatusText}
                 onFinished={handleFinished}
               />
               <OrbitControls />
@@ -69,10 +79,13 @@ function ThreeDimensionalDLA() {
             <button onClick={handleReset} disabled={isRunning}>Reset</button>
           </div>
           <div className="dlasim-3d-status-row">
-            Steps: {steps} | Walkers: {walkerPositions.length} | Cluster: {clusterEntries.length}
+            {statusText}
           </div>
         </div>
-        <SphereSpawnControls isRunning={isRunning} />
+        <div className="dlasim-3d-controls-col">
+          <SphereSpawnControls isRunning={isRunning} />
+          <SimulationControls isRunning={isRunning} />
+        </div>
       </div>
     </div>
   );
@@ -83,36 +96,30 @@ function ThreeDimensionalDLA() {
 
   function handleStop() {
     dispatch(setIsRunning(false));
+    updateStatusText();
   }
 
   function handleReset() {
     dispatch(resetState());
-    dlaStateRef.current = createDLA3DState(BOUND_HALF_EXTENT);
-    setSteps(0);
-    syncRenderState();
-  }
-
-  function handleStepUpdate() {
-    if (dlaStateRef.current) {
-      setSteps(dlaStateRef.current.steps);
-      syncRenderState();
-    }
+    dlaStateRef.current = createDLA3DState(BOUND_HALF_EXTENT, stickDistance);
+    updateStatusText();
   }
 
   function handleFinished() {
     dispatch(setIsRunning(false));
+    updateStatusText();
   }
 
-  function syncRenderState() {
+  function updateStatusText() {
     if (!dlaStateRef.current) return;
-    setWalkerPositions([...dlaStateRef.current.walkers]);
-    setClusterEntries(Object.values(dlaStateRef.current.cluster));
+    const s = dlaStateRef.current;
+    setStatusText(`Steps: ${s.steps} | Walkers: ${s.walkers.length} | Cluster: ${Object.keys(s.cluster).length}`);
   }
 
   function syncSpawnedWalkers() {
     if (dlaStateRef.current && reduxWalkers.length > 0) {
       dlaStateRef.current.walkers = [...reduxWalkers];
-      syncRenderState();
+      updateStatusText();
     }
   }
 
@@ -124,15 +131,13 @@ function ThreeDimensionalDLA() {
           walkers: reduxWalkers,
           steps: reduxSteps,
           stepSize: 0.2,
-          stickDistance: 0.3,
+          stickDistance,
           boundHalfExtent: BOUND_HALF_EXTENT,
         };
-        setSteps(reduxSteps);
       } else {
-        dlaStateRef.current = createDLA3DState(BOUND_HALF_EXTENT);
-        setSteps(0);
+        dlaStateRef.current = createDLA3DState(BOUND_HALF_EXTENT, stickDistance);
       }
-      syncRenderState();
+      updateStatusText();
     }
   }
 }
@@ -140,21 +145,27 @@ function ThreeDimensionalDLA() {
 interface SimulationLoopProps {
   dlaStateRef: React.RefObject<DLA3DState | null>;
   isRunning: boolean;
-  onStep: () => void;
+  setStatusText: (text: string) => void;
   onFinished: () => void;
 }
 
-function SimulationLoop({ dlaStateRef, isRunning, onStep, onFinished }: SimulationLoopProps) {
-  const onStepRef = useRef(onStep);
+function SimulationLoop({ dlaStateRef, isRunning, setStatusText, onFinished }: SimulationLoopProps) {
   const onFinishedRef = useRef(onFinished);
-  onStepRef.current = onStep;
+  const setStatusTextRef = useRef(setStatusText);
   onFinishedRef.current = onFinished;
+  setStatusTextRef.current = setStatusText;
 
   useFrame(() => {
     if (!isRunning || !dlaStateRef.current) return;
 
     dlaStateRef.current = stepDLA3D(dlaStateRef.current);
-    onStepRef.current();
+
+    if (dlaStateRef.current.steps % STATUS_UPDATE_INTERVAL === 0) {
+      const s = dlaStateRef.current;
+      setStatusTextRef.current(
+        `Steps: ${s.steps} | Walkers: ${s.walkers.length} | Cluster: ${Object.keys(s.cluster).length}`
+      );
+    }
 
     if (dlaStateRef.current.walkers.length === 0) {
       onFinishedRef.current();
@@ -164,37 +175,130 @@ function SimulationLoop({ dlaStateRef, isRunning, onStep, onFinished }: Simulati
   return null;
 }
 
-interface WalkerSpheresProps {
-  walkers: { x: number; y: number; z: number }[];
-}
+function InstancedWalkers({ dlaStateRef }: { dlaStateRef: React.RefObject<DLA3DState | null> }) {
+  const meshRef = useRef<THREE.InstancedMesh>(null);
+  const tempMatrix = useRef(new THREE.Matrix4());
 
-function WalkerSpheres({ walkers }: WalkerSpheresProps) {
+  useFrame(() => {
+    const mesh = meshRef.current;
+    const state = dlaStateRef.current;
+    if (!mesh || !state) return;
+
+    for (let i = 0; i < MAX_WALKERS; i++) {
+      if (i < state.walkers.length) {
+        const w = state.walkers[i];
+        tempMatrix.current.makeTranslation(w.x, w.y, w.z);
+      } else {
+        tempMatrix.current.copy(HIDDEN_POSITION);
+      }
+      mesh.setMatrixAt(i, tempMatrix.current);
+    }
+    mesh.instanceMatrix.needsUpdate = true;
+    mesh.count = state.walkers.length;
+  });
+
   return (
-    <>
-      {walkers.map((w, i) => (
-        <mesh key={i} position={[w.x, w.y, w.z]}>
-          <sphereGeometry args={[0.1, 8, 8]} />
-          <meshStandardMaterial color="#ff0080" />
-        </mesh>
-      ))}
-    </>
+    <instancedMesh ref={meshRef} args={[undefined, undefined, MAX_WALKERS]}>
+      <sphereGeometry args={[0.1, 8, 8]} />
+      <meshStandardMaterial color="#ff0080" />
+    </instancedMesh>
   );
 }
 
-interface ClusterSpheresProps {
-  entries: ClusterEntry3D[];
+function InstancedCluster({ dlaStateRef }: { dlaStateRef: React.RefObject<DLA3DState | null> }) {
+  const meshRef = useRef<THREE.InstancedMesh>(null);
+  const tempMatrix = useRef(new THREE.Matrix4());
+  const tempColor = useRef(new THREE.Color());
+  const prevClusterSize = useRef(0);
+
+  useFrame(() => {
+    const mesh = meshRef.current;
+    const state = dlaStateRef.current;
+    if (!mesh || !state) return;
+
+    const entries = Object.values(state.cluster);
+    const count = Math.min(entries.length, MAX_CLUSTER);
+
+    if (count !== prevClusterSize.current) {
+      for (let i = prevClusterSize.current; i < count; i++) {
+        const entry = entries[i];
+        tempMatrix.current.makeTranslation(entry.point.x, entry.point.y, entry.point.z);
+        mesh.setMatrixAt(i, tempMatrix.current);
+
+        const hue = entry.distance === 0 ? 0 : (entry.distance * 30) % 360;
+        const lightness = entry.distance === 0 ? 1.0 : 0.55;
+        const saturation = entry.distance === 0 ? 0.0 : 0.8;
+        tempColor.current.setHSL(hue / 360, saturation, lightness);
+        mesh.setColorAt(i, tempColor.current);
+      }
+
+      mesh.count = count;
+      mesh.instanceMatrix.needsUpdate = true;
+      if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+      prevClusterSize.current = count;
+    }
+  });
+
+  return (
+    <instancedMesh ref={meshRef} args={[undefined, undefined, MAX_CLUSTER]}>
+      <sphereGeometry args={[0.12, 8, 8]} />
+      <meshStandardMaterial />
+    </instancedMesh>
+  );
 }
 
-function ClusterSpheres({ entries }: ClusterSpheresProps) {
+function ClusterLines({ dlaStateRef }: { dlaStateRef: React.RefObject<DLA3DState | null> }) {
+  const lineRef = useRef<THREE.LineSegments>(null);
+  const positionsRef = useRef(new Float32Array(MAX_CONNECTIONS * 6));
+  const prevLineCount = useRef(0);
+
+  const geom = React.useMemo(() => {
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(MAX_CONNECTIONS * 6);
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setDrawRange(0, 0);
+    return geometry;
+  }, []);
+
+  useFrame(() => {
+    const line = lineRef.current;
+    const state = dlaStateRef.current;
+    if (!line || !state) return;
+
+    const entries = Object.values(state.cluster);
+    let lineCount = 0;
+    for (let i = 0; i < entries.length && lineCount < MAX_CONNECTIONS; i++) {
+      const entry = entries[i];
+      if (!entry.parentPoint) continue;
+      lineCount++;
+    }
+
+    if (lineCount === prevLineCount.current) return;
+
+    const positions = positionsRef.current;
+    let idx = 0;
+    for (let i = 0; i < entries.length && idx < MAX_CONNECTIONS * 6; i++) {
+      const entry = entries[i];
+      if (!entry.parentPoint) continue;
+      positions[idx++] = entry.point.x;
+      positions[idx++] = entry.point.y;
+      positions[idx++] = entry.point.z;
+      positions[idx++] = entry.parentPoint.x;
+      positions[idx++] = entry.parentPoint.y;
+      positions[idx++] = entry.parentPoint.z;
+    }
+
+    const attr = geom.getAttribute('position') as THREE.BufferAttribute;
+    attr.array.set(positions);
+    attr.needsUpdate = true;
+    geom.setDrawRange(0, (idx / 3));
+    prevLineCount.current = lineCount;
+  });
+
   return (
-    <>
-      {entries.map((entry, i) => (
-        <mesh key={i} position={[entry.point.x, entry.point.y, entry.point.z]}>
-          <sphereGeometry args={[0.12, 8, 8]} />
-          <meshStandardMaterial color={getClusterColor(entry.distance)} />
-        </mesh>
-      ))}
-    </>
+    <lineSegments ref={lineRef} geometry={geom}>
+      <lineBasicMaterial color="#66aaff" opacity={0.6} transparent />
+    </lineSegments>
   );
 }
 
@@ -206,12 +310,6 @@ function BoundingBox({ halfExtent }: { halfExtent: number }) {
       <lineBasicMaterial color="#444466" />
     </lineSegments>
   );
-}
-
-function getClusterColor(distance: number): string {
-  if (distance === 0) return '#ffffff';
-  const hue = (distance * 30) % 360;
-  return `hsl(${hue}, 80%, 55%)`;
 }
 
 export default ThreeDimensionalDLA;
