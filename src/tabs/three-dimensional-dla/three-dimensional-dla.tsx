@@ -11,6 +11,7 @@ import type { DLA3DState } from './dla-3d';
 import { BOUND_HALF_EXTENT, MAX_WALKERS, MAX_CLUSTER, MAX_CONNECTIONS } from './three-dimensional-dla-constants';
 import SphereSpawnControls from './sphere-spawn-controls/sphere-spawn-controls';
 import SimulationControls from './simulation-controls/simulation-controls';
+import BlenderExport from './blender-export/blender-export';
 import './three-dimensional-dla.css';
 
 const STATUS_UPDATE_INTERVAL = 10;
@@ -77,6 +78,7 @@ function ThreeDimensionalDLA() {
               <button onClick={handleStop}>Stop</button>
             )}
             <button onClick={handleReset} disabled={isRunning}>Reset</button>
+            <BlenderExport dlaStateRef={dlaStateRef} />
           </div>
           <div className="dlasim-3d-status-row">
             {statusText}
