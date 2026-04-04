@@ -62,6 +62,7 @@ const slice = createSlice({
       state.walkers = [];
       state.cluster = {};
       state.steps = 0;
+      state.stickDistance = DEFAULT_STICK_DISTANCE;
       state.centerSticky = DEFAULT_CENTER_STICKY;
       state.floorSticky = DEFAULT_FLOOR_STICKY;
     },
