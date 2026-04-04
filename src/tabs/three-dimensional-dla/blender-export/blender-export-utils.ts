@@ -1,7 +1,5 @@
 import type { ClusterMap3D, ClusterEntry3D, Point3D } from '../dla-3d';
 
-const ROOT_KEY = '0.0000,0.0000,0.0000';
-
 interface TreeNode {
   key: string;
   point: Point3D;
@@ -12,12 +10,14 @@ export function extractPaths(cluster: ClusterMap3D): Point3D[][] {
   if (Object.keys(cluster).length === 0) return [];
 
   const childrenMap = buildChildrenMap(cluster);
-  const rootEntry = cluster[ROOT_KEY];
-  if (!rootEntry) return [];
-
-  const rootNode = buildTree(ROOT_KEY, rootEntry, childrenMap, cluster);
   const paths: Point3D[][] = [];
-  collectPaths(rootNode, [rootNode.point], paths);
+
+  for (const [key, entry] of Object.entries(cluster)) {
+    if (entry.parentPoint !== null) continue;
+    const rootNode = buildTree(key, entry, childrenMap, cluster);
+    collectPaths(rootNode, [rootNode.point], paths);
+  }
+
   return paths;
 }
 
