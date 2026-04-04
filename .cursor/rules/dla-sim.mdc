@@ -5,7 +5,7 @@ alwaysApply: true
 
 ## Critical Rules
 
-- Components must be in named folders using PascalCase (e.g., ShapeSpawnControls).
+- Components must be in named folders using all lowercase with dashes (e.g., shape-spawn-controls).
 - Component files must use all lowercase with dashes (e.g., shape-spawn-controls.tsx).
 - Each component must have a corresponding CSS file; avoid inline styles.
 - All CSS class names must be prefixed with dlasim-.

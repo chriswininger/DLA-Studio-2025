@@ -1,0 +1,72 @@
+.dlasim-simulation-controls {
+  border: 2px solid var(--control-border-color);
+  border-radius: 8px;
+  padding: 24px;
+  min-width: 300px;
+}
+
+.dlasim-simulation-controls-row {
+  margin-bottom: 16px;
+}
+
+.dlasim-simulation-controls-row:last-child {
+  margin-bottom: 0;
+}
+
+.dlasim-simulation-controls-input {
+  margin-left: 8px;
+  width: 120px;
+  padding: 4px 8px;
+  border: 1px solid var(--control-border-color);
+  border-radius: 4px;
+  background: #1a1a2e;
+  color: #fff;
+}
+
+.dlasim-simulation-controls-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dlasim-simulation-controls-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.dlasim-simulation-controls-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--control-border-color);
+}
+
+.dlasim-simulation-controls-checkbox:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .dlasim-simulation-controls {
+    min-width: auto;
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+
+  .dlasim-simulation-controls-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .dlasim-simulation-controls-input {
+    margin-left: 0;
+    width: 100%;
+    max-width: 200px;
+    font-size: 16px;
+  }
+}
