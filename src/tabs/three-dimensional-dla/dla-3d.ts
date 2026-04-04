@@ -6,6 +6,8 @@ export interface Point3D {
 
 const ROOT = 'ROOT' as const;
 
+export const ORIGIN_KEY = '0.0000,0.0000,0.0000';
+
 export interface ClusterEntry3D {
   point: Point3D;
   distance: number;

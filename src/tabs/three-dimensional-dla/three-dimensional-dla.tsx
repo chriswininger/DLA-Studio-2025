@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../store';
 import type { RootState } from '../../store';
 import { setIsRunning, saveDLA3DState, resetState, setCenterSticky, setFloorSticky } from './three-dimensional-dla-slice';
-import { createDLA3DState, stepDLA3D } from './dla-3d';
+import { createDLA3DState, stepDLA3D, ORIGIN_KEY } from './dla-3d';
 import type { DLA3DState } from './dla-3d';
 import { BOUND_HALF_EXTENT, MAX_WALKERS, MAX_CLUSTER, MAX_CONNECTIONS } from './three-dimensional-dla-constants';
 import SphereSpawnControls from './sphere-spawn-controls/sphere-spawn-controls';
@@ -55,6 +55,15 @@ function ThreeDimensionalDLA() {
   useEffect(() => {
     if (dlaStateRef.current) {
       dlaStateRef.current.centerSticky = centerSticky;
+      if (centerSticky && !(ORIGIN_KEY in dlaStateRef.current.cluster)) {
+        dlaStateRef.current.cluster = {
+          ...dlaStateRef.current.cluster,
+          [ORIGIN_KEY]: { point: { x: 0, y: 0, z: 0 }, distance: 0, parent: 'ROOT' as const, parentPoint: null },
+        };
+      } else if (!centerSticky && ORIGIN_KEY in dlaStateRef.current.cluster) {
+        const { [ORIGIN_KEY]: _removed, ...rest } = dlaStateRef.current.cluster;
+        dlaStateRef.current.cluster = rest;
+      }
     }
   }, [centerSticky]);
 

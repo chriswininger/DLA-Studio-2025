@@ -24,18 +24,25 @@ function BlenderExport({ dlaStateRef }: BlenderExportProps) {
   );
 
   function handleExport() {
+    console.info('handle export invoked');
     if (!dlaStateRef.current) return;
+    console.info('exporting to blender started');
 
     const paths = extractPaths(dlaStateRef.current.cluster);
+    console.info('extracted paths: ', paths.length);
     if (paths.length === 0) return;
 
+    console.info('generate script');
     const script = generateBlenderScript(paths);
+    console.info('build blob');
     const blob = new Blob([script], { type: 'text/x-python' });
     const url = URL.createObjectURL(blob);
 
+    console.info('creating link to download element')
     const a = document.createElement('a');
     a.href = url;
     a.download = 'dla_paths.py';
+    console.info('simulating click to trigger download')
     a.click();
     URL.revokeObjectURL(url);
   }
