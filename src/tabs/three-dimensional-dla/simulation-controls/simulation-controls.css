@@ -28,6 +28,26 @@
   cursor: not-allowed;
 }
 
+.dlasim-simulation-controls-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.dlasim-simulation-controls-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--control-border-color);
+}
+
+.dlasim-simulation-controls-checkbox:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 @media (max-width: 768px) {
   .dlasim-simulation-controls {
     min-width: auto;

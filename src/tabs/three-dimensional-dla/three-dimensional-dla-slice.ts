@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { DEFAULT_PARTICLES_3D, DEFAULT_SPAWN_RADIUS, DEFAULT_STICK_DISTANCE } from './three-dimensional-dla-constants';
+import { DEFAULT_PARTICLES_3D, DEFAULT_SPAWN_RADIUS, DEFAULT_STICK_DISTANCE, DEFAULT_CENTER_STICKY, DEFAULT_FLOOR_STICKY } from './three-dimensional-dla-constants';
 import type { Point3D, ClusterMap3D } from './dla-3d';
 
 export interface ThreeDimensionalDLAState {
@@ -8,6 +8,8 @@ export interface ThreeDimensionalDLAState {
   numParticles: number;
   spawnSphereRadius: number;
   stickDistance: number;
+  centerSticky: boolean;
+  floorSticky: boolean;
   walkers: Point3D[];
   cluster: ClusterMap3D;
   steps: number;
@@ -18,6 +20,8 @@ const initialState: ThreeDimensionalDLAState = {
   numParticles: DEFAULT_PARTICLES_3D,
   spawnSphereRadius: DEFAULT_SPAWN_RADIUS,
   stickDistance: DEFAULT_STICK_DISTANCE,
+  centerSticky: DEFAULT_CENTER_STICKY,
+  floorSticky: DEFAULT_FLOOR_STICKY,
   walkers: [],
   cluster: {},
   steps: 0,
@@ -39,6 +43,12 @@ const slice = createSlice({
     setStickDistance(state, action: PayloadAction<number>) {
       state.stickDistance = action.payload;
     },
+    setCenterSticky(state, action: PayloadAction<boolean>) {
+      state.centerSticky = action.payload;
+    },
+    setFloorSticky(state, action: PayloadAction<boolean>) {
+      state.floorSticky = action.payload;
+    },
     addWalkers(state, action: PayloadAction<Point3D[]>) {
       state.walkers = [...state.walkers, ...action.payload];
     },
@@ -52,6 +62,8 @@ const slice = createSlice({
       state.walkers = [];
       state.cluster = {};
       state.steps = 0;
+      state.centerSticky = DEFAULT_CENTER_STICKY;
+      state.floorSticky = DEFAULT_FLOOR_STICKY;
     },
   },
 });
@@ -61,6 +73,8 @@ export const {
   setNumParticles,
   setSpawnSphereRadius,
   setStickDistance,
+  setCenterSticky,
+  setFloorSticky,
   addWalkers,
   saveDLA3DState,
   resetState,

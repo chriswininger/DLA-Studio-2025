@@ -24,12 +24,22 @@ export interface DLA3DState {
   stepSize: number;
   stickDistance: number;
   boundHalfExtent: number;
+  centerSticky: boolean;
+  floorSticky: boolean;
 }
 
-export function createDLA3DState(boundHalfExtent: number, stickDistance: number): DLA3DState {
+export function createDLA3DState(
+  boundHalfExtent: number,
+  stickDistance: number,
+  centerSticky: boolean = true,
+  floorSticky: boolean = false,
+): DLA3DState {
   const cluster: ClusterMap3D = {};
-  const origin: Point3D = { x: 0, y: 0, z: 0 };
-  cluster[pointKey(origin)] = { point: origin, distance: 0, parent: ROOT, parentPoint: null };
+
+  if (centerSticky) {
+    const origin: Point3D = { x: 0, y: 0, z: 0 };
+    cluster[pointKey(origin)] = { point: origin, distance: 0, parent: ROOT, parentPoint: null };
+  }
 
   return {
     cluster,
@@ -38,14 +48,17 @@ export function createDLA3DState(boundHalfExtent: number, stickDistance: number)
     stepSize: 0.2,
     stickDistance,
     boundHalfExtent,
+    centerSticky,
+    floorSticky,
   };
 }
 
 export function stepDLA3D(state: DLA3DState): DLA3DState {
-  const { cluster, stepSize, stickDistance, boundHalfExtent } = state;
+  const { cluster, stepSize, stickDistance, boundHalfExtent, floorSticky } = state;
   const newCluster: ClusterMap3D = {};
   const newWalkers: Point3D[] = [];
   const stickDistSq = stickDistance * stickDistance;
+  const floorY = -boundHalfExtent;
 
   const clusterPoints = Object.values(cluster);
 
@@ -59,6 +72,19 @@ export function stepDLA3D(state: DLA3DState): DLA3DState {
       y: clamp(walker.y + dy, -boundHalfExtent, boundHalfExtent),
       z: clamp(walker.z + dz, -boundHalfExtent, boundHalfExtent),
     };
+
+    if (floorSticky && moved.y <= floorY) {
+      const key = pointKey(moved);
+      if (!cluster[key] && !newCluster[key]) {
+        newCluster[key] = {
+          point: moved,
+          distance: 0,
+          parent: ROOT,
+          parentPoint: null,
+        };
+      }
+      continue;
+    }
 
     let stuckParent: ClusterEntry3D | undefined;
     for (const entry of clusterPoints) {

@@ -5,7 +5,7 @@ import { OrbitControls } from '@react-three/drei';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../store';
 import type { RootState } from '../../store';
-import { setIsRunning, saveDLA3DState, resetState } from './three-dimensional-dla-slice';
+import { setIsRunning, saveDLA3DState, resetState, setCenterSticky, setFloorSticky } from './three-dimensional-dla-slice';
 import { createDLA3DState, stepDLA3D } from './dla-3d';
 import type { DLA3DState } from './dla-3d';
 import { BOUND_HALF_EXTENT, MAX_WALKERS, MAX_CLUSTER, MAX_CONNECTIONS } from './three-dimensional-dla-constants';
@@ -24,6 +24,8 @@ function ThreeDimensionalDLA() {
   const reduxCluster = useAppSelector((state: RootState) => state.threeDimensionalDla.cluster);
   const reduxSteps = useAppSelector((state: RootState) => state.threeDimensionalDla.steps);
   const stickDistance = useAppSelector((state: RootState) => state.threeDimensionalDla.stickDistance);
+  const centerSticky = useAppSelector((state: RootState) => state.threeDimensionalDla.centerSticky);
+  const floorSticky = useAppSelector((state: RootState) => state.threeDimensionalDla.floorSticky);
 
   const dlaStateRef = useRef<DLA3DState | null>(null);
   const [statusText, setStatusText] = React.useState('Steps: 0 | Walkers: 0 | Cluster: 1');
@@ -49,6 +51,18 @@ function ThreeDimensionalDLA() {
       dlaStateRef.current.stickDistance = stickDistance;
     }
   }, [stickDistance]);
+
+  useEffect(() => {
+    if (dlaStateRef.current) {
+      dlaStateRef.current.centerSticky = centerSticky;
+    }
+  }, [centerSticky]);
+
+  useEffect(() => {
+    if (dlaStateRef.current) {
+      dlaStateRef.current.floorSticky = floorSticky;
+    }
+  }, [floorSticky]);
 
   return (
     <div className="dlasim-three-dimensional-dla">
@@ -86,7 +100,7 @@ function ThreeDimensionalDLA() {
         </div>
         <div className="dlasim-3d-controls-col">
           <SphereSpawnControls isRunning={isRunning} />
-          <SimulationControls isRunning={isRunning} />
+          <SimulationControls isRunning={isRunning} centerSticky={centerSticky} floorSticky={floorSticky} />
         </div>
       </div>
     </div>
@@ -103,7 +117,7 @@ function ThreeDimensionalDLA() {
 
   function handleReset() {
     dispatch(resetState());
-    dlaStateRef.current = createDLA3DState(BOUND_HALF_EXTENT, stickDistance);
+    dlaStateRef.current = createDLA3DState(BOUND_HALF_EXTENT, stickDistance, centerSticky, floorSticky);
     updateStatusText();
   }
 
@@ -137,7 +151,7 @@ function ThreeDimensionalDLA() {
           boundHalfExtent: BOUND_HALF_EXTENT,
         };
       } else {
-        dlaStateRef.current = createDLA3DState(BOUND_HALF_EXTENT, stickDistance);
+        dlaStateRef.current = createDLA3DState(BOUND_HALF_EXTENT, stickDistance, centerSticky, floorSticky);
       }
       updateStatusText();
     }
