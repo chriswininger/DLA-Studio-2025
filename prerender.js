@@ -16,7 +16,9 @@ const routes = [
   { path: '/svg-dla', output: 'svg-dla.html' },
   { path: '/svg-dla/', output: 'svg-dla/index.html' },
   { path: '/distance-gradient', output: 'distance-gradient.html' },
-  { path: '/distance-gradient/', output: 'distance-gradient/index.html' }
+  { path: '/distance-gradient/', output: 'distance-gradient/index.html' },
+  { path: '/3d-dla', output: '3d-dla.html' },
+  { path: '/3d-dla/', output: '3d-dla/index.html' }
 ];
 
 // Helper function to determine canonical URL for a route
@@ -35,6 +37,9 @@ function getCanonicalUrl(routePath) {
   }
   if (routePath === '/distance-gradient') {
     return `${baseUrl}/distance-gradient/`;
+  }
+  if (routePath === '/3d-dla') {
+    return `${baseUrl}/3d-dla/`;
   }
   
   // For routes with trailing slash or root, canonical points to itself
