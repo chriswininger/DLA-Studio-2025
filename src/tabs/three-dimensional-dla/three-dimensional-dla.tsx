@@ -5,10 +5,16 @@ import { OrbitControls } from '@react-three/drei';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../store';
 import type { RootState } from '../../store';
-import { setIsRunning, saveDLA3DState, resetState, setCenterSticky, setFloorSticky } from './three-dimensional-dla-slice';
+import { setIsRunning, saveDLA3DState, resetState } from './three-dimensional-dla-slice';
 import { createDLA3DState, stepDLA3D, ORIGIN_KEY } from './dla-3d';
 import type { DLA3DState } from './dla-3d';
-import { BOUND_HALF_EXTENT, MAX_WALKERS, MAX_CLUSTER, MAX_CONNECTIONS } from './three-dimensional-dla-constants';
+import {
+  BOUND_HALF_EXTENT,
+  MAX_WALKERS,
+  MAX_CLUSTER,
+  MAX_CONNECTIONS,
+  DEFAULT_CENTER_STICKY, DEFAULT_FLOOR_STICKY
+} from './three-dimensional-dla-constants';
 import SphereSpawnControls from './sphere-spawn-controls/sphere-spawn-controls';
 import SimulationControls from './simulation-controls/simulation-controls';
 import BlenderExport from './blender-export/blender-export';
@@ -61,6 +67,7 @@ function ThreeDimensionalDLA() {
           [ORIGIN_KEY]: { point: { x: 0, y: 0, z: 0 }, distance: 0, parent: 'ROOT' as const, parentPoint: null },
         };
       } else if (!centerSticky && ORIGIN_KEY in dlaStateRef.current.cluster) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { [ORIGIN_KEY]: _removed, ...rest } = dlaStateRef.current.cluster;
         dlaStateRef.current.cluster = rest;
       }
@@ -152,12 +159,14 @@ function ThreeDimensionalDLA() {
     if (!dlaStateRef.current) {
       if (Object.keys(reduxCluster).length > 0 || reduxWalkers.length > 0) {
         dlaStateRef.current = {
+          centerSticky: DEFAULT_CENTER_STICKY,
+          floorSticky: DEFAULT_FLOOR_STICKY,
           cluster: reduxCluster,
           walkers: reduxWalkers,
           steps: reduxSteps,
           stepSize: 0.2,
           stickDistance,
-          boundHalfExtent: BOUND_HALF_EXTENT,
+          boundHalfExtent: BOUND_HALF_EXTENT
         };
       } else {
         dlaStateRef.current = createDLA3DState(BOUND_HALF_EXTENT, stickDistance, centerSticky, floorSticky);
