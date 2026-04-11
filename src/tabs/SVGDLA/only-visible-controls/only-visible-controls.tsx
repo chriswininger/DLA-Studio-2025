@@ -1,18 +1,19 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
-import { useAppSelector } from '../../../store';
-import { setOnlyVisible, setIncludeBackgroundColor } from '../svg-dla-slice';
-import type { RootState } from '../../../store';
-import type { SVGDLAUIState } from '../svg-dla-slice';
-import './only-visible-controls.css';
+import React from "react";
+import { useDispatch } from "react-redux";
+import { useAppSelector } from "../../../store";
+import { setOnlyVisible, setIncludeBackgroundColor } from "../svg-dla-slice";
+import type { RootState } from "../../../store";
+import type { SVGDLAUIState } from "../svg-dla-slice";
+import "./only-visible-controls.css";
 
 const OnlyVisibleControls: React.FC = () => {
   const dispatch = useDispatch();
-  const onlyVisible = useAppSelector((state: RootState) => 
-    (state.svgDla as SVGDLAUIState).onlyVisible
+  const onlyVisible = useAppSelector(
+    (state: RootState) => (state.svgDla as SVGDLAUIState).onlyVisible,
   );
-  const includeBackgroundColor = useAppSelector((state: RootState) => 
-    (state.svgDla as SVGDLAUIState).includeBackgroundColor
+  const includeBackgroundColor = useAppSelector(
+    (state: RootState) =>
+      (state.svgDla as SVGDLAUIState).includeBackgroundColor,
   );
 
   return (
@@ -21,7 +22,7 @@ const OnlyVisibleControls: React.FC = () => {
         <input
           type="checkbox"
           checked={onlyVisible}
-          onChange={e => dispatch(setOnlyVisible(e.target.checked))}
+          onChange={(e) => dispatch(setOnlyVisible(e.target.checked))}
           className="svgdla-checkbox"
         />
         Only Visible
@@ -30,7 +31,9 @@ const OnlyVisibleControls: React.FC = () => {
         <input
           type="checkbox"
           checked={includeBackgroundColor}
-          onChange={e => dispatch(setIncludeBackgroundColor(e.target.checked))}
+          onChange={(e) =>
+            dispatch(setIncludeBackgroundColor(e.target.checked))
+          }
           className="svgdla-checkbox"
         />
         Include Background Color
@@ -39,4 +42,4 @@ const OnlyVisibleControls: React.FC = () => {
   );
 };
 
-export default OnlyVisibleControls; 
+export default OnlyVisibleControls;

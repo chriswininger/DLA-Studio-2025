@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 export interface NavigationState {
   currentTab: string;
@@ -6,12 +6,12 @@ export interface NavigationState {
 }
 
 const initialState: NavigationState = {
-  currentTab: '/about', // Default to about tab
+  currentTab: "/about", // Default to about tab
   isInitialized: false,
 };
 
 export const navigationSlice = createSlice({
-  name: 'navigation',
+  name: "navigation",
   initialState,
   reducers: {
     setCurrentTab: (state, action) => {
@@ -29,5 +29,6 @@ export const navigationSlice = createSlice({
   },
 });
 
-export const { setCurrentTab, setInitialized, initializeFromStorage } = navigationSlice.actions;
+export const { setCurrentTab, setInitialized, initializeFromStorage } =
+  navigationSlice.actions;
 export default navigationSlice.reducer;

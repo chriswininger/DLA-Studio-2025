@@ -1,22 +1,22 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
-import { useAppSelector } from '../../../store';
-import { setLineLength } from '../svg-dla-slice';
-import { setShowCircles, setCircleRadius } from '../svg-dla-slice';
-import type { RootState } from '../../../store';
-import type { SVGDLAUIState } from '../svg-dla-slice';
-import './line-length-controls.css';
+import React from "react";
+import { useDispatch } from "react-redux";
+import { useAppSelector } from "../../../store";
+import { setLineLength } from "../svg-dla-slice";
+import { setShowCircles, setCircleRadius } from "../svg-dla-slice";
+import type { RootState } from "../../../store";
+import type { SVGDLAUIState } from "../svg-dla-slice";
+import "./line-length-controls.css";
 
 const LineLengthControls: React.FC = () => {
   const dispatch = useDispatch();
-  const lineLength = useAppSelector((state: RootState) => 
-    (state.svgDla as SVGDLAUIState).lineLength
+  const lineLength = useAppSelector(
+    (state: RootState) => (state.svgDla as SVGDLAUIState).lineLength,
   );
-  const showCircles = useAppSelector((state: RootState) => 
-    (state.svgDla as SVGDLAUIState).showCircles
+  const showCircles = useAppSelector(
+    (state: RootState) => (state.svgDla as SVGDLAUIState).showCircles,
   );
-  const circleRadius = useAppSelector((state: RootState) => 
-    (state.svgDla as SVGDLAUIState).circleRadius
+  const circleRadius = useAppSelector(
+    (state: RootState) => (state.svgDla as SVGDLAUIState).circleRadius,
   );
 
   return (
@@ -39,7 +39,7 @@ const LineLengthControls: React.FC = () => {
           <input
             type="checkbox"
             checked={showCircles}
-            onChange={e => dispatch(setShowCircles(e.target.checked))}
+            onChange={(e) => dispatch(setShowCircles(e.target.checked))}
             className="svgdla-checkbox"
           />
           Show Circles
@@ -53,7 +53,7 @@ const LineLengthControls: React.FC = () => {
             pattern="[0-9]*"
             min={1}
             value={circleRadius}
-            onChange={e => dispatch(setCircleRadius(Number(e.target.value)))}
+            onChange={(e) => dispatch(setCircleRadius(Number(e.target.value)))}
             className="svgdla-radius-input"
           />
         </div>
@@ -69,4 +69,4 @@ const LineLengthControls: React.FC = () => {
   }
 };
 
-export default LineLengthControls; 
+export default LineLengthControls;

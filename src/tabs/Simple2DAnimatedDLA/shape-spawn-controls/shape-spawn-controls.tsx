@@ -1,11 +1,17 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
-import { useAppSelector } from '../../../store';
-import { setNumParticles, setSpawnXOffset, setSpawnYOffset, setSpawnRotation, setSpawnSquareSize } from '../simple-2d-animated-dla-slice';
-import { spawnWalkersInSquare } from '../../../dla/dla';
-import type { RootState } from '../../../store';
-import type { Simple2DAnimatedDLAUIState } from '../simple-2d-animated-dla-slice';
-import './shape-spawn-controls.css';
+import React from "react";
+import { useDispatch } from "react-redux";
+import { useAppSelector } from "../../../store";
+import {
+  setNumParticles,
+  setSpawnXOffset,
+  setSpawnYOffset,
+  setSpawnRotation,
+  setSpawnSquareSize,
+} from "../simple-2d-animated-dla-slice";
+import { spawnWalkersInSquare } from "../../../dla/dla";
+import type { RootState } from "../../../store";
+import type { Simple2DAnimatedDLAUIState } from "../simple-2d-animated-dla-slice";
+import "./shape-spawn-controls.css";
 
 interface ShapeSpawnControlsProps {
   canvasWidth: number;
@@ -23,17 +29,21 @@ const ShapeSpawnControls: React.FC<ShapeSpawnControlsProps> = ({
   spawnSquareSize,
 }) => {
   const dispatch = useDispatch();
-  const numParticles = useAppSelector((state: RootState) => 
-    (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).numParticles
+  const numParticles = useAppSelector(
+    (state: RootState) =>
+      (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).numParticles,
   );
-  const spawnXOffset = useAppSelector((state: RootState) => 
-    (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnXOffset
+  const spawnXOffset = useAppSelector(
+    (state: RootState) =>
+      (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnXOffset,
   );
-  const spawnYOffset = useAppSelector((state: RootState) => 
-    (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnYOffset
+  const spawnYOffset = useAppSelector(
+    (state: RootState) =>
+      (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnYOffset,
   );
-  const spawnRotation = useAppSelector((state: RootState) => 
-    (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnRotation
+  const spawnRotation = useAppSelector(
+    (state: RootState) =>
+      (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).spawnRotation,
   );
 
   return (
@@ -108,9 +118,9 @@ const ShapeSpawnControls: React.FC<ShapeSpawnControlsProps> = ({
           className="dlasim_spawn-input"
         />
       </div>
-      <button 
-        onClick={handleSpawn} 
-        disabled={isRunning} 
+      <button
+        onClick={handleSpawn}
+        disabled={isRunning}
         className="dlasim_spawn-button"
       >
         Spawn
@@ -155,9 +165,17 @@ const ShapeSpawnControls: React.FC<ShapeSpawnControlsProps> = ({
 
   // Handle spawn button click
   function handleSpawn() {
-    const newWalkers = spawnWalkersInSquare(canvasWidth, canvasHeight, numParticles, spawnSquareSize, spawnXOffset, spawnYOffset, spawnRotation);
+    const newWalkers = spawnWalkersInSquare(
+      canvasWidth,
+      canvasHeight,
+      numParticles,
+      spawnSquareSize,
+      spawnXOffset,
+      spawnYOffset,
+      spawnRotation,
+    );
     onSpawn(newWalkers);
   }
 };
 
-export default ShapeSpawnControls; 
+export default ShapeSpawnControls;

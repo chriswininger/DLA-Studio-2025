@@ -41,7 +41,9 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
   outline: none;
 }
 
@@ -51,11 +53,11 @@
 }
 
 .svgdla-checkbox:checked::after {
-  content: '\2714';
+  content: "\2714";
   font-size: 1.5em;
   position: absolute;
 }
 
 .svgdla-checkbox:focus {
   box-shadow: 0 0 0 3px #5a6ee655;
-} 
+}

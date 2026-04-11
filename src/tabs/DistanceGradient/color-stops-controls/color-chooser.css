@@ -104,30 +104,30 @@
     max-width: 100%;
     padding: 16px;
   }
-  
+
   .dlasim-color-chooser-preview {
     margin-right: 0;
     align-self: center;
   }
-  
+
   .dlasim-color-chooser-fields {
     width: 100%;
   }
-  
+
   .dlasim-color-chooser-inputs {
     flex-wrap: wrap;
     gap: 6px;
   }
-  
+
   .dlasim-color-chooser-slider {
     min-width: 120px;
   }
-  
+
   .dlasim-color-chooser-number {
     width: 60px;
   }
-  
+
   .dlasim-color-chooser-hex {
     width: 100px;
   }
-} 
+}

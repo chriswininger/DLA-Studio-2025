@@ -1,0 +1,7 @@
+# Ignore everything
+*
+# Unignore src
+!src/
+!src/**
+# Ignore markdown everywhere
+*.md

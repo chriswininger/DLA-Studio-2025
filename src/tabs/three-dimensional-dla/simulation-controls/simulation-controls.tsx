@@ -1,8 +1,12 @@
-import { useDispatch } from 'react-redux';
-import { useAppSelector } from '../../../store';
-import { setStickDistance, setCenterSticky, setFloorSticky } from '../three-dimensional-dla-slice';
-import type { RootState } from '../../../store';
-import './simulation-controls.css';
+import { useDispatch } from "react-redux";
+import { useAppSelector } from "../../../store";
+import {
+  setStickDistance,
+  setCenterSticky,
+  setFloorSticky,
+} from "../three-dimensional-dla-slice";
+import type { RootState } from "../../../store";
+import "./simulation-controls.css";
 
 interface SimulationControlsProps {
   isRunning: boolean;
@@ -10,9 +14,15 @@ interface SimulationControlsProps {
   floorSticky: boolean;
 }
 
-function SimulationControls({ isRunning, centerSticky, floorSticky }: SimulationControlsProps) {
+function SimulationControls({
+  isRunning,
+  centerSticky,
+  floorSticky,
+}: SimulationControlsProps) {
   const dispatch = useDispatch();
-  const stickDistance = useAppSelector((state: RootState) => state.threeDimensionalDla.stickDistance);
+  const stickDistance = useAppSelector(
+    (state: RootState) => state.threeDimensionalDla.stickDistance,
+  );
 
   return (
     <div className="dlasim-simulation-controls">
@@ -32,7 +42,10 @@ function SimulationControls({ isRunning, centerSticky, floorSticky }: Simulation
         />
       </div>
       <div className="dlasim-simulation-controls-row">
-        <label htmlFor="dla-3d-center-sticky" className="dlasim-simulation-controls-checkbox-label">
+        <label
+          htmlFor="dla-3d-center-sticky"
+          className="dlasim-simulation-controls-checkbox-label"
+        >
           <input
             id="dla-3d-center-sticky"
             type="checkbox"
@@ -45,7 +58,10 @@ function SimulationControls({ isRunning, centerSticky, floorSticky }: Simulation
         </label>
       </div>
       <div className="dlasim-simulation-controls-row">
-        <label htmlFor="dla-3d-floor-sticky" className="dlasim-simulation-controls-checkbox-label">
+        <label
+          htmlFor="dla-3d-floor-sticky"
+          className="dlasim-simulation-controls-checkbox-label"
+        >
           <input
             id="dla-3d-floor-sticky"
             type="checkbox"

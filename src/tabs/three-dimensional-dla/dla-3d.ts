@@ -4,9 +4,9 @@ export interface Point3D {
   z: number;
 }
 
-const ROOT = 'ROOT' as const;
+const ROOT = "ROOT" as const;
 
-export const ORIGIN_KEY = '0.0000,0.0000,0.0000';
+export const ORIGIN_KEY = "0.0000,0.0000,0.0000";
 
 export interface ClusterEntry3D {
   point: Point3D;
@@ -40,7 +40,12 @@ export function createDLA3DState(
 
   if (centerSticky) {
     const origin: Point3D = { x: 0, y: 0, z: 0 };
-    cluster[pointKey(origin)] = { point: origin, distance: 0, parent: ROOT, parentPoint: null };
+    cluster[pointKey(origin)] = {
+      point: origin,
+      distance: 0,
+      parent: ROOT,
+      parentPoint: null,
+    };
   }
 
   return {
@@ -56,7 +61,8 @@ export function createDLA3DState(
 }
 
 export function stepDLA3D(state: DLA3DState): DLA3DState {
-  const { cluster, stepSize, stickDistance, boundHalfExtent, floorSticky } = state;
+  const { cluster, stepSize, stickDistance, boundHalfExtent, floorSticky } =
+    state;
   const newCluster: ClusterMap3D = {};
   const newWalkers: Point3D[] = [];
   const stickDistSq = stickDistance * stickDistance;

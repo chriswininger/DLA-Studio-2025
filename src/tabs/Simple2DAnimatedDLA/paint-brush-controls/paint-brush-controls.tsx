@@ -1,27 +1,34 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
-import { useAppSelector } from '../../../store';
-import { setBrushSize, setBrushParticles, setBrushSpawnType } from '../simple-2d-animated-dla-slice';
-import type { RootState } from '../../../store';
-import type { Simple2DAnimatedDLAUIState } from '../simple-2d-animated-dla-slice';
-import './paint-brush-controls.css';
+import React from "react";
+import { useDispatch } from "react-redux";
+import { useAppSelector } from "../../../store";
+import {
+  setBrushSize,
+  setBrushParticles,
+  setBrushSpawnType,
+} from "../simple-2d-animated-dla-slice";
+import type { RootState } from "../../../store";
+import type { Simple2DAnimatedDLAUIState } from "../simple-2d-animated-dla-slice";
+import "./paint-brush-controls.css";
 
 interface PaintBrushControlsProps {
   isRunning: boolean;
 }
 
 const PaintBrushControls: React.FC<PaintBrushControlsProps> = ({
-  isRunning
+  isRunning,
 }) => {
   const dispatch = useDispatch();
-  const brushSize = useAppSelector((state: RootState) => 
-    (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushSize
+  const brushSize = useAppSelector(
+    (state: RootState) =>
+      (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushSize,
   );
-  const brushParticles = useAppSelector((state: RootState) => 
-    (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushParticles
+  const brushParticles = useAppSelector(
+    (state: RootState) =>
+      (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushParticles,
   );
-  const brushSpawnType = useAppSelector((state: RootState) => 
-    (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushSpawnType
+  const brushSpawnType = useAppSelector(
+    (state: RootState) =>
+      (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).brushSpawnType,
   );
 
   return (
@@ -61,7 +68,7 @@ const PaintBrushControls: React.FC<PaintBrushControlsProps> = ({
               type="radio"
               name="brush-spawn-type"
               value="walkers"
-              checked={brushSpawnType === 'walkers'}
+              checked={brushSpawnType === "walkers"}
               onChange={handleBrushSpawnTypeChange}
               disabled={isRunning}
               className="dlasim_radio-input"
@@ -73,7 +80,7 @@ const PaintBrushControls: React.FC<PaintBrushControlsProps> = ({
               type="radio"
               name="brush-spawn-type"
               value="stuck points"
-              checked={brushSpawnType === 'stuck points'}
+              checked={brushSpawnType === "stuck points"}
               onChange={handleBrushSpawnTypeChange}
               disabled={isRunning}
               className="dlasim_radio-input"
@@ -100,9 +107,9 @@ const PaintBrushControls: React.FC<PaintBrushControlsProps> = ({
   }
 
   function handleBrushSpawnTypeChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const value = e.target.value as 'walkers' | 'stuck points';
+    const value = e.target.value as "walkers" | "stuck points";
     dispatch(setBrushSpawnType(value));
   }
 };
 
-export default PaintBrushControls; 
+export default PaintBrushControls;

@@ -1,51 +1,74 @@
-import React, { useRef, useEffect } from 'react';
-import * as THREE from 'three';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
-import { useDispatch } from 'react-redux';
-import { useAppSelector } from '../../store';
-import type { RootState } from '../../store';
-import { setIsRunning, saveDLA3DState, resetState } from './three-dimensional-dla-slice';
-import { createDLA3DState, stepDLA3D, ORIGIN_KEY } from './dla-3d';
-import type { DLA3DState } from './dla-3d';
+import React, { useRef, useEffect } from "react";
+import * as THREE from "three";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { OrbitControls } from "@react-three/drei";
+import { useDispatch } from "react-redux";
+import { useAppSelector } from "../../store";
+import type { RootState } from "../../store";
+import {
+  setIsRunning,
+  saveDLA3DState,
+  resetState,
+} from "./three-dimensional-dla-slice";
+import { createDLA3DState, stepDLA3D, ORIGIN_KEY } from "./dla-3d";
+import type { DLA3DState } from "./dla-3d";
 import {
   BOUND_HALF_EXTENT,
   MAX_WALKERS,
   MAX_CLUSTER,
   MAX_CONNECTIONS,
-  DEFAULT_CENTER_STICKY, DEFAULT_FLOOR_STICKY
-} from './three-dimensional-dla-constants';
-import SphereSpawnControls from './sphere-spawn-controls/sphere-spawn-controls';
-import SimulationControls from './simulation-controls/simulation-controls';
-import BlenderExport from './blender-export/blender-export';
-import './three-dimensional-dla.css';
+  DEFAULT_CENTER_STICKY,
+  DEFAULT_FLOOR_STICKY,
+} from "./three-dimensional-dla-constants";
+import SphereSpawnControls from "./sphere-spawn-controls/sphere-spawn-controls";
+import SimulationControls from "./simulation-controls/simulation-controls";
+import BlenderExport from "./blender-export/blender-export";
+import "./three-dimensional-dla.css";
 
 const STATUS_UPDATE_INTERVAL = 10;
 const HIDDEN_POSITION = new THREE.Matrix4().makeTranslation(0, -9999, 0);
 
 function ThreeDimensionalDLA() {
   const dispatch = useDispatch();
-  const isRunning = useAppSelector((state: RootState) => state.threeDimensionalDla.isRunning);
-  const reduxWalkers = useAppSelector((state: RootState) => state.threeDimensionalDla.walkers);
-  const reduxCluster = useAppSelector((state: RootState) => state.threeDimensionalDla.cluster);
-  const reduxSteps = useAppSelector((state: RootState) => state.threeDimensionalDla.steps);
-  const stickDistance = useAppSelector((state: RootState) => state.threeDimensionalDla.stickDistance);
-  const centerSticky = useAppSelector((state: RootState) => state.threeDimensionalDla.centerSticky);
-  const floorSticky = useAppSelector((state: RootState) => state.threeDimensionalDla.floorSticky);
+  const isRunning = useAppSelector(
+    (state: RootState) => state.threeDimensionalDla.isRunning,
+  );
+  const reduxWalkers = useAppSelector(
+    (state: RootState) => state.threeDimensionalDla.walkers,
+  );
+  const reduxCluster = useAppSelector(
+    (state: RootState) => state.threeDimensionalDla.cluster,
+  );
+  const reduxSteps = useAppSelector(
+    (state: RootState) => state.threeDimensionalDla.steps,
+  );
+  const stickDistance = useAppSelector(
+    (state: RootState) => state.threeDimensionalDla.stickDistance,
+  );
+  const centerSticky = useAppSelector(
+    (state: RootState) => state.threeDimensionalDla.centerSticky,
+  );
+  const floorSticky = useAppSelector(
+    (state: RootState) => state.threeDimensionalDla.floorSticky,
+  );
 
   const dlaStateRef = useRef<DLA3DState | null>(null);
-  const [statusText, setStatusText] = React.useState('Steps: 0 | Walkers: 0 | Cluster: 1');
+  const [statusText, setStatusText] = React.useState(
+    "Steps: 0 | Walkers: 0 | Cluster: 1",
+  );
 
   useEffect(initializeState, []);
 
   useEffect(() => {
     return () => {
       if (dlaStateRef.current) {
-        dispatch(saveDLA3DState({
-          cluster: dlaStateRef.current.cluster,
-          walkers: dlaStateRef.current.walkers,
-          steps: dlaStateRef.current.steps,
-        }));
+        dispatch(
+          saveDLA3DState({
+            cluster: dlaStateRef.current.cluster,
+            walkers: dlaStateRef.current.walkers,
+            steps: dlaStateRef.current.steps,
+          }),
+        );
       }
     };
   }, [dispatch]);
@@ -64,7 +87,12 @@ function ThreeDimensionalDLA() {
       if (centerSticky && !(ORIGIN_KEY in dlaStateRef.current.cluster)) {
         dlaStateRef.current.cluster = {
           ...dlaStateRef.current.cluster,
-          [ORIGIN_KEY]: { point: { x: 0, y: 0, z: 0 }, distance: 0, parent: 'ROOT' as const, parentPoint: null },
+          [ORIGIN_KEY]: {
+            point: { x: 0, y: 0, z: 0 },
+            distance: 0,
+            parent: "ROOT" as const,
+            parentPoint: null,
+          },
         };
       } else if (!centerSticky && ORIGIN_KEY in dlaStateRef.current.cluster) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -107,16 +135,20 @@ function ThreeDimensionalDLA() {
             ) : (
               <button onClick={handleStop}>Stop</button>
             )}
-            <button onClick={handleReset} disabled={isRunning}>Reset</button>
+            <button onClick={handleReset} disabled={isRunning}>
+              Reset
+            </button>
             <BlenderExport dlaStateRef={dlaStateRef} />
           </div>
-          <div className="dlasim-3d-status-row">
-            {statusText}
-          </div>
+          <div className="dlasim-3d-status-row">{statusText}</div>
         </div>
         <div className="dlasim-3d-controls-col">
           <SphereSpawnControls isRunning={isRunning} />
-          <SimulationControls isRunning={isRunning} centerSticky={centerSticky} floorSticky={floorSticky} />
+          <SimulationControls
+            isRunning={isRunning}
+            centerSticky={centerSticky}
+            floorSticky={floorSticky}
+          />
         </div>
       </div>
     </div>
@@ -133,7 +165,12 @@ function ThreeDimensionalDLA() {
 
   function handleReset() {
     dispatch(resetState());
-    dlaStateRef.current = createDLA3DState(BOUND_HALF_EXTENT, stickDistance, centerSticky, floorSticky);
+    dlaStateRef.current = createDLA3DState(
+      BOUND_HALF_EXTENT,
+      stickDistance,
+      centerSticky,
+      floorSticky,
+    );
     updateStatusText();
   }
 
@@ -145,7 +182,9 @@ function ThreeDimensionalDLA() {
   function updateStatusText() {
     if (!dlaStateRef.current) return;
     const s = dlaStateRef.current;
-    setStatusText(`Steps: ${s.steps} | Walkers: ${s.walkers.length} | Cluster: ${Object.keys(s.cluster).length}`);
+    setStatusText(
+      `Steps: ${s.steps} | Walkers: ${s.walkers.length} | Cluster: ${Object.keys(s.cluster).length}`,
+    );
   }
 
   function syncSpawnedWalkers() {
@@ -166,10 +205,15 @@ function ThreeDimensionalDLA() {
           steps: reduxSteps,
           stepSize: 0.2,
           stickDistance,
-          boundHalfExtent: BOUND_HALF_EXTENT
+          boundHalfExtent: BOUND_HALF_EXTENT,
         };
       } else {
-        dlaStateRef.current = createDLA3DState(BOUND_HALF_EXTENT, stickDistance, centerSticky, floorSticky);
+        dlaStateRef.current = createDLA3DState(
+          BOUND_HALF_EXTENT,
+          stickDistance,
+          centerSticky,
+          floorSticky,
+        );
       }
       updateStatusText();
     }
@@ -183,7 +227,12 @@ interface SimulationLoopProps {
   onFinished: () => void;
 }
 
-function SimulationLoop({ dlaStateRef, isRunning, setStatusText, onFinished }: SimulationLoopProps) {
+function SimulationLoop({
+  dlaStateRef,
+  isRunning,
+  setStatusText,
+  onFinished,
+}: SimulationLoopProps) {
   const onFinishedRef = useRef(onFinished);
   const setStatusTextRef = useRef(setStatusText);
   onFinishedRef.current = onFinished;
@@ -197,7 +246,7 @@ function SimulationLoop({ dlaStateRef, isRunning, setStatusText, onFinished }: S
     if (dlaStateRef.current.steps % STATUS_UPDATE_INTERVAL === 0) {
       const s = dlaStateRef.current;
       setStatusTextRef.current(
-        `Steps: ${s.steps} | Walkers: ${s.walkers.length} | Cluster: ${Object.keys(s.cluster).length}`
+        `Steps: ${s.steps} | Walkers: ${s.walkers.length} | Cluster: ${Object.keys(s.cluster).length}`,
       );
     }
 
@@ -209,7 +258,11 @@ function SimulationLoop({ dlaStateRef, isRunning, setStatusText, onFinished }: S
   return null;
 }
 
-function InstancedWalkers({ dlaStateRef }: { dlaStateRef: React.RefObject<DLA3DState | null> }) {
+function InstancedWalkers({
+  dlaStateRef,
+}: {
+  dlaStateRef: React.RefObject<DLA3DState | null>;
+}) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const tempMatrix = useRef(new THREE.Matrix4());
 
@@ -239,7 +292,11 @@ function InstancedWalkers({ dlaStateRef }: { dlaStateRef: React.RefObject<DLA3DS
   );
 }
 
-function InstancedCluster({ dlaStateRef }: { dlaStateRef: React.RefObject<DLA3DState | null> }) {
+function InstancedCluster({
+  dlaStateRef,
+}: {
+  dlaStateRef: React.RefObject<DLA3DState | null>;
+}) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const tempMatrix = useRef(new THREE.Matrix4());
   const tempColor = useRef(new THREE.Color());
@@ -256,7 +313,11 @@ function InstancedCluster({ dlaStateRef }: { dlaStateRef: React.RefObject<DLA3DS
     if (count !== prevClusterSize.current) {
       for (let i = prevClusterSize.current; i < count; i++) {
         const entry = entries[i];
-        tempMatrix.current.makeTranslation(entry.point.x, entry.point.y, entry.point.z);
+        tempMatrix.current.makeTranslation(
+          entry.point.x,
+          entry.point.y,
+          entry.point.z,
+        );
         mesh.setMatrixAt(i, tempMatrix.current);
 
         const hue = entry.distance === 0 ? 0 : (entry.distance * 30) % 360;
@@ -281,7 +342,11 @@ function InstancedCluster({ dlaStateRef }: { dlaStateRef: React.RefObject<DLA3DS
   );
 }
 
-function ClusterLines({ dlaStateRef }: { dlaStateRef: React.RefObject<DLA3DState | null> }) {
+function ClusterLines({
+  dlaStateRef,
+}: {
+  dlaStateRef: React.RefObject<DLA3DState | null>;
+}) {
   const lineRef = useRef<THREE.LineSegments>(null);
   const positionsRef = useRef(new Float32Array(MAX_CONNECTIONS * 6));
   const prevLineCount = useRef(0);
@@ -289,7 +354,7 @@ function ClusterLines({ dlaStateRef }: { dlaStateRef: React.RefObject<DLA3DState
   const geom = React.useMemo(() => {
     const geometry = new THREE.BufferGeometry();
     const positions = new Float32Array(MAX_CONNECTIONS * 6);
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
     geometry.setDrawRange(0, 0);
     return geometry;
   }, []);
@@ -322,10 +387,10 @@ function ClusterLines({ dlaStateRef }: { dlaStateRef: React.RefObject<DLA3DState
       positions[idx++] = entry.parentPoint.z;
     }
 
-    const attr = geom.getAttribute('position') as THREE.BufferAttribute;
+    const attr = geom.getAttribute("position") as THREE.BufferAttribute;
     attr.array.set(positions);
     attr.needsUpdate = true;
-    geom.setDrawRange(0, (idx / 3));
+    geom.setDrawRange(0, idx / 3);
     prevLineCount.current = lineCount;
   });
 

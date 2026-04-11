@@ -1,21 +1,21 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
-import { useAppSelector } from '../../../store';
-import { setSquareSize, setRotations, setStroke } from '../svg-dla-slice';
-import type { RootState } from '../../../store';
-import type { SVGDLAUIState } from '../svg-dla-slice';
-import './square-size-controls.css';
+import React from "react";
+import { useDispatch } from "react-redux";
+import { useAppSelector } from "../../../store";
+import { setSquareSize, setRotations, setStroke } from "../svg-dla-slice";
+import type { RootState } from "../../../store";
+import type { SVGDLAUIState } from "../svg-dla-slice";
+import "./square-size-controls.css";
 
 const SquareSizeControls: React.FC = () => {
   const dispatch = useDispatch();
-  const squareSize = useAppSelector((state: RootState) => 
-    (state.svgDla as SVGDLAUIState).squareSize
+  const squareSize = useAppSelector(
+    (state: RootState) => (state.svgDla as SVGDLAUIState).squareSize,
   );
-  const rotations = useAppSelector((state: RootState) => 
-    (state.svgDla as SVGDLAUIState).rotations
+  const rotations = useAppSelector(
+    (state: RootState) => (state.svgDla as SVGDLAUIState).rotations,
   );
-  const stroke = useAppSelector((state: RootState) => 
-    (state.svgDla as SVGDLAUIState).stroke
+  const stroke = useAppSelector(
+    (state: RootState) => (state.svgDla as SVGDLAUIState).stroke,
   );
 
   return (
@@ -81,4 +81,4 @@ const SquareSizeControls: React.FC = () => {
   }
 };
 
-export default SquareSizeControls; 
+export default SquareSizeControls;

@@ -52,19 +52,21 @@
   border-radius: 8px;
   background: none;
   cursor: pointer;
-  transition: border-color 0.2s, background 0.2s;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
   font-size: 2rem;
   margin: 0;
   outline: none;
 }
 
 .dlasim_tool-btn.selected {
-  border-color: #FB8158;
+  border-color: #fb8158;
   background: rgba(251, 129, 88, 0.08);
 }
 
 .dlasim_tool-btn.unselected {
-  border-color: #EB2EA4;
+  border-color: #eb2ea4;
   background: rgba(235, 46, 164, 0.08);
 }
 
@@ -80,7 +82,7 @@
     max-width: 100vw;
     overflow-x: hidden;
   }
-  
+
   .svgdla-main-content {
     flex-direction: column;
     align-items: center;
@@ -88,7 +90,7 @@
     width: 100%;
     max-width: 100%;
   }
-  
+
   .dlasim_tool-container {
     margin-right: 0;
     flex-direction: row;
@@ -96,17 +98,17 @@
     width: 100%;
     justify-content: center;
   }
-  
+
   .dlasim_tool-btn {
     width: 36px;
     height: 36px;
     font-size: 1.5rem;
   }
-  
+
   .dlasim_tool-icon {
     font-size: 1.2rem;
   }
-  
+
   .svgdla-svg-container {
     margin-right: 0;
     margin-bottom: 1rem;
@@ -114,14 +116,14 @@
     width: 100%;
     max-width: 100%;
   }
-  
+
   .svgdla-svg {
     max-width: 100%;
     width: 100%;
     height: auto;
     min-width: 0;
   }
-  
+
   .svgdla-button-container {
     order: 3;
     display: flex;
@@ -130,11 +132,11 @@
     align-items: center;
     width: 100%;
   }
-  
+
   .svgdla-button-container button {
     margin-right: 0;
     margin-bottom: 0.5rem;
     width: 100%;
     max-width: 300px;
   }
-} 
+}

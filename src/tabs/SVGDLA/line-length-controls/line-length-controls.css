@@ -15,26 +15,26 @@
     padding: 16px;
     box-sizing: border-box;
   }
-  
+
   .svgdla_line-length-row {
     display: flex;
     flex-direction: column;
     gap: 8px;
   }
-  
+
   .svgdla_line-length-input {
     margin-left: 0;
     width: 100%;
     max-width: 200px;
     font-size: 16px; /* Prevent zoom on mobile */
   }
-  
+
   .svgdla-radius-row {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
-  
+
   .svgdla-radius-input {
     margin-left: 0;
     width: 100%;
@@ -85,7 +85,9 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
   outline: none;
 }
 
@@ -95,7 +97,7 @@
 }
 
 .svgdla-checkbox:checked::after {
-  content: '\2714';
+  content: "\2714";
   font-size: 1.5em;
   position: absolute;
 }
@@ -117,10 +119,12 @@
   background: #1a1a2e;
   color: #fff;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 
 .svgdla-radius-input:focus {
   border-color: #5a6ee6;
   box-shadow: 0 0 0 3px #5a6ee655;
-} 
+}

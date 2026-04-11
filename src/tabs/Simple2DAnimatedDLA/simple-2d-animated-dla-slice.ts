@@ -1,11 +1,11 @@
-import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
-import { DEFAULT_PARTICLES } from './simple-2d-animated-dla-constants';
-import type { ClusterMap } from '../../dla/dla';
+import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
+import { DEFAULT_PARTICLES } from "./simple-2d-animated-dla-constants";
+import type { ClusterMap } from "../../dla/dla";
 
-export type Simple2DAnimatedDLATool = 'brush' | 'eraser' | 'spawn-shapes';
-export type BrushSpawnType = 'walkers' | 'stuck points';
-export type EraseParticleType = 'walkers' | 'stuck points';
+export type Simple2DAnimatedDLATool = "brush" | "eraser" | "spawn-shapes";
+export type BrushSpawnType = "walkers" | "stuck points";
+export type EraseParticleType = "walkers" | "stuck points";
 export interface Simple2DAnimatedDLAUIState {
   numParticles: number;
   spawnXOffset: number;
@@ -37,9 +37,9 @@ const initialState: Simple2DAnimatedDLAUIState = {
   eraserSize: 10,
   isRunning: false,
   isSimulating: false,
-  selectedTool: 'brush',
-  brushSpawnType: 'walkers',
-  eraseParticleType: 'walkers',
+  selectedTool: "brush",
+  brushSpawnType: "walkers",
+  eraseParticleType: "walkers",
   // DLA simulation state
   dlaCluster: {},
   dlaWalkers: [],
@@ -47,7 +47,7 @@ const initialState: Simple2DAnimatedDLAUIState = {
 };
 
 const slice = createSlice({
-  name: 'simple2dAnimatedDlaUI',
+  name: "simple2dAnimatedDlaUI",
   initialState,
   reducers: {
     setNumParticles(state, action: PayloadAction<number>) {
@@ -89,7 +89,14 @@ const slice = createSlice({
     setEraseParticleType(state, action: PayloadAction<EraseParticleType>) {
       state.eraseParticleType = action.payload;
     },
-    saveDLAState(state, action: PayloadAction<{ cluster: ClusterMap; walkers: { x: number; y: number }[]; steps: number }>) {
+    saveDLAState(
+      state,
+      action: PayloadAction<{
+        cluster: ClusterMap;
+        walkers: { x: number; y: number }[];
+        steps: number;
+      }>,
+    ) {
       state.dlaCluster = action.payload.cluster;
       state.dlaWalkers = action.payload.walkers;
       state.dlaSteps = action.payload.steps;
@@ -117,6 +124,6 @@ export const {
   setBrushSpawnType,
   setEraseParticleType,
   saveDLAState,
-  resetDLAState
+  resetDLAState,
 } = slice.actions;
-export default slice.reducer; 
+export default slice.reducer;

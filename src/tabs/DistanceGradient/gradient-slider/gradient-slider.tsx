@@ -1,12 +1,14 @@
-import React, { useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import type { RootState } from '../../../store';
-import { updateColorStop } from '../distance-gradient-slice';
-import './gradient-slider.css';
+import React, { useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "../../../store";
+import { updateColorStop } from "../distance-gradient-slice";
+import "./gradient-slider.css";
 
 function GradientSlider() {
   const dispatch = useDispatch();
-  const { colorStops } = useSelector((state: RootState) => state.distanceGradient);
+  const { colorStops } = useSelector(
+    (state: RootState) => state.distanceGradient,
+  );
   const containerRef = useRef<HTMLDivElement>(null);
   const [draggedStop, setDraggedStop] = useState<string | null>(null);
 
@@ -15,36 +17,36 @@ function GradientSlider() {
 
   // Generate gradient CSS
   const gradientStops = sortedStops
-    .map(stop => `${stop.color} ${stop.position}%`)
-    .join(', ');
-  
+    .map((stop) => `${stop.color} ${stop.position}%`)
+    .join(", ");
+
   const gradientStyle = {
-    background: `linear-gradient(to right, ${gradientStops})`
+    background: `linear-gradient(to right, ${gradientStops})`,
   };
 
   // Add global event listeners for both mouse and touch
   React.useEffect(() => {
     if (draggedStop) {
       // Mouse events
-      document.addEventListener('mousemove', handleMouseMove as any);
-      document.addEventListener('mouseup', handleMouseUp);
-      
+      document.addEventListener("mousemove", handleMouseMove as any);
+      document.addEventListener("mouseup", handleMouseUp);
+
       // Touch events
-      document.addEventListener('touchmove', handleTouchMove as any);
-      document.addEventListener('touchend', handleTouchEnd);
-      
+      document.addEventListener("touchmove", handleTouchMove as any);
+      document.addEventListener("touchend", handleTouchEnd);
+
       return () => {
-        document.removeEventListener('mousemove', handleMouseMove as any);
-        document.removeEventListener('mouseup', handleMouseUp);
-        document.removeEventListener('touchmove', handleTouchMove as any);
-        document.removeEventListener('touchend', handleTouchEnd);
+        document.removeEventListener("mousemove", handleMouseMove as any);
+        document.removeEventListener("mouseup", handleMouseUp);
+        document.removeEventListener("touchmove", handleTouchMove as any);
+        document.removeEventListener("touchend", handleTouchEnd);
       };
     }
   }, [draggedStop]);
 
   return (
     <div className="gradient-slider-container">
-      <div 
+      <div
         ref={containerRef}
         className="gradient-bar"
         style={gradientStyle}
@@ -54,23 +56,23 @@ function GradientSlider() {
         {sortedStops.map((stop) => (
           <div
             key={stop.id}
-            className={`gradient-handle ${draggedStop === stop.id ? 'dragging' : ''}`}
+            className={`gradient-handle ${draggedStop === stop.id ? "dragging" : ""}`}
             style={{
               left: `${stop.position}%`,
               backgroundColor: stop.color,
-              borderColor: stop.color
+              borderColor: stop.color,
             }}
             onMouseDown={(e) => handleMouseDown(e, stop.id)}
             onTouchStart={(e) => handleTouchStart(e, stop.id)}
           />
         ))}
       </div>
-      
+
       <div className="gradient-axis">
         {sortedStops.map((stop) => (
           <div
             key={stop.id}
-            className={`value-label ${draggedStop === stop.id ? 'active' : ''}`}
+            className={`value-label ${draggedStop === stop.id ? "active" : ""}`}
             style={{ left: `${stop.position}%` }}
           >
             <span className="value-text">{stop.position}</span>
@@ -96,8 +98,14 @@ function GradientSlider() {
     const rect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
-    
-    dispatch(updateColorStop({ id: draggedStop, field: 'position', value: Math.round(percentage) }));
+
+    dispatch(
+      updateColorStop({
+        id: draggedStop,
+        field: "position",
+        value: Math.round(percentage),
+      }),
+    );
   }
 
   function handleTouchMove(e: React.TouchEvent) {
@@ -107,8 +115,14 @@ function GradientSlider() {
     const touch = e.touches[0];
     const x = touch.clientX - rect.left;
     const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
-    
-    dispatch(updateColorStop({ id: draggedStop, field: 'position', value: Math.round(percentage) }));
+
+    dispatch(
+      updateColorStop({
+        id: draggedStop,
+        field: "position",
+        value: Math.round(percentage),
+      }),
+    );
   }
 
   function handleMouseUp() {
@@ -120,4 +134,4 @@ function GradientSlider() {
   }
 }
 
-export default GradientSlider; 
+export default GradientSlider;

@@ -17,19 +17,21 @@
   border-radius: 8px;
   background: none;
   cursor: pointer;
-  transition: border-color 0.2s, background 0.2s;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
   font-size: 2rem;
   margin: 0;
   outline: none;
 }
 
 .dlasim_tool-btn.selected {
-  border-color: #FB8158;
+  border-color: #fb8158;
   background: rgba(251, 129, 88, 0.08);
 }
 
 .dlasim_tool-btn.unselected {
-  border-color: #EB2EA4;
+  border-color: #eb2ea4;
   background: rgba(235, 46, 164, 0.08);
 }
 
@@ -44,8 +46,8 @@
     height: 36px;
     font-size: 1.5rem;
   }
-  
+
   .dlasim_tool-icon {
     font-size: 1.2rem;
   }
-} 
+}

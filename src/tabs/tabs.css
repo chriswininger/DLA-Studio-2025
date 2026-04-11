@@ -18,7 +18,9 @@
   text-decoration: none;
   margin-right: 1rem;
   background: none;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 
 .dlasim_tab-link:last-child {
@@ -62,7 +64,9 @@
   height: 3px;
   background: var(--control-border-color);
   border-radius: 2px;
-  transition: transform 0.25s, opacity 0.25s;
+  transition:
+    transform 0.25s,
+    opacity 0.25s;
 }
 
 /* Animate to X when open */

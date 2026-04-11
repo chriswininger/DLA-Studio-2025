@@ -1,9 +1,13 @@
-import { useDispatch } from 'react-redux';
-import { useAppSelector } from '../../../store';
-import { setNumParticles, setSpawnSphereRadius, addWalkers } from '../three-dimensional-dla-slice';
-import type { RootState } from '../../../store';
-import type { Point3D } from '../dla-3d';
-import './sphere-spawn-controls.css';
+import { useDispatch } from "react-redux";
+import { useAppSelector } from "../../../store";
+import {
+  setNumParticles,
+  setSpawnSphereRadius,
+  addWalkers,
+} from "../three-dimensional-dla-slice";
+import type { RootState } from "../../../store";
+import type { Point3D } from "../dla-3d";
+import "./sphere-spawn-controls.css";
 
 interface SphereSpawnControlsProps {
   isRunning: boolean;
@@ -11,8 +15,12 @@ interface SphereSpawnControlsProps {
 
 function SphereSpawnControls({ isRunning }: SphereSpawnControlsProps) {
   const dispatch = useDispatch();
-  const numParticles = useAppSelector((state: RootState) => state.threeDimensionalDla.numParticles);
-  const spawnSphereRadius = useAppSelector((state: RootState) => state.threeDimensionalDla.spawnSphereRadius);
+  const numParticles = useAppSelector(
+    (state: RootState) => state.threeDimensionalDla.numParticles,
+  );
+  const spawnSphereRadius = useAppSelector(
+    (state: RootState) => state.threeDimensionalDla.spawnSphereRadius,
+  );
 
   return (
     <div className="dlasim-sphere-spawn-controls">

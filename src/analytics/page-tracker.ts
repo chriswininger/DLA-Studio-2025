@@ -1,14 +1,14 @@
 import { useLocation } from "react-router-dom";
-import {trackPageView } from "./analytics.ts";
+import { trackPageView } from "./analytics.ts";
 import { useEffect } from "react";
 
 // Component to track page views
 export function PageTracker() {
-    const location = useLocation();
+  const location = useLocation();
 
-    useEffect(() => {
-        trackPageView(location.pathname);
-    }, [location]);
+  useEffect(() => {
+    trackPageView(location.pathname);
+  }, [location]);
 
-    return null;
+  return null;
 }

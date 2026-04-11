@@ -1,24 +1,28 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
-import { useAppSelector } from '../../../store';
-import { setEraserSize, setEraseParticleType } from '../simple-2d-animated-dla-slice';
-import type { RootState } from '../../../store';
-import type { Simple2DAnimatedDLAUIState } from '../simple-2d-animated-dla-slice';
-import './eraser-controls.css';
+import React from "react";
+import { useDispatch } from "react-redux";
+import { useAppSelector } from "../../../store";
+import {
+  setEraserSize,
+  setEraseParticleType,
+} from "../simple-2d-animated-dla-slice";
+import type { RootState } from "../../../store";
+import type { Simple2DAnimatedDLAUIState } from "../simple-2d-animated-dla-slice";
+import "./eraser-controls.css";
 
 interface EraserControlsProps {
   isRunning: boolean;
 }
 
-const EraserControls: React.FC<EraserControlsProps> = ({
-  isRunning
-}) => {
+const EraserControls: React.FC<EraserControlsProps> = ({ isRunning }) => {
   const dispatch = useDispatch();
-  const eraserSize = useAppSelector((state: RootState) => 
-    (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).eraserSize
+  const eraserSize = useAppSelector(
+    (state: RootState) =>
+      (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).eraserSize,
   );
-  const eraseParticleType = useAppSelector((state: RootState) => 
-    (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState).eraseParticleType
+  const eraseParticleType = useAppSelector(
+    (state: RootState) =>
+      (state.simple2dAnimatedDla as Simple2DAnimatedDLAUIState)
+        .eraseParticleType,
   );
 
   return (
@@ -44,7 +48,7 @@ const EraserControls: React.FC<EraserControlsProps> = ({
               type="radio"
               name="erase-particle-type"
               value="walkers"
-              checked={eraseParticleType === 'walkers'}
+              checked={eraseParticleType === "walkers"}
               onChange={handleEraseParticleTypeChange}
               disabled={isRunning}
               className="dlasim_radio-input"
@@ -56,7 +60,7 @@ const EraserControls: React.FC<EraserControlsProps> = ({
               type="radio"
               name="erase-particle-type"
               value="stuck points"
-              checked={eraseParticleType === 'stuck points'}
+              checked={eraseParticleType === "stuck points"}
               onChange={handleEraseParticleTypeChange}
               disabled={isRunning}
               className="dlasim_radio-input"
@@ -75,10 +79,12 @@ const EraserControls: React.FC<EraserControlsProps> = ({
     }
   }
 
-  function handleEraseParticleTypeChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const value = e.target.value as 'walkers' | 'stuck points';
+  function handleEraseParticleTypeChange(
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) {
+    const value = e.target.value as "walkers" | "stuck points";
     dispatch(setEraseParticleType(value));
   }
 };
 
-export default EraserControls; 
+export default EraserControls;

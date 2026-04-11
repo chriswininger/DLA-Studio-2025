@@ -1,7 +1,7 @@
-import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 
-export type SVGDLAUITool = 'draw-with-lines' | 'draw-with-squares';
+export type SVGDLAUITool = "draw-with-lines" | "draw-with-squares";
 export interface SVGDLAUIState {
   lineLength: number;
   svgContent: string;
@@ -17,8 +17,8 @@ export interface SVGDLAUIState {
 
 const initialState: SVGDLAUIState = {
   lineLength: 2,
-  svgContent: '',
-  selectedTool: 'draw-with-lines',
+  svgContent: "",
+  selectedTool: "draw-with-lines",
   squareSize: 2,
   rotations: 0,
   stroke: false,
@@ -29,7 +29,7 @@ const initialState: SVGDLAUIState = {
 };
 
 const slice = createSlice({
-  name: 'svgDlaUI',
+  name: "svgDlaUI",
   initialState,
   reducers: {
     setLineLength(state, action: PayloadAction<number>) {
@@ -65,5 +65,16 @@ const slice = createSlice({
   },
 });
 
-export const { setLineLength, setSvgContent, setSelectedTool, setSquareSize, setRotations, setStroke, setShowCircles, setCircleRadius, setOnlyVisible, setIncludeBackgroundColor } = slice.actions;
-export default slice.reducer; 
+export const {
+  setLineLength,
+  setSvgContent,
+  setSelectedTool,
+  setSquareSize,
+  setRotations,
+  setStroke,
+  setShowCircles,
+  setCircleRadius,
+  setOnlyVisible,
+  setIncludeBackgroundColor,
+} = slice.actions;
+export default slice.reducer;

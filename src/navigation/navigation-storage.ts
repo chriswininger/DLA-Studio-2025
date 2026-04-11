@@ -1,11 +1,11 @@
-const NAVIGATION_STORAGE_KEY = 'dlasim-navigation-tab';
+const NAVIGATION_STORAGE_KEY = "dlasim-navigation-tab";
 
 export const navigationStorage = {
   getStoredTab: (): string | null => {
     try {
       return localStorage.getItem(NAVIGATION_STORAGE_KEY);
     } catch (error) {
-      console.warn('Failed to read navigation from localStorage:', error);
+      console.warn("Failed to read navigation from localStorage:", error);
       return null;
     }
   },
@@ -14,7 +14,7 @@ export const navigationStorage = {
     try {
       localStorage.setItem(NAVIGATION_STORAGE_KEY, tab);
     } catch (error) {
-      console.warn('Failed to save navigation to localStorage:', error);
+      console.warn("Failed to save navigation to localStorage:", error);
     }
   },
 
@@ -22,7 +22,7 @@ export const navigationStorage = {
     try {
       localStorage.removeItem(NAVIGATION_STORAGE_KEY);
     } catch (error) {
-      console.warn('Failed to clear navigation from localStorage:', error);
+      console.warn("Failed to clear navigation from localStorage:", error);
     }
   },
 };
