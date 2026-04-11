@@ -1,8 +1,12 @@
 #root {
+  width: 100%;
+  text-align: center;
+}
+
+.dlasim-content {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: 0 2rem 2rem;
 }
 
 .logo {
@@ -44,9 +48,12 @@
 /* Mobile responsive styles */
 @media (max-width: 768px) {
   #root {
-    padding: 1rem;
-    max-width: 100%;
     overflow-x: hidden;
+  }
+
+  .dlasim-content {
+    max-width: 100%;
+    padding: 0 1rem 1rem;
   }
   
   .card {

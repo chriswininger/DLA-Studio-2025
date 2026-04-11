@@ -1,14 +1,16 @@
-/* Tab navigation container */
+/* Tab navigation container — desktop */
 .dlasim_tab-nav {
   display: flex;
   gap: 2rem;
-  justify-content: flex-start;
-  margin: 2rem 0;
+  justify-content: space-around;
+  margin: 0 1rem;
+  padding: 0.75rem 2rem;
+  /*border-bottom: 2px solid var(--control-border-color);*/
 }
 
 /* Tab link styles */
 .dlasim_tab-link {
-  color: #ff00a6;
+  color: var(--dlasim-primary-color);
   font-size: 1.2rem;
   border: 2px solid var(--control-border-color);
   border-radius: 6px;
@@ -24,8 +26,7 @@
 }
 
 .dlasim_tab-link.dlasim_active {
-
-  border-color: #ff00a6;
+  border-color: var(--dlasim-primary-color);
 }
 
 /* Tab icon styles */
@@ -34,58 +35,94 @@
   font-size: 1rem;
 }
 
-/* Mobile responsive styles */
+/* Mobile nav wrapper — hidden on desktop */
+.dlasim-mobile-nav {
+  display: none;
+  position: relative;
+}
+
+/* Hamburger button */
+.dlasim-hamburger-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  padding: 6px;
+  background: none;
+  border: 2px solid var(--control-border-color);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.dlasim-hamburger-line {
+  display: block;
+  width: 100%;
+  height: 3px;
+  background: var(--control-border-color);
+  border-radius: 2px;
+  transition: transform 0.25s, opacity 0.25s;
+}
+
+/* Animate to X when open */
+.dlasim-hamburger-open .dlasim-hamburger-line:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+
+.dlasim-hamburger-open .dlasim-hamburger-line:nth-child(2) {
+  opacity: 0;
+}
+
+.dlasim-hamburger-open .dlasim-hamburger-line:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+/* Mobile dropdown menu */
+.dlasim-mobile-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 180px;
+  border: 2px solid var(--control-border-color);
+  border-radius: 6px;
+  background: #1a1a2e;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.dlasim-mobile-menu .dlasim_tab-link {
+  margin-right: 0;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid var(--control-border-color);
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  text-align: left;
+  color: var(--dlasim-primary-color);
+}
+
+.dlasim-mobile-menu .dlasim_tab-link:last-child {
+  border-bottom: none;
+}
+
+.dlasim-mobile-menu .dlasim_tab-link.dlasim_active {
+  background: rgba(90, 108, 255, 0.15);
+}
+
+/* Mobile breakpoint */
 @media (max-width: 768px) {
   .dlasim_tab-nav {
-    flex-direction: row;
-    gap: 0.5rem;
-    align-items: stretch;
-    flex-wrap: wrap;
-    justify-content: center;
+    display: none;
   }
-  
-  .dlasim_tab-link {
-    margin-right: 0;
-    text-align: center;
-    padding: 0.4rem 0.8rem;
-    font-size: 0.9rem;
-    flex: 1;
-    min-width: 0;
-    white-space: nowrap;
-  }
-  
-  .dlasim_tab-icon {
-    margin-right: 0.3rem;
-    font-size: 0.9rem;
+
+  .dlasim-mobile-nav {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0;
+    padding: 0.5rem 1rem;
   }
 }
-
-/* Extra small mobile devices */
-@media (max-width: 480px) {
-  .dlasim_tab-nav {
-    gap: 0.3rem;
-  }
-  
-  .dlasim_tab-link {
-    padding: 0.3rem 0.6rem;
-    font-size: 0.8rem;
-  }
-  
-  .dlasim_tab-icon {
-    margin-right: 0.2rem;
-    font-size: 0.8rem;
-  }
-}
-
-/* Very small mobile devices - stack vertically */
-@media (max-width: 360px) {
-  .dlasim_tab-nav {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  .dlasim_tab-link {
-    flex: none;
-    width: 100%;
-  }
-} 
