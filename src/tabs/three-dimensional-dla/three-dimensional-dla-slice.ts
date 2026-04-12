@@ -9,9 +9,12 @@ import {
 } from "./three-dimensional-dla-constants";
 import type { Point3D, ClusterMap3D } from "./dla-3d";
 
+export type SpawnMode = "sphere" | "random";
+
 export interface ThreeDimensionalDLAState {
   isRunning: boolean;
   numParticles: number;
+  spawnMode: SpawnMode;
   spawnSphereRadius: number;
   stickDistance: number;
   centerSticky: boolean;
@@ -24,6 +27,7 @@ export interface ThreeDimensionalDLAState {
 const initialState: ThreeDimensionalDLAState = {
   isRunning: false,
   numParticles: DEFAULT_PARTICLES_3D,
+  spawnMode: "sphere",
   spawnSphereRadius: DEFAULT_SPAWN_RADIUS,
   stickDistance: DEFAULT_STICK_DISTANCE,
   centerSticky: DEFAULT_CENTER_STICKY,
@@ -42,6 +46,9 @@ const slice = createSlice({
     },
     setNumParticles(state, action: PayloadAction<number>) {
       state.numParticles = action.payload;
+    },
+    setSpawnMode(state, action: PayloadAction<SpawnMode>) {
+      state.spawnMode = action.payload;
     },
     setSpawnSphereRadius(state, action: PayloadAction<number>) {
       state.spawnSphereRadius = action.payload;
@@ -75,6 +82,7 @@ const slice = createSlice({
       state.walkers = [];
       state.cluster = {};
       state.steps = 0;
+      state.spawnMode = "sphere";
       state.stickDistance = DEFAULT_STICK_DISTANCE;
       state.centerSticky = DEFAULT_CENTER_STICKY;
       state.floorSticky = DEFAULT_FLOOR_STICKY;
@@ -85,6 +93,7 @@ const slice = createSlice({
 export const {
   setIsRunning,
   setNumParticles,
+  setSpawnMode,
   setSpawnSphereRadius,
   setStickDistance,
   setCenterSticky,
